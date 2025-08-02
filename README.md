@@ -68,7 +68,7 @@ Silakan ikuti aturan berikut ketika berkontribusi pada repository ini:
 2. **Gunakan Pesan Commit yang Jelas:**  
    Pesan commit harus deskriptif.
 
-3. **Penamaan Branch:**  
+3. **Pesan Commit:**  
    - Gunakan feature/`nama-fitur-anda` untuk fitur baru.
    - Gunakan fix/`deskripsi-masalah` untuk perbaikan bug.
    - Gunakan docs/`update-deskripsi` untuk pembaruan dokumentasi.
