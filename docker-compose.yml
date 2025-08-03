@@ -5,8 +5,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: laravel-app
-    container_name: laravel-app
+    image: sim-absensi
+    container_name: sim-absensi
     volumes:
       - .:/var/www
     working_dir: /var/www
@@ -32,4 +32,16 @@ services:
     image: postgres:14
     container_name: postgres-db
     environment:
-      POSTGRES_DB: s_
+      POSTGRES_DB: sim-absensi
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - laravel
+
+volumes:
+  pgdata:
+
+networks:
+  laravel:
