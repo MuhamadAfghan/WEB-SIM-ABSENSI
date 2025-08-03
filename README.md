@@ -99,58 +99,113 @@ Silakan ikuti aturan berikut ketika berkontribusi pada repository ini:
 
 
 
-   🗂️ SIM Absensi – Laravel + Docker
+   🚀 SIM Absensi — Setup & Deployment via Docker
 
-   Sistem Informasi Absensi menggunakan Laravel, PostgreSQL, dan Docker. Proyek ini bertujuan agar semua developer bisa menjalankan backend API Laravel tanpa perlu menginstal PHP, Composer, atau database di mesin lokal.
-   📦 Fitur Utama
+Proyek ini adalah sistem absensi berbasis Laravel yang berjalan menggunakan Docker untuk kemudahan setup dan konsistensi lingkungan pengembangan.
+🛠️ Persiapan Sebelum Memulai
+✅ Yang Wajib Diinstall:
 
-      Laravel 10.x
+    Docker Desktop
 
-      PostgreSQL 14
+        Untuk menjalankan container (wajib).
 
-      Nginx (sebagai webserver)
+        Download: https://www.docker.com/products/docker-desktop/
 
-      Docker Compose untuk orkestrasi
+        Tutorial Install:
 
-   🚀 Cara Menjalankan Proyek
-   1. Clone Repository
+            Windows: https://www.youtube.com/watch?v=3c-iBn73dDE
 
-   git clone https://github.com/namarepo/sim-absensi.git
-   cd sim-absensi
+            Mac: https://www.youtube.com/watch?v=pTFZFxd4hOI
 
-   2. Buat File .env
+        Aktifkan fitur: WSL 2 backend (untuk Windows).
 
-   Salin dari contoh:
+    Git (jika ingin clone dari repo)
 
-   cp .env.example .env
+        https://git-scm.com/downloads
 
-   Lalu sesuaikan beberapa variabel environment jika perlu:
+    VS Code / Text Editor
 
-   DB_CONNECTION=pgsql
-   DB_HOST=postgres
-   DB_PORT=5432
-   DB_DATABASE=sim-absensi
-   DB_USERNAME=postgres
-   DB_PASSWORD=root
+        https://code.visualstudio.com/
 
-   3. Build dan Jalankan Docker
+        Disarankan install ekstensi: Laravel Blade, Docker, PHP Intelephense.
 
-   docker-compose up -d --build
+🧾 Syarat & Aturan Pakai
 
-   4. Install Dependency Laravel
+    Proyek ini hanya berjalan di Docker, tidak bisa langsung pakai php artisan serve dari lokal tanpa konfigurasi khusus.
 
-   docker exec -it sim-absensi composer install
+    Pastikan port 8000 belum digunakan aplikasi lain.
 
-   5. Generate Key dan Jalankan Migration
+    Gunakan perintah Docker di terminal (CMD, PowerShell, atau VSCode terminal).
 
-   docker exec -it sim-absensi php artisan key:generate
-   docker exec -it sim-absensi php artisan migrate
+📦 Cara Menjalankan Proyek
+1. Clone Repository
 
-   🔗 Akses Proyek
+git clone https://github.com/username/WEB-SIM-ABSENSI.git
+cd WEB-SIM-ABSENSI
 
-   Setelah semua container berjalan, buka di browser:
+2. Copy .env File
 
-   http://localhost:8000
+cp .env.example .env
+
+Lalu ubah konfigurasi DB menjadi:
+
+DB_CONNECTION=pgsql
+DB_HOST=postgres
+DB_PORT=5432
+DB_DATABASE=sim-absensi
+DB_USERNAME=postgres
+DB_PASSWORD=root
+
+3. Jalankan Docker
+
+docker-compose up -d --build
+
+    -d agar berjalan di background
+
+    --build untuk membangun ulang image dari Dockerfile
+
+4. Install Dependency Laravel
+
+docker exec -it sim-absensi composer install
+
+5. Generate Key Laravel
+
+docker exec -it sim-absensi php artisan key:generate
+
+6. Jalankan Migrasi
+
+docker exec -it sim-absensi php artisan migrate
+
+7. Akses Website
+
+Buka browser dan akses:
+👉 http://localhost:8000
+🔄 Perintah Tambahan (Opsional)
+Stop Semua Container
+
+docker-compose down
+
+Reset Database + Container
+
+docker-compose down -v
+
+❗ Troubleshooting
+1. Website Tidak Muncul?
+
+    Pastikan Docker sudah jalan.
+
+    Pastikan tidak ada error di docker logs sim-absensi atau nginx-server.
+
+2. Perubahan Kode Tidak Update?
+
+    Restart container app jika perlu:
+
+docker restart sim-absensi
+
+🤝 Kontribusi
+
+Jika ada error, silakan buat issue atau hubungi pengembang.
+
 
 
 ---
