@@ -24,3 +24,32 @@ Route::get('/', function () {
     }
     return view('welcome');
 });
+
+// Authentication Routes
+Route::get('/login', function () {
+    return view('login');
+})->name('login');
+
+// Dashboard Routes
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->name('dashboard');
+
+// Employee Management Routes
+Route::get('/employees', function () {
+    return view('data-karyawan');
+})->name('employees');
+
+Route::get('/employee-details', function () {
+    return view('detail-data-karyawan');
+})->name('employee.details');
+
+// Attendance Routes
+Route::get('/attendance', function () {
+    return view('data-absensi');
+})->name('attendance');
+
+// Account Management Routes
+Route::get('/account-management', function () {
+    return view('account-management');
+})->name('account.management');
