@@ -13,6 +13,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+use Illuminate\Support\Facades\DB;
+
 Route::get('/', function () {
+    try {
+        DB::connection()->getPdo();
+        echo "Connected successfully to database " . DB::connection()->getDatabaseName();
+    } catch (\Exception $e) {
+        echo "Could not connect to the database. Please check your configuration. Error: " . $e->getMessage();
+    }
     return view('welcome');
 });
