@@ -1,0 +1,40 @@
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+h1 {
+  font-weight: 650;
+}
+
+/* Rounded ekstra untuk sudut kanan */
+.rounded-l-extra {
+  border-top-left-radius: 40px;
+  border-bottom-left-radius: 40px;
+}
+
+/* Shadow halus untuk input */
+.shadow-input {
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Atur posisi konten login agar agak ke kanan */
+.login-container {
+  padding-left: 80px;
+  padding-right: 40px;
+  margin-left: 90px;
+}
+
+.login-image {
+  background-image: 
+    linear-gradient(to top, rgba(96, 181, 255, 0.8), rgba(96, 181, 255, 0.4), rgba(96, 181, 255, 0)),
+    url('/img/loginBackground.webp');
+  background-size: cover;
+  background-position: 55% center;
+  background-repeat: no-repeat;
+  box-shadow: -10px 0 20px rgba(0, 0, 0, 0.15);
+  border-top-left-radius: 1rem;
+  border-bottom-left-radius: 1rem;
+}
+
+
