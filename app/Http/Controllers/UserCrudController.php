@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Exception;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\KaryawanImport;
 
 class UserCrudController extends Controller
 {
@@ -68,7 +70,7 @@ class UserCrudController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Data found',
-                'data' => $users,
+                'data' => $users->items(),
                 'meta' => [
                     'current_page' => $users->currentPage(),
                     'last_page' => $users->lastPage(),
@@ -195,6 +197,29 @@ class UserCrudController extends Controller
                 'status' => 'error',
                 'message' => 'Server error',
                 'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function import(Request $request)
+    {
+        // Validasi file harus excel
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:2048'
+        ]);
+
+        // Proses import
+        try {
+            Excel::import(new KaryawanImport, $request->file('file'));
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data karyawan berhasil diimport.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal mengimport data: ' . $e->getMessage()
             ], 500);
         }
     }

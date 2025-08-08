@@ -35,11 +35,10 @@ Route::get('/user', [UserCrudController::class, 'readAllUser']); //Baca semuan u
 Route::get('/user/{id?}', [UserCrudController::class, 'showUserById']); //Baca satu user berdasarkan ID
 Route::put('/user/{id?}', [UserCrudController::class, 'updateUser']); //update user berdasarkan ID
 Route::delete('user/{id?}', [UserCrudController::class, 'deleteUser']); //Hapus user berdasarkan ID
+Route::post('/user/import', [UserCrudController::class, 'import']); //Impor data karyawan dari file Excel`
+
 //admin
 Route::get('/admin', [AdminCrudController::class, 'readAllAdmin']); //Baca semua admin
 Route::get('/admin/{id?}', [AdminCrudController::class, 'showAdminById']); //Baca satu admin berdasarkan ID
 Route::put('/admin/{id?}', [AdminCrudController::class, 'updateAdmin']); //update admin berdasarkan ID
 Route::delete('admin/{id?}', [AdminCrudController::class, 'deleteAdmin']); //Hapus admin berdasarkan ID
-
-// Karyawan Import
-Route::post('/karyawan/import', [KaryawanImportController::class, 'import']); //Impor data karyawan dari file Excel
