@@ -54,9 +54,11 @@ class AdminAuthController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Login sukses',
-                'token' => $token,
-                'serial_number' => $serialNumber,
-                'user' => $admin,
+                'data' => [
+                    'token' => $token,
+                    'serial_number' => $serialNumber,
+                    'admin' => $admin,
+                ]
             ]);
         } catch (ValidationException $e) {
             return response()->json([
@@ -109,7 +111,8 @@ class AdminAuthController extends Controller
             if ($validator->fails()) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Gagal menyimpan data', 'data' => $validator->errors()
+                    'message' => 'Gagal menyimpan data',
+                    'data' => $validator->errors()
                 ], 400);
             }
 
@@ -133,7 +136,8 @@ class AdminAuthController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Server error', 'error' => $e->getMessage()
+                'message' => 'Server error',
+                'error' => $e->getMessage()
             ], 500);
         }
     }
@@ -155,6 +159,4 @@ class AdminAuthController extends Controller
             ], 500);
         }
     }
-
-    
 }
