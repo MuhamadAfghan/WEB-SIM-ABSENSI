@@ -55,3 +55,7 @@ Route::get('/attendance', function () {
 Route::get('/account-management', function () {
     return view('account-management');
 })->name('account.management');
+
+Route::get('/preview/form-karyawan', function () {
+    return view('preview-form-karyawan');
+});
