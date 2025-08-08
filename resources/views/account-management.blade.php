@@ -1,6 +1,6 @@
 @extends('components.template')
 
-@section('title', 'Managemen Akun - Hadir.in')
+@section('title', 'Manajemen Akun - Hadir.in')
 
 @section('content')
 <div class="mx-auto w-full max-w-7xl">

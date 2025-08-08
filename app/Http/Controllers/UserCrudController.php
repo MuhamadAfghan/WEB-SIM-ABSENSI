@@ -12,23 +12,81 @@ use Exception;
 
 class UserCrudController extends Controller
 {
-    public function readAllUser()
+    // public function readAllUser()
+    // {
+    //     try {
+    //         $data = User::orderBy('id', 'asc')->get()->makeVisible(['password', 'serialNumber']);
+    //         return response()->json([
+    //             'status' => 'success',
+    //             'message' => 'Data found', 'data' => $data
+    //         ]);
+    //     } catch (Exception $e) {
+    //         return response()->json([
+    //             'status' => 'error',
+    //             'message' => 'Server error', 'error' => $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
+
+    public function readAllUser(Request $request)
     {
         try {
-            $data = User::orderBy('id', 'asc')->get()->makeVisible(['password', 'serialNumber']);
+            $query = User::query();
+
+            // Fitur pencarian
+            if ($request->has('search')) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%$search%")
+                        ->orWhere('username', 'like', "%$search%")
+                        ->orWhere('email', 'like', "%$search%")
+                        ->orWhere('nip', 'like', "%$search%")
+                        ->orWhere('telepon', 'like', "%$search%")
+                        ->orWhere('divisi', 'like', "%$search%")
+                        ->orWhere('mapel', 'like', "%$search%");
+                });
+            }
+
+            // Fitur sorting
+            $sortField = $request->input('sort_field', 'id');
+            $sortOrder = $request->input('sort_order', 'asc');
+
+            // Validasi field sorting untuk mencegah SQL injection
+            $validSortFields = ['id', 'name', 'username', 'email', 'nip', 'telepon', 'divisi', 'mapel', 'created_at', 'updated_at'];
+            if (!in_array($sortField, $validSortFields)) {
+                $sortField = 'id';
+            }
+
+            $sortOrder = strtolower($sortOrder) === 'desc' ? 'desc' : 'asc';
+
+            $query->orderBy($sortField, $sortOrder);
+
+            // Fitur pagination
+            $perPage = $request->input('per_page', 10);
+            $users = $query->paginate($perPage);
+
             return response()->json([
                 'status' => 'success',
-                'message' => 'Data found', 'data' => $data
+                'message' => 'Data found',
+                'data' => $users,
+                'meta' => [
+                    'current_page' => $users->currentPage(),
+                    'last_page' => $users->lastPage(),
+                    'per_page' => $users->perPage(),
+                    'total' => $users->total(),
+                    'sort_field' => $sortField,
+                    'sort_order' => $sortOrder,
+                    'search_query' => $request->search ?? null,
+                ]
             ]);
         } catch (Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Server error', 'error' => $e->getMessage()
+                'message' => 'Server error',
+                'error' => $e->getMessage()
             ], 500);
         }
     }
-
-
 
     public function showUserById(?string $id = null)
     {
@@ -44,7 +102,8 @@ class UserCrudController extends Controller
             if ($data) {
                 return response()->json([
                     'status' => 'success',
-                    'message' => 'Data found', 'data' => $data
+                    'message' => 'Data found',
+                    'data' => $data
                 ]);
             }
             return response()->json([
@@ -54,7 +113,8 @@ class UserCrudController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Server error', 'error' => $e->getMessage()
+                'message' => 'Server error',
+                'error' => $e->getMessage()
             ], 500);
         }
     }
@@ -75,7 +135,7 @@ class UserCrudController extends Controller
                 'message' => 'Data not found'
             ], 404);
 
-            $data = array_filter($request->only(['name', 'username', 'password', 'nip', 'email','telepon', 'divisi', 'mapel']), fn ($value) => $value !== null);
+            $data = array_filter($request->only(['name', 'username', 'password', 'nip', 'email', 'telepon', 'divisi', 'mapel']), fn($value) => $value !== null);
             if (empty($data)) return response()->json([
                 'status' => false,
                 'message' => 'No data to update'
@@ -106,7 +166,8 @@ class UserCrudController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Server error', 'error' => $e->getMessage()
+                'message' => 'Server error',
+                'error' => $e->getMessage()
             ], 500);
         }
     }
@@ -132,7 +193,8 @@ class UserCrudController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Server error', 'error' => $e->getMessage()
+                'message' => 'Server error',
+                'error' => $e->getMessage()
             ], 500);
         }
     }

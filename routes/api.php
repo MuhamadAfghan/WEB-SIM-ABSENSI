@@ -23,17 +23,18 @@ use Illuminate\Support\Facades\Route;
 
 //auth user
 Route::post('/login', [UserAuthController::class, 'login']); //Login user
-Route::post('/register', [UserAuthController::class, 'register']); //Simpan user baru
+// Route::post('/register', [UserAuthController::class, 'register']); //Simpan user baru
 //auth admin
 Route::post('/login/admin', [AdminAuthController::class, 'loginAdmin']); //Login admin
-Route::post('/register/admin', [AdminAuthController::class, 'registerAdmin']); //Simpan admin baru
+// Route::post('/register/admin', [AdminAuthController::class, 'registerAdmin']); //Simpan admin baru
 
-//user 
+//user
+Route::post('/user', [UserCrudController::class, 'addUser']); //Baca semuan user
 Route::get('/user', [UserCrudController::class, 'readAllUser']); //Baca semuan user
 Route::get('/user/{id?}', [UserCrudController::class, 'showUserById']); //Baca satu user berdasarkan ID
 Route::put('/user/{id?}', [UserCrudController::class, 'updateUser']); //update user berdasarkan ID
 Route::delete('user/{id?}', [UserCrudController::class, 'deleteUser']); //Hapus user berdasarkan ID
-//admin 
+//admin
 Route::get('/admin', [AdminCrudController::class, 'readAllAdmin']); //Baca semua admin
 Route::get('/admin/{id?}', [AdminCrudController::class, 'showAdminById']); //Baca satu admin berdasarkan ID
 Route::put('/admin/{id?}', [AdminCrudController::class, 'updateAdmin']); //update admin berdasarkan ID
