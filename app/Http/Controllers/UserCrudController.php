@@ -30,6 +30,41 @@ class UserCrudController extends Controller
     //     }
     // }
 
+    public function addUser(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'nip' => 'required|string|max:20|unique:users',
+                'email' => ['required', 'email', 'max:255', Rule::unique('users')],
+                'password' => 'nullable|string|min:6',
+                'telepon' => 'nullable|string|max:15',
+                'divisi' => 'nullable|string|max:100',
+                'mapel' => 'nullable|string|max:100',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['status' => false, 'message' => $validator->errors()->first()], 400);
+            }
+
+            $password = $request->filled('password') ? $request->password : $request->nip;
+
+            $user = User::create([
+                'name' => $request->name,
+                'password' => Hash::make($password),
+                'nip' => $request->nip,
+                'email' => $request->email,
+                'telepon' => $request->telepon,
+                'divisi' => $request->divisi,
+                'mapel' => $request->mapel,
+            ]);
+
+            return response()->json(['status' => true, 'message' => 'User created successfully', 'data' => $user], 201);
+        } catch (Exception $e) {
+            return response()->json(['status' => false, 'message' => 'Server error', 'error' => $e->getMessage()], 500);
+        }
+    }
+
     public function readAllUser(Request $request)
     {
         try {
@@ -40,7 +75,6 @@ class UserCrudController extends Controller
                 $search = $request->search;
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%$search%")
-                        ->orWhere('username', 'like', "%$search%")
                         ->orWhere('email', 'like', "%$search%")
                         ->orWhere('nip', 'like', "%$search%")
                         ->orWhere('telepon', 'like', "%$search%")

@@ -14,13 +14,13 @@ class StatistikTahunanController extends Controller
         try {
             // Validasi input tahun
             $validator = Validator::make($request->all(), [
-                'tahun' => ['required', 'digits:4', 'numeric', 'min:1900', 'max:' . date('Y')],
+                'year' => ['required', 'digits:4', 'numeric', 'min:1900', 'max:' . date('Y')],
             ], [
-                'tahun.required' => 'Tahun wajib diisi.',
-                'tahun.digits' => 'Tahun harus terdiri dari 4 digit.',
-                'tahun.numeric' => 'Tahun harus berupa angka.',
-                'tahun.min' => 'Tahun terlalu kecil.',
-                'tahun.max' => 'Tahun tidak boleh lebih dari tahun sekarang.',
+                'year.required' => 'Tahun wajib diisi.',
+                'year.digits' => 'Tahun harus terdiri dari 4 digit.',
+                'year.numeric' => 'Tahun harus berupa angka.',
+                'year.min' => 'Tahun terlalu kecil.',
+                'year.max' => 'Tahun tidak boleh lebih dari tahun sekarang.',
             ]);
 
             if ($validator->fails()) {
@@ -31,7 +31,7 @@ class StatistikTahunanController extends Controller
                 ], 422);
             }
 
-            $tahun = (int) $request->input('tahun');
+            $tahun = (int) $request->input('year');
             $data = [];
 
             // Siapkan struktur data 12 bulan
