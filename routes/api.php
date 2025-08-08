@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserCrudController;
+use App\Http\Controllers\StatistikTahunanController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -39,3 +40,5 @@ Route::get('/admin', [AdminCrudController::class, 'readAllAdmin']); //Baca semua
 Route::get('/admin/{id?}', [AdminCrudController::class, 'showAdminById']); //Baca satu admin berdasarkan ID
 Route::put('/admin/{id?}', [AdminCrudController::class, 'updateAdmin']); //update admin berdasarkan ID
 Route::delete('admin/{id?}', [AdminCrudController::class, 'deleteAdmin']); //Hapus admin berdasarkan ID
+
+Route::get('/statistik-tahunan', [StatistikTahunanController::class, 'statistikTahunan']);//statistik tahunan
