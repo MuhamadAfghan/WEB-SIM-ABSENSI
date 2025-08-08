@@ -14,7 +14,8 @@ class Attendance extends Model
         'longitude',
         'latitude',
         'date',
-        'time',
+        'check_in_time',
+        'check_out_time',
         'keterangan',
         'lokasi'
     ];
