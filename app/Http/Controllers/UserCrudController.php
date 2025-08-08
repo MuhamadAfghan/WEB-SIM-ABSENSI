@@ -12,50 +12,72 @@ use Exception;
 
 class UserCrudController extends Controller
 {
-    public function addUser(Request $request)
+    // public function readAllUser()
+    // {
+    //     try {
+    //         $data = User::orderBy('id', 'asc')->get()->makeVisible(['password', 'serialNumber']);
+    //         return response()->json([
+    //             'status' => 'success',
+    //             'message' => 'Data found', 'data' => $data
+    //         ]);
+    //     } catch (Exception $e) {
+    //         return response()->json([
+    //             'status' => 'error',
+    //             'message' => 'Server error', 'error' => $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
+
+    public function readAllUser(Request $request)
     {
         try {
-            $data = $request->only(['name', 'username', 'password', 'nip', 'email', 'telepon', 'divisi', 'mapel']);
-            $data['password'] = Hash::make($data['password']);
+            $query = User::query();
 
-            $validator = Validator::make($data, [
-                'name' => 'required|string|max:255',
-                'username' => ['required', 'string', 'max:255', Rule::unique('users')],
-                'password' => 'required|string|min:6',
-                'nip' => 'nullable|string|max:20',
-                'email' => ['required', 'email', Rule::unique('users')],
-                'telepon' => 'nullable|string|max:15',
-                'divisi' => 'nullable|string|max:50',
-                'mapel' => 'nullable|string|max:50',
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json(['status' => false, 'message' => $validator->errors()->first()], 400);
+            // Fitur pencarian
+            if ($request->has('search')) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%$search%")
+                        ->orWhere('username', 'like', "%$search%")
+                        ->orWhere('email', 'like', "%$search%")
+                        ->orWhere('nip', 'like', "%$search%")
+                        ->orWhere('telepon', 'like', "%$search%")
+                        ->orWhere('divisi', 'like', "%$search%")
+                        ->orWhere('mapel', 'like', "%$search%");
+                });
             }
 
-            $user = User::create($data);
-            return response()->json([
-                'status' => true,
-                'message' => 'User created successfully',
-                'data' => $user
-            ], 201);
-        } catch (Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Server error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
+            // Fitur sorting
+            $sortField = $request->input('sort_field', 'id');
+            $sortOrder = $request->input('sort_order', 'asc');
 
-    public function readAllUser()
-    {
-        try {
-            $data = User::orderBy('id', 'asc')->get()->makeVisible(['password', 'serialNumber']);
+            // Validasi field sorting untuk mencegah SQL injection
+            $validSortFields = ['id', 'name', 'username', 'email', 'nip', 'telepon', 'divisi', 'mapel', 'created_at', 'updated_at'];
+            if (!in_array($sortField, $validSortFields)) {
+                $sortField = 'id';
+            }
+
+            $sortOrder = strtolower($sortOrder) === 'desc' ? 'desc' : 'asc';
+
+            $query->orderBy($sortField, $sortOrder);
+
+            // Fitur pagination
+            $perPage = $request->input('per_page', 10);
+            $users = $query->paginate($perPage);
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Data found',
-                'data' => $data
+                'data' => $users,
+                'meta' => [
+                    'current_page' => $users->currentPage(),
+                    'last_page' => $users->lastPage(),
+                    'per_page' => $users->perPage(),
+                    'total' => $users->total(),
+                    'sort_field' => $sortField,
+                    'sort_order' => $sortOrder,
+                    'search_query' => $request->search ?? null,
+                ]
             ]);
         } catch (Exception $e) {
             return response()->json([
