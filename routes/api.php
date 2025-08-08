@@ -1,5 +1,12 @@
 <?php
 
+use App\Http\Controllers\AdminAuthController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdminCrudController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserAuthController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserCrudController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +21,20 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+//auth user
+Route::post('/login', [UserAuthController::class, 'login']); //Login
+Route::post('/register', [UserAuthController::class, 'register']); //Simpan user baru
+//auth admin
+Route::post('/login/admin', [AdminAuthController::class, 'loginAdmin']); //Login
+Route::post('/register/admin', [AdminAuthController::class, 'registerAdmin']); //Simpan admin baru
+
+//user 
+Route::get('/user', [UserCrudController::class, 'readAllUser']); //Baca semuan user
+Route::get('/user/{id?}', [UserCrudController::class, 'showUserById']); //Baca satu user berdasarkan ID
+Route::put('/user/{id?}', [UserCrudController::class, 'updateUser']); //update user berdasarkan ID
+Route::delete('user/{id?}', [UserCrudController::class, 'deleteUser']); //Hapus user berdasarkan ID
+//admin 
+Route::get('/admin', [AdminCrudController::class, 'readAllAdmin']); //Baca semua admin
+Route::get('/admin/{id?}', [AdminCrudController::class, 'showAdminById']); //Baca satu admin berdasarkan ID
+Route::put('/admin/{id?}', [AdminCrudController::class, 'updateAdmin']); //update admin berdasarkan ID
+Route::delete('admin/{id?}', [AdminCrudController::class, 'deleteAdmin']); //Hapus admin berdasarkan ID
