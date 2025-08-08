@@ -101,10 +101,10 @@ class UserAuthController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'name' => 'required',
-                'username' => 'required',
+                'username' => 'required|unique:users,username',
                 'password' => 'required|min:6',
                 'nip' => 'required',
-                'email' => 'required',
+                'email' => 'required|email|unique:users,email',
                 'telepon' => 'required',
                 'divisi' => 'required',
                 'mapel' => 'required',
