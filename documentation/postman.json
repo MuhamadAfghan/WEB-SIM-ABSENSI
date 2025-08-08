@@ -77,6 +77,299 @@
 			"description": "Authentication endpoints for users and admins"
 		},
 		{
+			"name": "Settings Management",
+			"item": [
+				{
+					"name": "Get Settings",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has success field\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response has data field\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"});",
+									"",
+									"pm.test(\"Data contains work schedule fields\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property('monday_start_time');",
+									"    pm.expect(jsonData.data).to.have.property('monday_end_time');",
+									"    pm.expect(jsonData.data).to.have.property('monday_is_active');",
+									"});",
+									"",
+									"pm.test(\"Data contains location fields\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property('location_name');",
+									"    pm.expect(jsonData.data).to.have.property('latitude');",
+									"    pm.expect(jsonData.data).to.have.property('longitude');",
+									"    pm.expect(jsonData.data).to.have.property('radius');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/settings",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"settings"
+							]
+						},
+						"description": "Retrieve work schedule and location settings. If no settings exist, default values will be created automatically."
+					}
+				},
+				{
+					"name": "Save Settings",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has success field\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Settings saved successfully\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.include('successfully');",
+									"});",
+									"",
+									"pm.test(\"Response contains updated data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.have.property('id');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"monday_start_time\": \"07:30\",\n    \"monday_end_time\": \"16:00\",\n    \"monday_is_active\": true,\n    \"tuesday_start_time\": \"08:00\",\n    \"tuesday_end_time\": \"15:30\",\n    \"tuesday_is_active\": true,\n    \"wednesday_start_time\": \"08:00\",\n    \"wednesday_end_time\": \"15:30\",\n    \"wednesday_is_active\": true,\n    \"thursday_start_time\": \"08:00\",\n    \"thursday_end_time\": \"15:30\",\n    \"thursday_is_active\": true,\n    \"friday_start_time\": \"08:00\",\n    \"friday_end_time\": \"11:30\",\n    \"friday_is_active\": true,\n    \"saturday_start_time\": \"08:00\",\n    \"saturday_end_time\": \"12:00\",\n    \"saturday_is_active\": false,\n    \"location_name\": \"SMK Wikrama Bogor\",\n    \"latitude\": -6.6476344,\n    \"longitude\": 106.8169444,\n    \"radius\": 150\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/settings",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"settings"
+							]
+						},
+						"description": "Save or update work schedule and location settings. This endpoint will create new settings if none exist, or update existing settings."
+					}
+				},
+				{
+					"name": "Save Settings - Friday Half Day",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Friday schedule updated to half day\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.friday_end_time).to.eql('11:30:00');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"monday_start_time\": \"08:00\",\n    \"monday_end_time\": \"15:30\",\n    \"monday_is_active\": true,\n    \"tuesday_start_time\": \"08:00\",\n    \"tuesday_end_time\": \"15:30\",\n    \"tuesday_is_active\": true,\n    \"wednesday_start_time\": \"08:00\",\n    \"wednesday_end_time\": \"15:30\",\n    \"wednesday_is_active\": true,\n    \"thursday_start_time\": \"08:00\",\n    \"thursday_end_time\": \"15:30\",\n    \"thursday_is_active\": true,\n    \"friday_start_time\": \"08:00\",\n    \"friday_end_time\": \"11:30\",\n    \"friday_is_active\": true,\n    \"saturday_start_time\": \"08:00\",\n    \"saturday_end_time\": \"15:30\",\n    \"saturday_is_active\": false,\n    \"location_name\": \"SMK Wikrama Bogor\",\n    \"latitude\": -6.6476344,\n    \"longitude\": 106.8169444,\n    \"radius\": 100\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/settings",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"settings"
+							]
+						},
+						"description": "Example: Set Friday as half day (until 11:30) and Saturday as inactive"
+					}
+				},
+				{
+					"name": "Test Validation - Empty Data",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422 (Validation Error)\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});",
+									"",
+									"pm.test(\"Response has errors field\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('errors');",
+									"});",
+									"",
+									"pm.test(\"Validation errors for required fields\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.errors).to.have.property('monday_start_time');",
+									"    pm.expect(jsonData.errors).to.have.property('location_name');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/settings",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"settings"
+							]
+						},
+						"description": "Test validation by sending empty data. Should return 422 with validation errors."
+					}
+				},
+				{
+					"name": "Test Validation - Invalid Data",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422 (Validation Error)\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});",
+									"",
+									"pm.test(\"Response has validation errors\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('errors');",
+									"});",
+									"",
+									"pm.test(\"Time format validation error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.errors).to.have.property('monday_start_time');",
+									"});",
+									"",
+									"pm.test(\"Coordinate validation error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.errors).to.have.property('latitude');",
+									"    pm.expect(jsonData.errors).to.have.property('longitude');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"monday_start_time\": \"25:00\",\n    \"monday_end_time\": \"invalid_time\",\n    \"monday_is_active\": \"not_boolean\",\n    \"tuesday_start_time\": \"08:00\",\n    \"tuesday_end_time\": \"15:30\",\n    \"tuesday_is_active\": true,\n    \"wednesday_start_time\": \"08:00\",\n    \"wednesday_end_time\": \"15:30\",\n    \"wednesday_is_active\": true,\n    \"thursday_start_time\": \"08:00\",\n    \"thursday_end_time\": \"15:30\",\n    \"thursday_is_active\": true,\n    \"friday_start_time\": \"08:00\",\n    \"friday_end_time\": \"15:30\",\n    \"friday_is_active\": true,\n    \"saturday_start_time\": \"08:00\",\n    \"saturday_end_time\": \"15:30\",\n    \"saturday_is_active\": true,\n    \"location_name\": \"SMK Wikrama Bogor\",\n    \"latitude\": 200,\n    \"longitude\": 200,\n    \"radius\": 5\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/settings",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"settings"
+							]
+						},
+						"description": "Test validation with invalid data: invalid time format, coordinates out of range, radius too small, etc."
+					}
+				}
+			],
+			"description": "Work schedule and location settings management endpoints"
+		},
+		{
 			"name": "User Management",
 			"item": [
 				{
