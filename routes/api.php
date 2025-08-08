@@ -22,10 +22,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 //auth user
-Route::post('/login', [UserAuthController::class, 'login']); //Login
+Route::post('/login', [UserAuthController::class, 'login']); //Login user
 Route::post('/register', [UserAuthController::class, 'register']); //Simpan user baru
 //auth admin
-Route::post('/login/admin', [AdminAuthController::class, 'loginAdmin']); //Login
+Route::post('/login/admin', [AdminAuthController::class, 'loginAdmin']); //Login admin
 Route::post('/register/admin', [AdminAuthController::class, 'registerAdmin']); //Simpan admin baru
 
 //user 
