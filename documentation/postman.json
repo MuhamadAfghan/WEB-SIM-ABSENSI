@@ -61,7 +61,7 @@
                             "_postman_previewlanguage": "json",
                             "header": [],
                             "cookie": [],
-                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Login successful\",\n    \"data\": {\n        \"user\": {\n            \"id\": 1,\n            \"name\": \"John Doe\",\n            \"email\": \"user@example.com\",\n            \"nip\": \"EMP001\",\n            \"telepon\": \"081234567890\",\n            \"divisi\": \"IT\",\n            \"mapel\": \"Programming\"\n        },\n        \"token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...\"\n    }\n}"
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Login sukses\",\n    \"token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...\",\n    \"serial_number\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"user\": {\n        \"id\": 1,\n        \"name\": \"John Doe\",\n        \"email\": \"user@example.com\",\n        \"nip\": \"EMP001\",\n        \"telepon\": \"081234567890\",\n        \"divisi\": \"IT\",\n        \"mapel\": \"Programming\"\n    }\n}"
                         }
                     ]
                 },
@@ -116,7 +116,7 @@
                             "_postman_previewlanguage": "json",
                             "header": [],
                             "cookie": [],
-                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Login successful\",\n    \"data\": {\n        \"admin\": {\n            \"id\": 1,\n            \"username\": \"admin\"\n        },\n        \"token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...\"\n    }\n}"
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Login sukses\",\n    \"data\": {\n        \"token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...\",\n        \"serial_number\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"admin\": {\n            \"id\": 1,\n            \"username\": \"admin\"\n        }\n    }\n}"
                         }
                     ]
                 }
@@ -141,7 +141,7 @@
                             },
                             {
                                 "key": "Authorization",
-                                "value": "Bearer {{admin_token}}"
+                                "value": "Bearer {{token}}"
                             }
                         ],
                         "body": {
@@ -153,7 +153,7 @@
                             "host": ["{{base_url}}"],
                             "path": ["api", "user"]
                         },
-                        "description": "Create a new user (employee) with all required fields"
+                        "description": "Create a new user (employee). Password is optional - if not provided, NIP will be used as default password."
                     },
                     "response": [
                         {
@@ -167,7 +167,7 @@
                                     },
                                     {
                                         "key": "Authorization",
-                                        "value": "Bearer {{admin_token}}"
+                                        "value": "Bearer {{token}}"
                                     }
                                 ],
                                 "body": {
@@ -185,7 +185,7 @@
                             "_postman_previewlanguage": "json",
                             "header": [],
                             "cookie": [],
-                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"User created successfully\",\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"John Doe\",\n        \"email\": \"john.doe@example.com\",\n        \"nip\": \"EMP001\",\n        \"telepon\": \"081234567890\",\n        \"divisi\": \"IT\",\n        \"mapel\": \"Programming\",\n        \"created_at\": \"2025-08-08T00:00:00.000000Z\",\n        \"updated_at\": \"2025-08-08T00:00:00.000000Z\"\n    }\n}"
+                            "body": "{\n    \"status\": true,\n    \"message\": \"User created successfully\",\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"John Doe\",\n        \"email\": \"john.doe@example.com\",\n        \"nip\": \"EMP001\",\n        \"telepon\": \"081234567890\",\n        \"divisi\": \"IT\",\n        \"mapel\": \"Programming\",\n        \"created_at\": \"2025-08-09T00:00:00.000000Z\",\n        \"updated_at\": \"2025-08-09T00:00:00.000000Z\"\n    }\n}"
                         }
                     ]
                 },
@@ -200,18 +200,18 @@
                             },
                             {
                                 "key": "Authorization",
-                                "value": "Bearer {{admin_token}}"
+                                "value": "Bearer {{token}}"
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/api/user?search=&page=1&per_page=10",
+                            "raw": "{{base_url}}/api/user?search=&page=1&per_page=10&sort_field=id&sort_order=asc",
                             "host": ["{{base_url}}"],
                             "path": ["api", "user"],
                             "query": [
                                 {
                                     "key": "search",
                                     "value": "",
-                                    "description": "Search by name, email, or NIP"
+                                    "description": "Search term for name, email, nip, telepon, divisi, or mapel"
                                 },
                                 {
                                     "key": "page",
@@ -222,10 +222,20 @@
                                     "key": "per_page",
                                     "value": "10",
                                     "description": "Number of items per page"
+                                },
+                                {
+                                    "key": "sort_field",
+                                    "value": "id",
+                                    "description": "Field to sort by (id, name, email, nip, telepon, divisi, mapel, created_at, updated_at)"
+                                },
+                                {
+                                    "key": "sort_order",
+                                    "value": "asc",
+                                    "description": "Sort order (asc or desc)"
                                 }
                             ]
                         },
-                        "description": "Retrieve all users with pagination and search functionality"
+                        "description": "Retrieve all users with pagination, search, and sorting functionality"
                     },
                     "response": [
                         {
@@ -239,18 +249,14 @@
                                     },
                                     {
                                         "key": "Authorization",
-                                        "value": "Bearer {{admin_token}}"
+                                        "value": "Bearer {{token}}"
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{base_url}}/api/user?search=&page=1&per_page=10",
+                                    "raw": "{{base_url}}/api/user?page=1&per_page=10",
                                     "host": ["{{base_url}}"],
                                     "path": ["api", "user"],
                                     "query": [
-                                        {
-                                            "key": "search",
-                                            "value": ""
-                                        },
                                         {
                                             "key": "page",
                                             "value": "1"
@@ -267,7 +273,7 @@
                             "_postman_previewlanguage": "json",
                             "header": [],
                             "cookie": [],
-                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Data found\",\n    \"data\": {\n        \"current_page\": 1,\n        \"data\": [\n            {\n                \"id\": 1,\n                \"name\": \"John Doe\",\n                \"email\": \"john.doe@example.com\",\n                \"nip\": \"EMP001\",\n                \"telepon\": \"081234567890\",\n                \"divisi\": \"IT\",\n                \"mapel\": \"Programming\",\n                \"created_at\": \"2025-08-08T00:00:00.000000Z\",\n                \"updated_at\": \"2025-08-08T00:00:00.000000Z\"\n            }\n        ],\n        \"first_page_url\": \"http://localhost:8000/api/user?page=1\",\n        \"from\": 1,\n        \"last_page\": 1,\n        \"last_page_url\": \"http://localhost:8000/api/user?page=1\",\n        \"links\": [],\n        \"next_page_url\": null,\n        \"path\": \"http://localhost:8000/api/user\",\n        \"per_page\": 10,\n        \"prev_page_url\": null,\n        \"to\": 1,\n        \"total\": 1\n    }\n}"
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Data found\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"name\": \"John Doe\",\n            \"email\": \"john.doe@example.com\",\n            \"nip\": \"EMP001\",\n            \"telepon\": \"081234567890\",\n            \"divisi\": \"IT\",\n            \"mapel\": \"Programming\",\n            \"created_at\": \"2025-08-09T00:00:00.000000Z\",\n            \"updated_at\": \"2025-08-09T00:00:00.000000Z\"\n        }\n    ],\n    \"meta\": {\n        \"current_page\": 1,\n        \"last_page\": 1,\n        \"per_page\": 10,\n        \"total\": 1,\n        \"sort_field\": \"id\",\n        \"sort_order\": \"asc\",\n        \"search_query\": null\n    }\n}"
                         }
                     ]
                 },
@@ -318,7 +324,58 @@
                             "_postman_previewlanguage": "json",
                             "header": [],
                             "cookie": [],
-                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Data found\",\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"John Doe\",\n        \"email\": \"john.doe@example.com\",\n        \"nip\": \"EMP001\",\n        \"telepon\": \"081234567890\",\n        \"divisi\": \"IT\",\n        \"mapel\": \"Programming\",\n        \"created_at\": \"2025-08-08T00:00:00.000000Z\",\n        \"updated_at\": \"2025-08-08T00:00:00.000000Z\"\n    }\n}"
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Data found\",\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"John Doe\",\n        \"email\": \"john.doe@example.com\",\n        \"nip\": \"EMP001\",\n        \"telepon\": \"081234567890\",\n        \"divisi\": \"IT\",\n        \"mapel\": \"Programming\",\n        \"created_at\": \"2025-08-09T00:00:00.000000Z\",\n        \"updated_at\": \"2025-08-09T00:00:00.000000Z\"\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Get User Detail with Attendance History",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/user/{{user_id}}/absences",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "user", "{{user_id}}", "absences"]
+                        },
+                        "description": "Retrieve user details along with their complete attendance and absence history"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/user/1/absences",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "user", "1", "absences"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Detail data guru dan riwayat absensi berhasil diambil.\",\n    \"data\": {\n        \"user\": {\n            \"id\": 1,\n            \"name\": \"John Doe\",\n            \"email\": \"john.doe@example.com\",\n            \"nip\": \"EMP001\",\n            \"telepon\": \"081234567890\",\n            \"divisi\": \"IT\",\n            \"mapel\": \"Programming\"\n        },\n        \"riwayat_absensi\": [\n            {\n                \"tanggal\": \"2025-08-09\",\n                \"waktu\": \"08:30:00\",\n                \"metode-absen\": \"manual\",\n                \"lokasi\": \"Kantor Pusat\",\n                \"status\": \"Hadir\",\n                \"keterangan\": null\n            },\n            {\n                \"tanggal\": \"2025-08-08\",\n                \"waktu\": \"-\",\n                \"metode-absen\": \"sakit\",\n                \"lokasi\": \"-\",\n                \"status\": \"Tidak Hadir\",\n                \"keterangan\": \"sakit\"\n            }\n        ]\n    }\n}"
                         }
                     ]
                 },
@@ -349,7 +406,7 @@
                             "host": ["{{base_url}}"],
                             "path": ["api", "user", "{{user_id}}"]
                         },
-                        "description": "Update an existing user's information"
+                        "description": "Update an existing user's information. All fields are optional."
                     },
                     "response": [
                         {
@@ -368,7 +425,7 @@
                                 ],
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n    \"name\": \"John Smith\",\n    \"email\": \"john.smith@example.com\",\n    \"telepon\": \"081234567891\",\n    \"divisi\": \"HR\",\n    \"mapel\": \"Management\"\n}"
+                                    "raw": "{\n    \"name\": \"John Smith\",\n    \"email\": \"john.smith@example.com\"\n}"
                                 },
                                 "url": {
                                     "raw": "{{base_url}}/api/user/1",
@@ -381,7 +438,7 @@
                             "_postman_previewlanguage": "json",
                             "header": [],
                             "cookie": [],
-                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"User updated successfully\",\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"John Smith\",\n        \"email\": \"john.smith@example.com\",\n        \"nip\": \"EMP001\",\n        \"telepon\": \"081234567891\",\n        \"divisi\": \"HR\",\n        \"mapel\": \"Management\",\n        \"created_at\": \"2025-08-08T00:00:00.000000Z\",\n        \"updated_at\": \"2025-08-08T01:00:00.000000Z\"\n    }\n}"
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Success update data\"\n}"
                         }
                     ]
                 },
@@ -396,7 +453,7 @@
                             },
                             {
                                 "key": "Authorization",
-                                "value": "Bearer {{admin_token}}"
+                                "value": "Bearer {{token}}"
                             }
                         ],
                         "url": {
@@ -418,7 +475,7 @@
                                     },
                                     {
                                         "key": "Authorization",
-                                        "value": "Bearer {{admin_token}}"
+                                        "value": "Bearer {{token}}"
                                     }
                                 ],
                                 "url": {
@@ -432,7 +489,7 @@
                             "_postman_previewlanguage": "json",
                             "header": [],
                             "cookie": [],
-                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"User deleted successfully\"\n}"
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Success delete data\"\n}"
                         }
                     ]
                 },
@@ -447,7 +504,7 @@
                             },
                             {
                                 "key": "Authorization",
-                                "value": "Bearer {{admin_token}}"
+                                "value": "Bearer {{token}}"
                             }
                         ],
                         "body": {
@@ -456,8 +513,8 @@
                                 {
                                     "key": "file",
                                     "type": "file",
-                                    "src": "/path/to/employees.xlsx",
-                                    "description": "Excel file with employee data (xlsx, xls, or csv format, max 2MB)"
+                                    "src": [],
+                                    "description": "Excel file (.xlsx, .xls, .csv) with columns: nama, nip, email, no_telepon, divisi, mapel"
                                 }
                             ]
                         },
@@ -466,7 +523,7 @@
                             "host": ["{{base_url}}"],
                             "path": ["api", "user", "import"]
                         },
-                        "description": "Import employee data from Excel file. File must be in xlsx, xls, or csv format with columns: nama, nip, email, no_telepon, divisi, mapel"
+                        "description": "Import employee data from Excel file. File must be in xlsx, xls, or csv format with columns: nama, nip, email, no_telepon, divisi, mapel. Password will be set to NIP by default."
                     },
                     "response": [
                         {
@@ -480,7 +537,7 @@
                                     },
                                     {
                                         "key": "Authorization",
-                                        "value": "Bearer {{admin_token}}"
+                                        "value": "Bearer {{token}}"
                                     }
                                 ],
                                 "body": {
@@ -489,7 +546,7 @@
                                         {
                                             "key": "file",
                                             "type": "file",
-                                            "src": "/path/to/employees.xlsx"
+                                            "src": []
                                         }
                                     ]
                                 },
@@ -504,7 +561,7 @@
                             "_postman_previewlanguage": "json",
                             "header": [],
                             "cookie": [],
-                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Data imported successfully\",\n    \"data\": {\n        \"imported_count\": 25,\n        \"updated_count\": 5\n    }\n}"
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Data karyawan berhasil diimport.\"\n}"
                         }
                     ]
                 }
@@ -525,7 +582,7 @@
                             },
                             {
                                 "key": "Authorization",
-                                "value": "Bearer {{admin_token}}"
+                                "value": "Bearer {{token}}"
                             }
                         ],
                         "url": {
@@ -536,11 +593,11 @@
                                 {
                                     "key": "year",
                                     "value": "{{current_year}}",
-                                    "description": "Year for statistics (optional, defaults to current year)"
+                                    "description": "Year for statistics (YYYY format, required)"
                                 }
                             ]
                         },
-                        "description": "Get annual attendance statistics including total employees, present days, late arrivals, and absences"
+                        "description": "Get annual attendance statistics including monthly breakdown and yearly totals for attendance, sick leave, permission, and unauthorized absences"
                     },
                     "response": [
                         {
@@ -554,7 +611,7 @@
                                     },
                                     {
                                         "key": "Authorization",
-                                        "value": "Bearer {{admin_token}}"
+                                        "value": "Bearer {{token}}"
                                     }
                                 ],
                                 "url": {
@@ -574,12 +631,12 @@
                             "_postman_previewlanguage": "json",
                             "header": [],
                             "cookie": [],
-                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Annual statistics retrieved successfully\",\n    \"data\": {\n        \"year\": 2025,\n        \"total_employees\": 45,\n        \"total_working_days\": 250,\n        \"total_attendance\": 10800,\n        \"total_late_arrivals\": 180,\n        \"total_absences\": 450,\n        \"attendance_rate\": 96.0,\n        \"monthly_breakdown\": [\n            {\n                \"month\": \"January\",\n                \"present\": 900,\n                \"late\": 15,\n                \"absent\": 35\n            },\n            {\n                \"month\": \"February\",\n                \"present\": 850,\n                \"late\": 12,\n                \"absent\": 28\n            }\n        ]\n    }\n}"
+                            "body": "{\n    \"success\": true,\n    \"message\": \"Data Statistik Tahunan\",\n    \"data\": {\n        \"tahun\": 2025,\n        \"total_statistik_tahunan\": {\n            \"hadir\": 450,\n            \"sakit\": 25,\n            \"izin\": 15,\n            \"tanpa_keterangan\": 10\n        },\n        \"data_bulanan\": [\n            {\n                \"bulan\": \"Januari\",\n                \"hadir\": 38,\n                \"sakit\": 3,\n                \"izin\": 2,\n                \"tanpa_keterangan\": 1\n            },\n            {\n                \"bulan\": \"Februari\",\n                \"hadir\": 36,\n                \"sakit\": 2,\n                \"izin\": 1,\n                \"tanpa_keterangan\": 1\n            },\n            {\n                \"bulan\": \"Maret\",\n                \"hadir\": 40,\n                \"sakit\": 2,\n                \"izin\": 1,\n                \"tanpa_keterangan\": 0\n            }\n        ]\n    }\n}"
                         }
                     ]
                 }
             ],
-            "description": "Statistical data and reports"
+            "description": "Statistical data and reports for attendance management"
         }
     ],
     "event": [
@@ -599,21 +656,22 @@
                 "type": "text/javascript",
                 "exec": [
                     "// Check if response is successful",
-                    "pm.test('Status code is 200', function () {",
-                    "    pm.response.to.have.status(200);",
+                    "pm.test('Status code is 200 or 201', function () {",
+                    "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
                     "});",
                     "",
                     "// Parse response and set tokens",
-                    "if (pm.response.code === 200) {",
+                    "if (pm.response.code === 200 || pm.response.code === 201) {",
                     "    const responseJson = pm.response.json();",
                     "    ",
                     "    // Set token for user login",
-                    "    if (responseJson.data && responseJson.data.token) {",
-                    "        if (pm.info.requestName === 'User Login') {",
-                    "            pm.globals.set('token', responseJson.data.token);",
-                    "        } else if (pm.info.requestName === 'Admin Login') {",
-                    "            pm.globals.set('admin_token', responseJson.data.token);",
-                    "        }",
+                    "    if (responseJson.token && pm.info.requestName === 'User Login') {",
+                    "        pm.globals.set('token', responseJson.token);",
+                    "    }",
+                    "    ",
+                    "    // Set token for admin login",
+                    "    if (responseJson.data && responseJson.data.token && pm.info.requestName === 'Admin Login') {",
+                    "        pm.globals.set('admin_token', responseJson.data.token);",
                     "    }",
                     "}"
                 ]

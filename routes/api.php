@@ -1,16 +1,10 @@
 <?php
 
 use App\Http\Controllers\AdminAuthController;
-use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminCrudController;
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserAuthController;
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserCrudController;
-use App\Http\Controllers\KaryawanImportController;
-use App\Http\Controllers\DetailWithAttendanceController;
-use App\Http\Controllers\StatistikTahunanController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\StatistikController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -35,6 +29,7 @@ Route::post('/login/admin', [AdminAuthController::class, 'loginAdmin']); //Login
 Route::post('/user', [UserCrudController::class, 'addUser']); //Baca semuan user
 Route::get('/user', [UserCrudController::class, 'readAllUser']); //Baca semuan user
 Route::get('/user/{id?}', [UserCrudController::class, 'showUserById']); //Baca satu user berdasarkan ID
+Route::get('/user/{id?}/absences', [UserCrudController::class, 'showDetailWithAttendance']); //Baca absensi user berdasarkan ID
 Route::put('/user/{id?}', [UserCrudController::class, 'updateUser']); //update user berdasarkan ID
 Route::delete('user/{id?}', [UserCrudController::class, 'deleteUser']); //Hapus user berdasarkan ID
 Route::post('/user/import', [UserCrudController::class, 'import']); //Impor data karyawan dari file Excel`
@@ -45,9 +40,4 @@ Route::get('/admin/{id?}', [AdminCrudController::class, 'showAdminById']); //Bac
 Route::put('/admin/{id?}', [AdminCrudController::class, 'updateAdmin']); //update admin berdasarkan ID
 Route::delete('admin/{id?}', [AdminCrudController::class, 'deleteAdmin']); //Hapus admin berdasarkan ID
 
-// Karyawan Import
-Route::post('/karyawan/import', [KaryawanImportController::class, 'import']); //Impor data karyawan dari file Excel
-
-// Detail data Guru dan Riwayat Absensi
-Route::get('/detail/{id?}', [DetailWithAttendanceController::class, 'showDetailWithAttendance']); //Baca detail data guru dan riwayat absensi berdasarkan ID
-Route::get('/statistik-tahunan', [StatistikTahunanController::class, 'statistikTahunan']);//statistik tahunan
+Route::get('/statistik-tahunan', [StatistikController::class, 'statistikTahunan']);//statistik tahunan

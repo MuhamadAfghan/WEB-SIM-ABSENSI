@@ -7,8 +7,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 
-class StatistikTahunanController extends Controller
+class StatistikController extends Controller
 {
+
     public function statistikTahunan(Request $request)
     {
         try {

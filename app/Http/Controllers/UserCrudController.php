@@ -11,6 +11,8 @@ use Illuminate\Validation\Rule;
 use Exception;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\KaryawanImport;
+use App\Models\Absence;
+use App\Models\Attendance;
 
 class UserCrudController extends Controller
 {
@@ -153,6 +155,54 @@ class UserCrudController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function showDetailWithAttendance(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        // Ambil data hadir
+        $attendances = Attendance::where('user_id', $id)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'tanggal' => $item->date,
+                    'waktu' => $item->check_in_time,
+                    'metode-absen' => $item->type,
+                    'lokasi' => $item->lokasi,
+                    'status' => 'Hadir',
+                    'keterangan' => $item->keterangan ?? null,
+                ];
+            });
+
+        // Ambil data tidak hadir
+        $absences = Absence::where('user_id', $id)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'tanggal' => $item->date_start,
+                    'waktu' => '-',
+                    'metode-absen' => $item->type,
+                    'lokasi' => '-',
+                    'status' => 'Tidak Hadir',
+                    'keterangan' => $item->type ?? null,
+                ];
+            });
+
+        // Gabung & urutkan berdasarkan tanggal terbaru
+        $history = $attendances
+            ->merge($absences)
+            ->sortByDesc('tanggal')
+            ->values();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Detail data guru dan riwayat absensi berhasil diambil.',
+            'data' => [
+                'user' => $user,
+                'riwayat_absensi' => $history
+            ],
+        ]);
     }
 
     public function updateUser(Request $request, ?string $id = null)
