@@ -43,9 +43,7 @@ Route::put('/admin/{id?}', [AdminCrudController::class, 'updateAdmin']); //updat
 Route::delete('admin/{id?}', [AdminCrudController::class, 'deleteAdmin']); //Hapus admin berdasarkan ID
 
 Route::prefix('absences')->group(function () {
-    Route::get('/', [AbsenceController::class, 'index']);
-
     // Routes Untuk filter dan export
-    Route::get('/filter/data', [AbsenceController::class, 'filter']);
-    Route::get('export/data', [AbsenceController::class, 'export']);
+    Route::get('/filter', [AbsenceController::class, 'filter']);
+    Route::get('/export', [AbsenceController::class, 'export']);
 });
