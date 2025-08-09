@@ -637,6 +637,165 @@
                 }
             ],
             "description": "Statistical data and reports for attendance management"
+        },
+        {
+            "name": "Settings",
+            "item": [
+                {
+                    "name": "Get Settings",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/settings",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "settings"]
+                        },
+                        "description": "Retrieve work schedule and location settings. If no settings exist, it will create default settings."
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/settings",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "settings"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"success\": true,\n    \"message\": \"Settings retrieved successfully\",\n    \"data\": {\n        \"id\": 1,\n        \"monday_start_time\": \"08:00\",\n        \"monday_end_time\": \"17:00\",\n        \"monday_is_active\": true,\n        \"tuesday_start_time\": \"08:00\",\n        \"tuesday_end_time\": \"17:00\",\n        \"tuesday_is_active\": true,\n        \"wednesday_start_time\": \"08:00\",\n        \"wednesday_end_time\": \"17:00\",\n        \"wednesday_is_active\": true,\n        \"thursday_start_time\": \"08:00\",\n        \"thursday_end_time\": \"17:00\",\n        \"thursday_is_active\": true,\n        \"friday_start_time\": \"08:00\",\n        \"friday_end_time\": \"17:00\",\n        \"friday_is_active\": true,\n        \"saturday_start_time\": \"08:00\",\n        \"saturday_end_time\": \"12:00\",\n        \"saturday_is_active\": false,\n        \"location_name\": \"Kantor Pusat\",\n        \"latitude\": -6.2088,\n        \"longitude\": 106.8456,\n        \"radius\": 100,\n        \"created_at\": \"2025-08-09T00:00:00.000000Z\",\n        \"updated_at\": \"2025-08-09T00:00:00.000000Z\"\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Save Settings",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"monday_start_time\": \"08:00\",\n    \"monday_end_time\": \"17:00\",\n    \"monday_is_active\": true,\n    \"tuesday_start_time\": \"08:00\",\n    \"tuesday_end_time\": \"17:00\",\n    \"tuesday_is_active\": true,\n    \"wednesday_start_time\": \"08:00\",\n    \"wednesday_end_time\": \"17:00\",\n    \"wednesday_is_active\": true,\n    \"thursday_start_time\": \"08:00\",\n    \"thursday_end_time\": \"17:00\",\n    \"thursday_is_active\": true,\n    \"friday_start_time\": \"08:00\",\n    \"friday_end_time\": \"17:00\",\n    \"friday_is_active\": true,\n    \"saturday_start_time\": \"08:00\",\n    \"saturday_end_time\": \"12:00\",\n    \"saturday_is_active\": false,\n    \"location_name\": \"Kantor Pusat\",\n    \"latitude\": -6.2088,\n    \"longitude\": 106.8456,\n    \"radius\": 100\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/settings",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "settings"]
+                        },
+                        "description": "Save or update work schedule and location settings. All fields are required with specific validation rules."
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"monday_start_time\": \"08:00\",\n    \"monday_end_time\": \"17:00\",\n    \"monday_is_active\": true,\n    \"tuesday_start_time\": \"08:00\",\n    \"tuesday_end_time\": \"17:00\",\n    \"tuesday_is_active\": true,\n    \"wednesday_start_time\": \"08:00\",\n    \"wednesday_end_time\": \"17:00\",\n    \"wednesday_is_active\": true,\n    \"thursday_start_time\": \"08:00\",\n    \"thursday_end_time\": \"17:00\",\n    \"thursday_is_active\": true,\n    \"friday_start_time\": \"08:00\",\n    \"friday_end_time\": \"17:00\",\n    \"friday_is_active\": true,\n    \"saturday_start_time\": \"08:00\",\n    \"saturday_end_time\": \"12:00\",\n    \"saturday_is_active\": false,\n    \"location_name\": \"Kantor Pusat\",\n    \"latitude\": -6.2088,\n    \"longitude\": 106.8456,\n    \"radius\": 100\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/settings",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "settings"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"success\": true,\n    \"message\": \"Settings saved successfully\",\n    \"data\": {\n        \"id\": 1,\n        \"monday_start_time\": \"08:00\",\n        \"monday_end_time\": \"17:00\",\n        \"monday_is_active\": true,\n        \"tuesday_start_time\": \"08:00\",\n        \"tuesday_end_time\": \"17:00\",\n        \"tuesday_is_active\": true,\n        \"wednesday_start_time\": \"08:00\",\n        \"wednesday_end_time\": \"17:00\",\n        \"wednesday_is_active\": true,\n        \"thursday_start_time\": \"08:00\",\n        \"thursday_end_time\": \"17:00\",\n        \"thursday_is_active\": true,\n        \"friday_start_time\": \"08:00\",\n        \"friday_end_time\": \"17:00\",\n        \"friday_is_active\": true,\n        \"saturday_start_time\": \"08:00\",\n        \"saturday_end_time\": \"12:00\",\n        \"saturday_is_active\": false,\n        \"location_name\": \"Kantor Pusat\",\n        \"latitude\": -6.2088,\n        \"longitude\": 106.8456,\n        \"radius\": 100,\n        \"created_at\": \"2025-08-09T00:00:00.000000Z\",\n        \"updated_at\": \"2025-08-09T00:00:00.000000Z\"\n    }\n}"
+                        },
+                        {
+                            "name": "Validation Error Response",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"monday_start_time\": \"invalid_time\",\n    \"latitude\": 200\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/settings",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "settings"]
+                                }
+                            },
+                            "status": "Unprocessable Entity",
+                            "code": 422,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"message\": \"The given data was invalid.\",\n    \"errors\": {\n        \"monday_start_time\": [\n            \"The monday start time does not match the format H:i.\"\n        ],\n        \"latitude\": [\n            \"The latitude must be between -90 and 90.\"\n        ]\n    }\n}"
+                        }
+                    ]
+                }
+            ],
+            "description": "Work schedule and location settings management"
         }
     ],
     "event": [
