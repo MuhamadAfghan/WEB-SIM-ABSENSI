@@ -8,6 +8,7 @@ use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserCrudController;
 use App\Http\Controllers\KaryawanImportController;
+use App\Http\Controllers\DetailWithAttendanceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -43,3 +44,6 @@ Route::delete('admin/{id?}', [AdminCrudController::class, 'deleteAdmin']); //Hap
 
 // Karyawan Import
 Route::post('/karyawan/import', [KaryawanImportController::class, 'import']); //Impor data karyawan dari file Excel
+
+// Detail data Guru dan Riwayat Absensi
+Route::get('/detail/{id?}', [DetailWithAttendanceController::class, 'showDetailWithAttendance']); //Baca detail data guru dan riwayat absensi berdasarkan ID
