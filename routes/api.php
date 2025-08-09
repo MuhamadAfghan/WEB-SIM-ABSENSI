@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AdminCrudController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\UserCrudController;
 use App\Http\Controllers\StatistikController;
@@ -40,4 +41,7 @@ Route::get('/admin/{id?}', [AdminCrudController::class, 'showAdminById']); //Bac
 Route::put('/admin/{id?}', [AdminCrudController::class, 'updateAdmin']); //update admin berdasarkan ID
 Route::delete('admin/{id?}', [AdminCrudController::class, 'deleteAdmin']); //Hapus admin berdasarkan ID
 
-Route::get('/statistik-tahunan', [StatistikController::class, 'statistikTahunan']);//statistik tahunan
+Route::get('/statistik-tahunan', [StatistikController::class, 'statistikTahunan']); //statistik tahunan
+//settings
+Route::get('/settings', [SettingController::class, 'index']); //Get work schedule and location settings
+Route::post('/settings', [SettingController::class, 'store']); //Save work schedule and location settings
