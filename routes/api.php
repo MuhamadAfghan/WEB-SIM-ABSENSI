@@ -9,6 +9,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserCrudController;
 use App\Http\Controllers\KaryawanImportController;
 use App\Http\Controllers\DetailWithAttendanceController;
+use App\Http\Controllers\StatistikTahunanController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -36,6 +37,8 @@ Route::get('/user', [UserCrudController::class, 'readAllUser']); //Baca semuan u
 Route::get('/user/{id?}', [UserCrudController::class, 'showUserById']); //Baca satu user berdasarkan ID
 Route::put('/user/{id?}', [UserCrudController::class, 'updateUser']); //update user berdasarkan ID
 Route::delete('user/{id?}', [UserCrudController::class, 'deleteUser']); //Hapus user berdasarkan ID
+Route::post('/user/import', [UserCrudController::class, 'import']); //Impor data karyawan dari file Excel`
+
 //admin
 Route::get('/admin', [AdminCrudController::class, 'readAllAdmin']); //Baca semua admin
 Route::get('/admin/{id?}', [AdminCrudController::class, 'showAdminById']); //Baca satu admin berdasarkan ID
@@ -47,3 +50,4 @@ Route::post('/karyawan/import', [KaryawanImportController::class, 'import']); //
 
 // Detail data Guru dan Riwayat Absensi
 Route::get('/detail/{id?}', [DetailWithAttendanceController::class, 'showDetailWithAttendance']); //Baca detail data guru dan riwayat absensi berdasarkan ID
+Route::get('/statistik-tahunan', [StatistikTahunanController::class, 'statistikTahunan']);//statistik tahunan

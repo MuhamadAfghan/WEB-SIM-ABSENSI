@@ -1,412 +1,660 @@
 {
-	"info": {
-		"_postman_id": "sim-absensi-api-collection",
-		"name": "SIM ABSENSI API",
-		"description": "API Documentation for SIM ABSENSI (Attendance Management System)",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "sim-absensi"
-	},
-	"item": [
-		{
-			"name": "Authentication",
-			"item": [
-				{
-					"name": "User Login",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/login",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"login"
-							]
-						},
-						"description": "Login endpoint for regular users"
-					}
-				},
-				{
-					"name": "Admin Login",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin123\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/login/admin",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"login",
-								"admin"
-							]
-						},
-						"description": "Login endpoint for admin users"
-					}
-				}
-			],
-			"description": "Authentication endpoints for users and admins"
-		},
-		{
-			"name": "User Management",
-			"item": [
-				{
-					"name": "Create User",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{admin_token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"password123\",\n    \"employee_id\": \"EMP001\",\n    \"department\": \"IT\",\n    \"position\": \"Developer\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/user",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"user"
-							]
-						},
-						"description": "Create a new user (employee)"
-					}
-				},
-				{
-					"name": "Get All Users",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{admin_token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/user",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"user"
-							]
-						},
-						"description": "Retrieve all users from the system"
-					}
-				},
-				{
-					"name": "Get User by ID",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/user/{{user_id}}",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"user",
-								"{{user_id}}"
-							]
-						},
-						"description": "Retrieve a specific user by their ID"
-					}
-				},
-				{
-					"name": "Update User",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"John Smith\",\n    \"email\": \"john.smith@example.com\",\n    \"department\": \"HR\",\n    \"position\": \"Manager\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/user/{{user_id}}",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"user",
-								"{{user_id}}"
-							]
-						},
-						"description": "Update an existing user's information"
-					}
-				},
-				{
-					"name": "Delete User",
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{admin_token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/user/{{user_id}}",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"user",
-								"{{user_id}}"
-							]
-						},
-						"description": "Delete a user from the system"
-					}
-				}
-			],
-			"description": "CRUD operations for user management"
-		},
-		{
-			"name": "Admin Management",
-			"item": [
-				{
-					"name": "Get All Admins",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{admin_token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/admin",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"admin"
-							]
-						},
-						"description": "Retrieve all admin users from the system"
-					}
-				},
-				{
-					"name": "Get Admin by ID",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{admin_token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/admin/{{admin_id}}",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"admin",
-								"{{admin_id}}"
-							]
-						},
-						"description": "Retrieve a specific admin by their ID"
-					}
-				},
-				{
-					"name": "Update Admin",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{admin_token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"Admin Name\",\n    \"email\": \"admin@example.com\",\n    \"role\": \"super_admin\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/admin/{{admin_id}}",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"admin",
-								"{{admin_id}}"
-							]
-						},
-						"description": "Update an existing admin's information"
-					}
-				},
-				{
-					"name": "Delete Admin",
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{admin_token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/admin/{{admin_id}}",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"admin",
-								"{{admin_id}}"
-							]
-						},
-						"description": "Delete an admin from the system"
-					}
-				}
-			],
-			"description": "CRUD operations for admin management"
-		}
-	],
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		},
-		{
-			"listen": "test",
-			"script": {
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		}
-	],
-	"variable": [
-		{
-			"key": "base_url",
-			"value": "http://localhost:8000",
-			"type": "string"
-		},
-		{
-			"key": "token",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "admin_token",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "user_id",
-			"value": "1",
-			"type": "string"
-		},
-		{
-			"key": "admin_id",
-			"value": "1",
-			"type": "string"
-		}
-	]
+    "info": {
+        "_postman_id": "sim-absensi-api-collection",
+        "name": "SIM ABSENSI API",
+        "description": "API Documentation for SIM ABSENSI (Attendance Management System)",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "_exporter_id": "sim-absensi"
+    },
+    "item": [
+        {
+            "name": "Authentication",
+            "item": [
+                {
+                    "name": "User Login",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/login",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "login"]
+                        },
+                        "description": "Login endpoint for regular users using email and password"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/login",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "login"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Login successful\",\n    \"data\": {\n        \"user\": {\n            \"id\": 1,\n            \"name\": \"John Doe\",\n            \"email\": \"user@example.com\",\n            \"nip\": \"EMP001\",\n            \"telepon\": \"081234567890\",\n            \"divisi\": \"IT\",\n            \"mapel\": \"Programming\"\n        },\n        \"token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...\"\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Admin Login",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/login/admin",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "login", "admin"]
+                        },
+                        "description": "Login endpoint for admin users using username and password"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin123\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/login/admin",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "login", "admin"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Login successful\",\n    \"data\": {\n        \"admin\": {\n            \"id\": 1,\n            \"username\": \"admin\"\n        },\n        \"token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...\"\n    }\n}"
+                        }
+                    ]
+                }
+            ],
+            "description": "Authentication endpoints for users and admins"
+        },
+        {
+            "name": "User Management",
+            "item": [
+                {
+                    "name": "Create User",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"password123\",\n    \"nip\": \"EMP001\",\n    \"telepon\": \"081234567890\",\n    \"divisi\": \"IT\",\n    \"mapel\": \"Programming\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/user",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "user"]
+                        },
+                        "description": "Create a new user (employee) with all required fields"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"password123\",\n    \"nip\": \"EMP001\",\n    \"telepon\": \"081234567890\",\n    \"divisi\": \"IT\",\n    \"mapel\": \"Programming\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/user",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "user"]
+                                }
+                            },
+                            "status": "Created",
+                            "code": 201,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"User created successfully\",\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"John Doe\",\n        \"email\": \"john.doe@example.com\",\n        \"nip\": \"EMP001\",\n        \"telepon\": \"081234567890\",\n        \"divisi\": \"IT\",\n        \"mapel\": \"Programming\",\n        \"created_at\": \"2025-08-08T00:00:00.000000Z\",\n        \"updated_at\": \"2025-08-08T00:00:00.000000Z\"\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Get All Users",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/user?search=&page=1&per_page=10",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "user"],
+                            "query": [
+                                {
+                                    "key": "search",
+                                    "value": "",
+                                    "description": "Search by name, email, or NIP"
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "description": "Page number for pagination"
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "10",
+                                    "description": "Number of items per page"
+                                }
+                            ]
+                        },
+                        "description": "Retrieve all users with pagination and search functionality"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/user?search=&page=1&per_page=10",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "user"],
+                                    "query": [
+                                        {
+                                            "key": "search",
+                                            "value": ""
+                                        },
+                                        {
+                                            "key": "page",
+                                            "value": "1"
+                                        },
+                                        {
+                                            "key": "per_page",
+                                            "value": "10"
+                                        }
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Data found\",\n    \"data\": {\n        \"current_page\": 1,\n        \"data\": [\n            {\n                \"id\": 1,\n                \"name\": \"John Doe\",\n                \"email\": \"john.doe@example.com\",\n                \"nip\": \"EMP001\",\n                \"telepon\": \"081234567890\",\n                \"divisi\": \"IT\",\n                \"mapel\": \"Programming\",\n                \"created_at\": \"2025-08-08T00:00:00.000000Z\",\n                \"updated_at\": \"2025-08-08T00:00:00.000000Z\"\n            }\n        ],\n        \"first_page_url\": \"http://localhost:8000/api/user?page=1\",\n        \"from\": 1,\n        \"last_page\": 1,\n        \"last_page_url\": \"http://localhost:8000/api/user?page=1\",\n        \"links\": [],\n        \"next_page_url\": null,\n        \"path\": \"http://localhost:8000/api/user\",\n        \"per_page\": 10,\n        \"prev_page_url\": null,\n        \"to\": 1,\n        \"total\": 1\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Get User by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/user/{{user_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "user", "{{user_id}}"]
+                        },
+                        "description": "Retrieve a specific user by their ID"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/user/1",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "user", "1"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Data found\",\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"John Doe\",\n        \"email\": \"john.doe@example.com\",\n        \"nip\": \"EMP001\",\n        \"telepon\": \"081234567890\",\n        \"divisi\": \"IT\",\n        \"mapel\": \"Programming\",\n        \"created_at\": \"2025-08-08T00:00:00.000000Z\",\n        \"updated_at\": \"2025-08-08T00:00:00.000000Z\"\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Update User",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"John Smith\",\n    \"email\": \"john.smith@example.com\",\n    \"telepon\": \"081234567891\",\n    \"divisi\": \"HR\",\n    \"mapel\": \"Management\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/user/{{user_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "user", "{{user_id}}"]
+                        },
+                        "description": "Update an existing user's information"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"name\": \"John Smith\",\n    \"email\": \"john.smith@example.com\",\n    \"telepon\": \"081234567891\",\n    \"divisi\": \"HR\",\n    \"mapel\": \"Management\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/user/1",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "user", "1"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"User updated successfully\",\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"John Smith\",\n        \"email\": \"john.smith@example.com\",\n        \"nip\": \"EMP001\",\n        \"telepon\": \"081234567891\",\n        \"divisi\": \"HR\",\n        \"mapel\": \"Management\",\n        \"created_at\": \"2025-08-08T00:00:00.000000Z\",\n        \"updated_at\": \"2025-08-08T01:00:00.000000Z\"\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Delete User",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/user/{{user_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "user", "{{user_id}}"]
+                        },
+                        "description": "Delete a user from the system"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/user/1",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "user", "1"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"User deleted successfully\"\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Import Users from Excel",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "src": "/path/to/employees.xlsx",
+                                    "description": "Excel file with employee data (xlsx, xls, or csv format, max 2MB)"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/user/import",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "user", "import"]
+                        },
+                        "description": "Import employee data from Excel file. File must be in xlsx, xls, or csv format with columns: nama, nip, email, no_telepon, divisi, mapel"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "formdata",
+                                    "formdata": [
+                                        {
+                                            "key": "file",
+                                            "type": "file",
+                                            "src": "/path/to/employees.xlsx"
+                                        }
+                                    ]
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/user/import",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "user", "import"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Data imported successfully\",\n    \"data\": {\n        \"imported_count\": 25,\n        \"updated_count\": 5\n    }\n}"
+                        }
+                    ]
+                }
+            ],
+            "description": "CRUD operations for user management"
+        },
+        {
+            "name": "Statistics",
+            "item": [
+                {
+                    "name": "Get Annual Statistics",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/statistik-tahunan?year={{current_year}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "statistik-tahunan"],
+                            "query": [
+                                {
+                                    "key": "year",
+                                    "value": "{{current_year}}",
+                                    "description": "Year for statistics (optional, defaults to current year)"
+                                }
+                            ]
+                        },
+                        "description": "Get annual attendance statistics including total employees, present days, late arrivals, and absences"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/statistik-tahunan?year=2025",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "statistik-tahunan"],
+                                    "query": [
+                                        {
+                                            "key": "year",
+                                            "value": "2025"
+                                        }
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Annual statistics retrieved successfully\",\n    \"data\": {\n        \"year\": 2025,\n        \"total_employees\": 45,\n        \"total_working_days\": 250,\n        \"total_attendance\": 10800,\n        \"total_late_arrivals\": 180,\n        \"total_absences\": 450,\n        \"attendance_rate\": 96.0,\n        \"monthly_breakdown\": [\n            {\n                \"month\": \"January\",\n                \"present\": 900,\n                \"late\": 15,\n                \"absent\": 35\n            },\n            {\n                \"month\": \"February\",\n                \"present\": 850,\n                \"late\": 12,\n                \"absent\": 28\n            }\n        ]\n    }\n}"
+                        }
+                    ]
+                }
+            ],
+            "description": "Statistical data and reports"
+        }
+    ],
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    "// Set current year variable",
+                    "pm.globals.set('current_year', new Date().getFullYear());"
+                ]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    "// Check if response is successful",
+                    "pm.test('Status code is 200', function () {",
+                    "    pm.response.to.have.status(200);",
+                    "});",
+                    "",
+                    "// Parse response and set tokens",
+                    "if (pm.response.code === 200) {",
+                    "    const responseJson = pm.response.json();",
+                    "    ",
+                    "    // Set token for user login",
+                    "    if (responseJson.data && responseJson.data.token) {",
+                    "        if (pm.info.requestName === 'User Login') {",
+                    "            pm.globals.set('token', responseJson.data.token);",
+                    "        } else if (pm.info.requestName === 'Admin Login') {",
+                    "            pm.globals.set('admin_token', responseJson.data.token);",
+                    "        }",
+                    "    }",
+                    "}"
+                ]
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8000",
+            "type": "string"
+        },
+        {
+            "key": "token",
+            "value": "",
+            "type": "string",
+            "description": "User authentication token"
+        },
+        {
+            "key": "admin_token",
+            "value": "",
+            "type": "string",
+            "description": "Admin authentication token"
+        },
+        {
+            "key": "user_id",
+            "value": "1",
+            "type": "string",
+            "description": "Sample user ID for testing"
+        },
+        {
+            "key": "admin_id",
+            "value": "1",
+            "type": "string",
+            "description": "Sample admin ID for testing"
+        },
+        {
+            "key": "current_year",
+            "value": "2025",
+            "type": "string",
+            "description": "Current year for statistics"
+        }
+    ]
 }
