@@ -3,10 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\Absence;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class AbsenceController extends Controller
 {
+    public function approveAbsence(User $user)
+    {
+        $absence = Absence::where('user_id', $user->id)->first();
+
+        if (!$absence) {
+            return response()->json(['status' => 'error', 'message' => 'Absence not found'], 404);
+        }
+
+        $absence->is_approved = true;
+        $absence->save();
+
+        return response()->json(['status' => 'success', 'message' => 'Absence approved successfully']);
+    }
+
     /**
      * Display a listing of the resource.
      */

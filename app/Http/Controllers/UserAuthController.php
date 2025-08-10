@@ -29,7 +29,7 @@ class UserAuthController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['status' => false, 'message' => $validator->errors()->first()], 400);
+                return response()->json(['status' => "error", 'message' => $validator->errors()->first()], 400);
             }
 
             $user = User::where('email', $request->email)->first();
@@ -37,12 +37,12 @@ class UserAuthController extends Controller
 
             if (!$user) {
                 RateLimiter::hit($this->throttleKey($request));
-                return response()->json(['status' => false, 'message' => 'Email tidak ditemukan'], 404);
+                return response()->json(['status' => "error", 'message' => 'Email tidak ditemukan'], 404);
             }
 
             if (!Hash::check($request->password, $user->password)) {
                 RateLimiter::hit($this->throttleKey($request));
-                return response()->json(['status' => false, 'message' => 'Password salah'], 401);
+                return response()->json(['status' => "error", 'message' => 'Password salah'], 401);
             }
 
             $token = $user->createToken('auth_token')->plainTextToken;
@@ -160,7 +160,7 @@ class UserAuthController extends Controller
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'status' => false,
+                'status' => "error",
                 'message' => 'Gagal logout',
                 'error' => $e->getMessage()
             ], 500);

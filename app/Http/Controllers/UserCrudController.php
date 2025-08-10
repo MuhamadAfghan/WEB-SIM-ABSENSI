@@ -13,6 +13,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\KaryawanImport;
 use App\Models\Absence;
 use App\Models\Attendance;
+use App\Models\Setting;
 
 class UserCrudController extends Controller
 {
@@ -283,6 +284,86 @@ class UserCrudController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function getMyCurrentActivity()
+    {
+        $user = auth()->user();
+
+        $currentActivity = [
+            'check_in_time' => null,
+            'check_out_time' => null,
+            'is_late' => false,
+            'late_duration_minutes' => 0,
+        ];
+
+        $today = now()->toDateString();
+        $attendance = Attendance::where('user_id', $user->id)
+            ->whereDate('date', $today)
+            ->first();
+
+        $expectedCheckIn = null;
+        if ($settings = Setting::first()) {
+            $day = strtolower(now()->format('l'));
+            $startField  = "{$day}_start_time";
+            $activeField = "{$day}_is_active";
+
+            $isActive = property_exists($settings, $activeField) ? (bool) $settings->$activeField : true;
+            if ($isActive && isset($settings->$startField) && $settings->$startField) {
+                $expectedCheckIn = $settings->$startField;
+                if (strlen($expectedCheckIn) === 5) {
+                    $expectedCheckIn .= ':00';
+                }
+            }
+        }
+
+        if ($attendance) {
+            $currentActivity['check_in_time'] = $attendance->check_in_time;
+            $currentActivity['check_out_time'] = $attendance->check_out_time;
+
+            if ($attendance->check_in_time && $expectedCheckIn && $attendance->check_in_time > $expectedCheckIn) {
+                $currentActivity['is_late'] = true;
+                $lateMinutes = \Carbon\Carbon::parse($attendance->check_in_time)
+                    ->diffInMinutes(\Carbon\Carbon::parse($expectedCheckIn));
+                $currentActivity['late_duration_minutes'] = $lateMinutes;
+            }
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $currentActivity + ['expected_check_in_time' => $expectedCheckIn]
+        ]);
+    }
+
+    public function getMyStatistik()
+    {
+        $user = auth()->user();
+
+        // jumlah dia masuk kerja
+        $totalMasuk = Attendance::where('user_id', $user->id)->where('keterangan', 'masuk')->count();
+
+        // jumlah dia telat
+        $totalTelat = Attendance::where('user_id', $user->id)->where('keterangan', 'telat')->count();
+
+        // total tidak masuk
+        $totalTidakMasuk = Absence::where('user_id', $user->id)->count();
+
+        $totalIzin = Absence::where('user_id', $user->id)->where('type', 'izin')->count();
+
+        $totalSakit = Absence::where('user_id', $user->id)->where('type', 'sakit')->count();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Statistik berhasil diambil',
+            'data' => [
+                'persentase_kehadiran' => $totalMasuk > 0 ? ($totalMasuk / ($totalMasuk + $totalTidakMasuk)) * 100 : 0,
+                'jumlah_tidak_masuk' => $totalTidakMasuk,
+                'jumlah_masuk' => $totalMasuk,
+                'jumlah_telat' => $totalTelat,
+                'jumlah_izin' => $totalIzin,
+                'jumlah_sakit' => $totalSakit,
+            ]
+        ]);
     }
 
     public function import(Request $request)

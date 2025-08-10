@@ -124,6 +124,114 @@
             "description": "Authentication endpoints for users and admins"
         },
         {
+            "name": "User Profile",
+            "item": [
+                {
+                    "name": "Get My Current Activity",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/user/current-activity",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "user", "current-activity"]
+                        },
+                        "description": "Get current day's activity for the authenticated user, including expected_check_in_time and lateness info"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/user/current-activity",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "user", "current-activity"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"data\": {\n        \"check_in_time\": \"08:30:00\",\n        \"check_out_time\": \"17:01:12\",\n        \"is_late\": true,\n        \"late_duration_minutes\": 30,\n        \"expected_check_in_time\": \"08:00:00\"\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Get My Statistik",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/user/statistik",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "user", "statistik"]
+                        },
+                        "description": "Get personal statistics for the authenticated user"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/user/statistik",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "user", "statistik"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Statistik berhasil diambil\",\n    \"data\": {\n        \"persentase_kehadiran\": 95.5,\n        \"jumlah_tidak_masuk\": 3,\n        \"jumlah_masuk\": 22,\n        \"jumlah_telat\": 2,\n        \"jumlah_izin\": 1,\n        \"jumlah_sakit\": 2\n    }\n}"
+                        }
+                    ]
+                }
+            ],
+            "description": "Endpoints for the authenticated user (requires Bearer {{token}})"
+        },
+        {
             "name": "User Management",
             "item": [
                 {
@@ -141,7 +249,7 @@
                             },
                             {
                                 "key": "Authorization",
-                                "value": "Bearer {{token}}"
+                                "value": "Bearer {{admin_token}}"
                             }
                         ],
                         "body": {
@@ -167,7 +275,7 @@
                                     },
                                     {
                                         "key": "Authorization",
-                                        "value": "Bearer {{token}}"
+                                        "value": "Bearer {{admin_token}}"
                                     }
                                 ],
                                 "body": {
@@ -200,7 +308,7 @@
                             },
                             {
                                 "key": "Authorization",
-                                "value": "Bearer {{token}}"
+                                "value": "Bearer {{admin_token}}"
                             }
                         ],
                         "url": {
@@ -249,7 +357,7 @@
                                     },
                                     {
                                         "key": "Authorization",
-                                        "value": "Bearer {{token}}"
+                                        "value": "Bearer {{admin_token}}"
                                     }
                                 ],
                                 "url": {
@@ -288,7 +396,7 @@
                             },
                             {
                                 "key": "Authorization",
-                                "value": "Bearer {{token}}"
+                                "value": "Bearer {{admin_token}}"
                             }
                         ],
                         "url": {
@@ -339,7 +447,7 @@
                             },
                             {
                                 "key": "Authorization",
-                                "value": "Bearer {{token}}"
+                                "value": "Bearer {{admin_token}}"
                             }
                         ],
                         "url": {
@@ -394,7 +502,7 @@
                             },
                             {
                                 "key": "Authorization",
-                                "value": "Bearer {{token}}"
+                                "value": "Bearer {{admin_token}}"
                             }
                         ],
                         "body": {
@@ -453,7 +561,7 @@
                             },
                             {
                                 "key": "Authorization",
-                                "value": "Bearer {{token}}"
+                                "value": "Bearer {{admin_token}}"
                             }
                         ],
                         "url": {
@@ -504,7 +612,7 @@
                             },
                             {
                                 "key": "Authorization",
-                                "value": "Bearer {{token}}"
+                                "value": "Bearer {{admin_token}}"
                             }
                         ],
                         "body": {
@@ -569,6 +677,68 @@
             "description": "CRUD operations for user management"
         },
         {
+            "name": "Absences",
+            "item": [
+                {
+                    "name": "Approve Absence for a User",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/absences/{{user_id}}/approve",
+                            "host": ["{{base_url}}"],
+                            "path": [
+                                "api",
+                                "absences",
+                                "{{user_id}}",
+                                "approve"
+                            ]
+                        },
+                        "description": "Approve the most recent absence record for the specified user (Admin only)"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/absences/1/approve",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "absences", "1", "approve"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Absence approved successfully\"\n}"
+                        }
+                    ]
+                }
+            ],
+            "description": "Absence management endpoints (Admin only)"
+        },
+        {
             "name": "Statistics",
             "item": [
                 {
@@ -582,7 +752,7 @@
                             },
                             {
                                 "key": "Authorization",
-                                "value": "Bearer {{token}}"
+                                "value": "Bearer {{admin_token}}"
                             }
                         ],
                         "url": {
@@ -652,7 +822,7 @@
                             },
                             {
                                 "key": "Authorization",
-                                "value": "Bearer {{token}}"
+                                "value": "Bearer {{admin_token}}"
                             }
                         ],
                         "url": {
@@ -707,7 +877,7 @@
                             },
                             {
                                 "key": "Authorization",
-                                "value": "Bearer {{token}}"
+                                "value": "Bearer {{admin_token}}"
                             }
                         ],
                         "body": {
