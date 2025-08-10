@@ -35,6 +35,8 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
 
+
+
 // Employee Management Routes
 Route::get('/employees', function () {
     return view('data-karyawan');
@@ -53,3 +55,7 @@ Route::get('/attendance', function () {
 Route::get('/account-management', function () {
     return view('account-management');
 })->name('account.management');
+
+Route::get('/preview/form-karyawan', function () {
+    return view('preview-form-karyawan');
+});

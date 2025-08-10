@@ -9,53 +9,113 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Exception;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\KaryawanImport;
+use App\Models\Absence;
+use App\Models\Attendance;
 
 class UserCrudController extends Controller
 {
+    // public function readAllUser()
+    // {
+    //     try {
+    //         $data = User::orderBy('id', 'asc')->get()->makeVisible(['password', 'serialNumber']);
+    //         return response()->json([
+    //             'status' => 'success',
+    //             'message' => 'Data found', 'data' => $data
+    //         ]);
+    //     } catch (Exception $e) {
+    //         return response()->json([
+    //             'status' => 'error',
+    //             'message' => 'Server error', 'error' => $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
+
     public function addUser(Request $request)
     {
         try {
-            $data = $request->only(['name', 'username', 'password', 'nip', 'email', 'telepon', 'divisi', 'mapel']);
-            $data['password'] = Hash::make($data['password']);
-
-            $validator = Validator::make($data, [
+            $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
-                'username' => ['required', 'string', 'max:255', Rule::unique('users')],
-                'password' => 'required|string|min:6',
-                'nip' => 'nullable|string|max:20',
-                'email' => ['required', 'email', Rule::unique('users')],
+                'nip' => 'required|string|max:20|unique:users',
+                'email' => ['required', 'email', 'max:255', Rule::unique('users')],
+                'password' => 'nullable|string|min:6',
                 'telepon' => 'nullable|string|max:15',
-                'divisi' => 'nullable|string|max:50',
-                'mapel' => 'nullable|string|max:50',
+                'divisi' => 'nullable|string|max:100',
+                'mapel' => 'nullable|string|max:100',
             ]);
 
             if ($validator->fails()) {
                 return response()->json(['status' => false, 'message' => $validator->errors()->first()], 400);
             }
 
-            $user = User::create($data);
-            return response()->json([
-                'status' => true,
-                'message' => 'User created successfully',
-                'data' => $user
-            ], 201);
+            $password = $request->filled('password') ? $request->password : $request->nip;
+
+            $user = User::create([
+                'name' => $request->name,
+                'password' => Hash::make($password),
+                'nip' => $request->nip,
+                'email' => $request->email,
+                'telepon' => $request->telepon,
+                'divisi' => $request->divisi,
+                'mapel' => $request->mapel,
+            ]);
+
+            return response()->json(['status' => true, 'message' => 'User created successfully', 'data' => $user], 201);
         } catch (Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Server error',
-                'error' => $e->getMessage()
-            ], 500);
+            return response()->json(['status' => false, 'message' => 'Server error', 'error' => $e->getMessage()], 500);
         }
     }
 
-    public function readAllUser()
+    public function readAllUser(Request $request)
     {
         try {
-            $data = User::orderBy('id', 'asc')->get()->makeVisible(['password', 'serialNumber']);
+            $query = User::query();
+
+            // Fitur pencarian
+            if ($request->has('search')) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%$search%")
+                        ->orWhere('email', 'like', "%$search%")
+                        ->orWhere('nip', 'like', "%$search%")
+                        ->orWhere('telepon', 'like', "%$search%")
+                        ->orWhere('divisi', 'like', "%$search%")
+                        ->orWhere('mapel', 'like', "%$search%");
+                });
+            }
+
+            // Fitur sorting
+            $sortField = $request->input('sort_field', 'id');
+            $sortOrder = $request->input('sort_order', 'asc');
+
+            // Validasi field sorting untuk mencegah SQL injection
+            $validSortFields = ['id', 'name', 'username', 'email', 'nip', 'telepon', 'divisi', 'mapel', 'created_at', 'updated_at'];
+            if (!in_array($sortField, $validSortFields)) {
+                $sortField = 'id';
+            }
+
+            $sortOrder = strtolower($sortOrder) === 'desc' ? 'desc' : 'asc';
+
+            $query->orderBy($sortField, $sortOrder);
+
+            // Fitur pagination
+            $perPage = $request->input('per_page', 10);
+            $users = $query->paginate($perPage);
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Data found',
-                'data' => $data
+                'data' => $users->items(),
+                'meta' => [
+                    'current_page' => $users->currentPage(),
+                    'last_page' => $users->lastPage(),
+                    'per_page' => $users->perPage(),
+                    'total' => $users->total(),
+                    'sort_field' => $sortField,
+                    'sort_order' => $sortOrder,
+                    'search_query' => $request->search ?? null,
+                ]
             ]);
         } catch (Exception $e) {
             return response()->json([
@@ -95,6 +155,54 @@ class UserCrudController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function showDetailWithAttendance(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        // Ambil data hadir
+        $attendances = Attendance::where('user_id', $id)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'tanggal' => $item->date,
+                    'waktu' => $item->check_in_time,
+                    'metode-absen' => $item->type,
+                    'lokasi' => $item->lokasi,
+                    'status' => 'Hadir',
+                    'keterangan' => $item->keterangan ?? null,
+                ];
+            });
+
+        // Ambil data tidak hadir
+        $absences = Absence::where('user_id', $id)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'tanggal' => $item->date_start,
+                    'waktu' => '-',
+                    'metode-absen' => $item->type,
+                    'lokasi' => '-',
+                    'status' => 'Tidak Hadir',
+                    'keterangan' => $item->type ?? null,
+                ];
+            });
+
+        // Gabung & urutkan berdasarkan tanggal terbaru
+        $history = $attendances
+            ->merge($absences)
+            ->sortByDesc('tanggal')
+            ->values();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Detail data guru dan riwayat absensi berhasil diambil.',
+            'data' => [
+                'user' => $user,
+                'riwayat_absensi' => $history
+            ],
+        ]);
     }
 
     public function updateUser(Request $request, ?string $id = null)
@@ -173,6 +281,29 @@ class UserCrudController extends Controller
                 'status' => 'error',
                 'message' => 'Server error',
                 'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function import(Request $request)
+    {
+        // Validasi file harus excel
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:2048'
+        ]);
+
+        // Proses import
+        try {
+            Excel::import(new KaryawanImport, $request->file('file'));
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data karyawan berhasil diimport.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal mengimport data: ' . $e->getMessage()
             ], 500);
         }
     }
