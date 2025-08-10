@@ -36,5 +36,9 @@ Route::middleware(['auth:sanctum', 'auth.admin'])->group(function () {
     Route::post('/settings', [SettingController::class, 'store']);
     Route::get('/statistik-tahunan', [StatistikController::class, 'statistikTahunan']);
 
-    Route::put('/absences/{user:id}/approve', [AbsenceController::class, 'approveAbsence']);
+    Route::prefix('/absences')->group(function () {
+        Route::put('/{user:id}/approve', [AbsenceController::class, 'approveAbsence']);
+        Route::get('/filter', [AbsenceController::class, 'filter']);
+        Route::get('/export', [AbsenceController::class, 'export']);
+    });
 });

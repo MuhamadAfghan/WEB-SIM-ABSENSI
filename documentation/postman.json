@@ -734,6 +734,87 @@
                             "body": "{\n    \"status\": \"success\",\n    \"message\": \"Absence approved successfully\"\n}"
                         }
                     ]
+                },
+                {
+                    "name": "Filter Absences",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/absences/filter?date_start=2024-01-01&date_end=2024-12-31&type=izin",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "absences", "filter"],
+                            "query": [
+                                {
+                                    "key": "date_start",
+                                    "value": "2024-01-01",
+                                    "description": "Start date filter (optional)"
+                                },
+                                {
+                                    "key": "date_end",
+                                    "value": "2024-12-31",
+                                    "description": "End date filter (optional)"
+                                },
+                                {
+                                    "key": "type",
+                                    "value": "izin",
+                                    "description": "Absence type: izin, sakit, alpa (optional)"
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "description": "Page number for pagination (optional)",
+                                    "disabled": true
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Export Absences",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/absences/export?date_start=2024-01-01&date_end=2024-12-31",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "absences", "export"],
+                            "query": [
+                                {
+                                    "key": "date_start",
+                                    "value": "2024-01-01",
+                                    "description": "Start date for export (required)"
+                                },
+                                {
+                                    "key": "date_end",
+                                    "value": "2024-12-31",
+                                    "description": "End date for export (required)"
+                                }
+                            ]
+                        }
+                    }
                 }
             ],
             "description": "Absence management endpoints (Admin only)"
