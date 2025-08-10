@@ -36,7 +36,7 @@ Route::middleware(['auth:sanctum', 'auth.admin'])->group(function () {
     Route::get('/settings', [SettingController::class, 'index']);
     Route::post('/settings', [SettingController::class, 'store']);
 
-    Route::get('/dashboard-statistik', [AttendanceController::class, 'indexHarian']);
+    Route::get('/dashboard-statistik', [StatistikController::class, 'dashboardStatistik']);
     Route::get('/statistik-tahunan', [StatistikController::class, 'statistikTahunan']);
     Route::get('/statistik-bulanan', [StatistikController::class, 'statistikBulanan']); //statistik bulanan
 
