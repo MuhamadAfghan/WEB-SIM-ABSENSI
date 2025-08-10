@@ -20,7 +20,6 @@ return new class extends Migration
             $table->boolean('is_approved')->default(false);
             $table->string('description')->nullable();
             $table->string('upload_attachment')->nullable();
-
         });
     }
 

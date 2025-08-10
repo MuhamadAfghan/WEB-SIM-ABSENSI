@@ -119,4 +119,97 @@ class StatistikController extends Controller
             ], 500);
         }
     }
+
+    public function statistikBulanan(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'month' => 'required|string', 
+                'year' => 'nullable|numeric|digits:4|min:2020|max:' . date('Y'),
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validasi gagal',
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+
+            // Definisikan array months di dalam fungsi statistikBulanan
+            $months = [
+                'januari' => 1,
+                'februari' => 2,
+                'maret' => 3,
+                'april' => 4,
+                'mei' => 5,
+                'juni' => 6,
+                'juli' => 7,
+                'agustus' => 8,
+                'september' => 9,
+                'oktober' => 10,
+                'november' => 11,
+                'desember' => 12,
+                'january' => 1,
+                'february' => 2,
+                'march' => 3,
+                'april' => 4,
+                'may' => 5,
+                'june' => 6,
+                'july' => 7,
+                'august' => 8,
+                'september' => 9,
+                'october' => 10,
+                'november' => 11,
+                'december' => 12,
+            ];
+
+            // Ambil bulan dari nama
+            $monthName = strtolower($request->input('month'));
+            $month = $months[$monthName] ?? null;
+
+            if (!$month) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Nama bulan tidak valid',
+                ], 422);
+            }
+
+            $year = (int) ($request->input('year') ?? date('Y'));
+
+            // Rekap data absensi
+            $data = DB::table('attendances')
+                ->selectRaw("
+                SUM(CASE WHEN keterangan = 'hadir' THEN 1 ELSE 0 END) as hadir,
+                SUM(CASE WHEN keterangan = 'sakit' THEN 1 ELSE 0 END) as sakit,
+                SUM(CASE WHEN keterangan = 'izin' THEN 1 ELSE 0 END) as izin,
+                SUM(CASE WHEN keterangan IS NULL OR keterangan = '' THEN 1 ELSE 0 END) as tanpa_keterangan
+            ")
+                ->whereYear('date', $year)
+                ->whereMonth('date', $month)
+                ->first();
+
+            // Nama bulan Indonesia
+            $indonesianMonth = Carbon::createFromDate($year, $month, 1)
+                ->locale('id')
+                ->translatedFormat('F');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data Statistik Bulanan',
+                'bulan' => strtolower($indonesianMonth),
+                'data' => [
+                    'hadir' => (int) $data->hadir,
+                    'sakit' => (int) $data->sakit,
+                    'izin' => (int) $data->izin,
+                    'tanpa_keterangan' => (int) $data->tanpa_keterangan,
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

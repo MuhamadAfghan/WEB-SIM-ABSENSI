@@ -6,6 +6,7 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\UserCrudController;
 use App\Http\Controllers\StatistikController;
+use App\Http\Controllers\AttendanceController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -42,6 +43,10 @@ Route::put('/admin/{id?}', [AdminCrudController::class, 'updateAdmin']); //updat
 Route::delete('admin/{id?}', [AdminCrudController::class, 'deleteAdmin']); //Hapus admin berdasarkan ID
 
 Route::get('/statistik-tahunan', [StatistikController::class, 'statistikTahunan']); //statistik tahunan
+Route::get('/statistik-bulanan', [StatistikController::class, 'statistikBulanan']); //statistik bulanan
 //settings
 Route::get('/settings', [SettingController::class, 'index']); //Get work schedule and location settings
 Route::post('/settings', [SettingController::class, 'store']); //Save work schedule and location settings
+
+
+Route::get('/jumlah-harian', [AttendanceController::class, 'indexHarian']);
