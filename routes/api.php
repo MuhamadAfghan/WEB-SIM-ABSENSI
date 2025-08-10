@@ -7,6 +7,7 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\UserCrudController;
 use App\Http\Controllers\StatistikController;
+use App\Http\Controllers\AttendanceController;
 use Illuminate\Support\Facades\Route;
 
 // Public auth
@@ -34,7 +35,10 @@ Route::middleware(['auth:sanctum', 'auth.admin'])->group(function () {
     // Settings and statistics (admin-managed)
     Route::get('/settings', [SettingController::class, 'index']);
     Route::post('/settings', [SettingController::class, 'store']);
+
+    Route::get('/dashboard-statistik', [AttendanceController::class, 'indexHarian']);
     Route::get('/statistik-tahunan', [StatistikController::class, 'statistikTahunan']);
+    Route::get('/statistik-bulanan', [StatistikController::class, 'statistikBulanan']); //statistik bulanan
 
     Route::prefix('/absences')->group(function () {
         Route::put('/{user:id}/approve', [AbsenceController::class, 'approveAbsence']);

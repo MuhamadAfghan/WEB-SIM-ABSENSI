@@ -20,10 +20,10 @@ return new class extends Migration
             $table->date('date');
             $table->time('time')->nullable();
             $table->string('keterangan');
-            $table->string('lokasi');
+            $table->string('lokasi');   
 
         });
-    }
+    }   
 
     /**
      * Reverse the migrations.
