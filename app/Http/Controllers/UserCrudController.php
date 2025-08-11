@@ -73,6 +73,12 @@ class UserCrudController extends Controller
         try {
             $query = User::query();
 
+            // Filter khusus untuk divisi
+            if ($request->has('divisi')) {
+                $divisi = $request->input('divisi');
+                $query->where('divisi', $divisi);
+            }
+
             // Fitur pencarian
             if ($request->has('search')) {
                 $search = $request->search;
@@ -81,7 +87,6 @@ class UserCrudController extends Controller
                         ->orWhere('email', 'like', "%$search%")
                         ->orWhere('nip', 'like', "%$search%")
                         ->orWhere('telepon', 'like', "%$search%")
-                        ->orWhere('divisi', 'like', "%$search%")
                         ->orWhere('mapel', 'like', "%$search%");
                 });
             }
@@ -116,6 +121,7 @@ class UserCrudController extends Controller
                     'sort_field' => $sortField,
                     'sort_order' => $sortOrder,
                     'search_query' => $request->search ?? null,
+                    'filter_divisi' => $request->divisi ?? null,
                 ]
             ]);
         } catch (Exception $e) {
