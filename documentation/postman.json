@@ -796,6 +796,102 @@
                 }
             ],
             "description": "Work schedule and location settings management"
+        },        {
+            "name": "Attendance",
+            "description": "Attendance endpoints: Check In, Check Out, and Attendance History",
+            "item": [
+                {
+                    "name": "Absen Masuk (Check In)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            { "key": "Content-Type", "value": "application/json" },
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Authorization", "value": "Bearer {{token}}" }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"user_id\": {{user_id}},\n    \"latitude\": -6.2,\n    \"longitude\": 106.8,\n    \"type\": \"mobile\",\n    \"keterangan\": \"Tepat waktu\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/check-in",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "check-in"]
+                        },
+                        "description": "Melakukan absen masuk untuk user. Validasi lokasi, jadwal kerja, dan status keterlambatan."
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Absen masuk berhasil\",\n    \"data\": {\n        \"attendance_id\": 1,\n        \"check_in_time\": \"2025-08-09T08:00:00.000000Z\",\n        \"status\": \"mobile\",\n        \"location\": \"Kantor Pusat\",\n        \"is_late\": false,\n        \"distance\": 10.5\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Absen Pulang (Check Out)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            { "key": "Content-Type", "value": "application/json" },
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Authorization", "value": "Bearer {{token}}" }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"user_id\": {{user_id}},\n    \"latitude\": -6.2,\n    \"longitude\": 106.8,\n    \"keterangan\": \"Pulang tepat waktu\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/check-out",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "check-out"]
+                        },
+                        "description": "Melakukan absen pulang untuk user. Menghitung total jam kerja."
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Absen pulang berhasil\",\n    \"data\": {\n        \"attendance_id\": 1,\n        \"check_in_time\": \"2025-08-09T08:00:00.000000Z\",\n        \"check_out_time\": \"2025-08-09T17:00:00.000000Z\",\n        \"working_hours\": \"9 jam 0 menit\",\n        \"total_minutes\": 540,\n        \"location\": \"Kantor Pusat\",\n        \"distance\": 10.5\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Riwayat Absensi (Attendance History)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Authorization", "value": "Bearer {{token}}" }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/history?user_id={{user_id}}&limit=10&month=8&year=2025",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "history"],
+                            "query": [
+                                { "key": "user_id", "value": "{{user_id}}" },
+                                { "key": "limit", "value": "10" },
+                                { "key": "month", "value": "8" },
+                                { "key": "year", "value": "2025" }
+                            ]
+                        },
+                        "description": "Mengambil riwayat absensi user dengan filter bulan, tahun, dan paginasi."
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Data riwayat absensi\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"date\": \"2025-08-09\",\n            \"day_name\": \"Saturday\",\n            \"check_in_time\": \"08:00:00\",\n            \"check_out_time\": \"17:00:00\",\n            \"status\": \"on_time\",\n            \"status_text\": \"Tepat Waktu\",\n            \"location\": \"Kantor Pusat\",\n            \"keterangan\": null,\n            \"working_hours\": {\n                \"hours\": 9,\n                \"minutes\": 0\n            }\n        }\n    ]\n}"
+                        }
+                    ]
+                }
+            ]
         }
     ],
     "event": [

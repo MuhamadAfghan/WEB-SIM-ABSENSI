@@ -5,12 +5,9 @@ use App\Http\Controllers\AdminCrudController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\UserCrudController;
-<<<<<<< HEAD
 use App\Http\Controllers\AttendanceController;
-use Illuminate\Http\Request;
-=======
 use App\Http\Controllers\StatistikController;
->>>>>>> 8ecf44a4e51df55495139ef231efd09bf46e2c7d
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -49,11 +46,9 @@ Route::delete('admin/{id?}', [AdminCrudController::class, 'deleteAdmin']); //Hap
 Route::get('/statistik-tahunan', [StatistikController::class, 'statistikTahunan']); //statistik tahunan
 //settings
 Route::get('/settings', [SettingController::class, 'index']); //Get work schedule and location settings
-<<<<<<< HEAD
 Route::post('/settings', [SettingController::class, 'store']); //Save work schedule and location settings
 
-// check in
-Route::post('/attendance/check-in', [AttendanceController::class, 'checkIn']); //Check in
-=======
-Route::post('/settings', [SettingController::class, 'store']); //Save work schedule and location settings
->>>>>>> 8ecf44a4e51df55495139ef231efd09bf46e2c7d
+Route::post('/check-in', [AttendanceController::class, 'checkIn']);
+Route::post('/check-out', [AttendanceController::class, 'checkOut']);
+Route::get('/history', [AttendanceController::class, 'history']);
+Route::get('/today-status', [AttendanceController::class, 'todayStatus']);
