@@ -6,8 +6,8 @@ use App\Http\Controllers\AdminCrudController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\UserCrudController;
-use App\Http\Controllers\StatistikController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\StatistikController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,6 +21,12 @@ Route::middleware(['auth:sanctum', 'auth.user'])->group(function () {
     // User profile
     Route::get('/user/current-activity', [UserCrudController::class, 'getMyCurrentActivity']);
     Route::get('/user/statistik', [UserCrudController::class, 'getMyStatistik']);
+
+    Route::post('/check-in', [AttendanceController::class, 'checkIn']);
+    Route::post('/check-out', [AttendanceController::class, 'checkOut']);
+
+    Route::get('/today-status', [AttendanceController::class, 'todayStatus']);
+    Route::get('/history', [AttendanceController::class, 'history']);
 });
 
 // Admin-protected endpoints
