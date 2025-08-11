@@ -8,6 +8,7 @@ use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\UserCrudController;
 use App\Http\Controllers\StatistikController;
 use App\Http\Controllers\AttendanceController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Public auth
@@ -44,5 +45,11 @@ Route::middleware(['auth:sanctum', 'auth.admin'])->group(function () {
         Route::put('/{user:id}/approve', [AbsenceController::class, 'approveAbsence']);
         Route::get('/filter', [AbsenceController::class, 'filter']);
         Route::get('/export', [AbsenceController::class, 'export']);
+
+        //absence / attendance all data today
+        Route::get('/showtodayattendance', [AttendanceController::class, 'showTodayAttendance']);
+
+        // absence / attendance by pagination
+        Route::get('/attendance/paginate', [AttendanceController::class, 'showAttendanceByPagination']);
     });
 });
