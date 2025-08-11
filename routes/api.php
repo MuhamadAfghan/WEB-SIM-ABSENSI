@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 // Public auth
 Route::post('/login', [UserAuthController::class, 'login']);         // user login (email+password)
 Route::post('/login/admin', [AdminAuthController::class, 'loginAdmin']); // admin login (username+password)
+Route::get('/settings', [SettingController::class, 'index']);
 
 // User-protected endpoints
 Route::middleware(['auth:sanctum', 'auth.user'])->group(function () {
@@ -33,7 +34,6 @@ Route::middleware(['auth:sanctum', 'auth.admin'])->group(function () {
     Route::post('/user/import', [UserCrudController::class, 'import']);
 
     // Settings and statistics (admin-managed)
-    Route::get('/settings', [SettingController::class, 'index']);
     Route::post('/settings', [SettingController::class, 'store']);
 
     Route::get('/dashboard-statistik', [StatistikController::class, 'dashboardStatistik']);
