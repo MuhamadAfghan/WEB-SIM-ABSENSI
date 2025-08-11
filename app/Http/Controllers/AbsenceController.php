@@ -9,7 +9,6 @@ use App\Exports\AbsenceExport;
 use Illuminate\Http\Request;
 use App\Models\Admin;
 use App\Models\Attendance;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -89,49 +88,70 @@ class AbsenceController extends Controller
         'date_end.after_or_equal' => 'Tanggal selesai harus setelah atau sama dengan tanggal mulai'
     ];
 
-    public function filter(Request $request)
+    public function showAbsences(Request $request)
     {
         try {
-            $query = Absence::query();
+            // Get Absence and Attendance data, merge before filtering
+            $absenceQuery = Absence::query()->with('user');
+            $attendanceQuery = Attendance::query()->with('user');
 
-            $filters = [
-                'date_start' => $request->date_start,
-                'date_end' => $request->date_end,
-                'type' => $request->type ?? 'all'
-            ];
+            // Merge collections
+            $absences = $absenceQuery->get();
+            $attendances = $attendanceQuery->get();
 
+            // Combine and convert to collection
+            $merged = $absences->concat($attendances);
+
+            // Apply filters
             if ($request->has('date_start')) {
-                $query->where('date-start', '>=', $request->date_start);
+                $merged = $merged->filter(function ($item) use ($request) {
+                    return isset($item->date_start)
+                        ? $item->date_start >= $request->date_start
+                        : (isset($item->date) ? $item->date >= $request->date_start : true);
+                });
             }
 
             if ($request->has('date_end')) {
-                $query->where('date-end', '<=', $request->date_end);
+                $merged = $merged->filter(function ($item) use ($request) {
+                    return isset($item->date_end)
+                        ? $item->date_end <= $request->date_end
+                        : (isset($item->date) ? $item->date <= $request->date_end : true);
+                });
             }
 
             if ($request->has('type')) {
-                $query->where('type', $request->type);
+                $merged = $merged->filter(function ($item) use ($request) {
+                    return isset($item->type) ? $item->type == $request->type : true;
+                });
             }
 
-            //Get results with pagination
-            $absences = $query->with('user')->paginate(10);
+            // Paginate manually
+            $page = $request->get('page', 1);
+            $perPage = 10;
+            $items = $merged->slice(($page - 1) * $perPage, $perPage)->values();
+            $total = $merged->count();
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Absences filtered successfully',
+                'message' => 'Absences and attendances filtered successfully',
                 'data' => [
-                    'filters_applied' => $filters,
-                    'items' => $absences->items(),
-                    'total_records' => $absences->total(),
-                    'current_page' => $absences->currentPage(),
-                    'per_page' => $absences->perPage(),
+                    'filters_applied' => [
+                        'date_start' => $request->date_start,
+                        'date_end' => $request->date_end,
+                        'type' => $request->type ?? 'all'
+                    ],
+                    'items' => $items,
+                    'total_records' => $total,
+                    'current_page' => $page,
+                    'per_page' => $perPage,
                 ]
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Failed to filter absences',
+                'message' => 'Failed to filter absences and attendances',
                 'error' => $e->getMessage()
-            ])->setStatusCode(500);
+            ], 500);
         }
     }
 

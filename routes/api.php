@@ -42,14 +42,12 @@ Route::middleware(['auth:sanctum', 'auth.admin'])->group(function () {
     Route::get('/statistik-bulanan', [StatistikController::class, 'statistikBulanan']); //statistik bulanan
 
     Route::prefix('/absences')->group(function () {
+        Route::get('/', [AbsenceController::class, 'showAbsences']);
+        Route::get('/today', [AttendanceController::class, 'showTodayAttendance']);
         Route::put('/{user:id}/approve', [AbsenceController::class, 'approveAbsence']);
-        Route::get('/filter', [AbsenceController::class, 'filter']);
         Route::get('/export', [AbsenceController::class, 'export']);
 
-        //absence / attendance all data today
-        Route::get('/showtodayattendance', [AttendanceController::class, 'showTodayAttendance']);
-
         // absence / attendance by pagination
-        Route::get('/attendance/paginate', [AttendanceController::class, 'showAttendanceByPagination']);
+        // Route::get('/attendances', [AttendanceController::class, 'showAttendanceByPagination']);
     });
 });
