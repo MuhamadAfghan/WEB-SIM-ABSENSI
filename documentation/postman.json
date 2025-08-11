@@ -232,6 +232,279 @@
             "description": "Endpoints for the authenticated user (requires Bearer {{token}})"
         },
         {
+            "name": "Attendance",
+            "item": [
+                {
+                    "name": "Check In",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"latitude\": -6.2088,\n    \"longitude\": 106.8456,\n    \"keterangan\": \"Tepat waktu\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/check-in",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "check-in"]
+                        },
+                        "description": "Check in for attendance. Validates location, work schedule, and lateness status."
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"latitude\": -6.2088,\n    \"longitude\": 106.8456,\n    \"keterangan\": \"Tepat waktu\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/check-in",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "check-in"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Absen masuk berhasil\",\n    \"data\": {\n        \"attendance_id\": 1,\n        \"check_in_time\": \"08:00:00\",\n        \"location\": \"Kantor Pusat\",\n        \"is_late\": false,\n        \"distance\": 15.5\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Check Out",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"latitude\": -6.2088,\n    \"longitude\": 106.8456,\n    \"keterangan\": \"Pulang tepat waktu\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/check-out",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "check-out"]
+                        },
+                        "description": "Check out for attendance. Calculates total working hours."
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"latitude\": -6.2088,\n    \"longitude\": 106.8456,\n    \"keterangan\": \"Pulang tepat waktu\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/check-out",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "check-out"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Absen pulang berhasil\",\n    \"data\": {\n        \"attendance_id\": 1,\n        \"check_in_time\": \"08:00:00\",\n        \"check_out_time\": \"17:00:00\",\n        \"working_hours\": \"9 jam 0 menit\",\n        \"total_minutes\": 540,\n        \"location\": \"Kantor Pusat\"\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Get Today Status",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/today-status",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "today-status"]
+                        },
+                        "description": "Get today's attendance status for the authenticated user"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/today-status",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "today-status"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"data\": {\n        \"date\": \"2025-08-11\",\n        \"has_checked_in\": true,\n        \"has_checked_out\": false,\n        \"check_in_time\": \"08:00:00\",\n        \"check_out_time\": null,\n        \"is_late\": false\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Get Attendance History",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/history?limit=10&month=8&year=2025",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "history"],
+                            "query": [
+                                {
+                                    "key": "limit",
+                                    "value": "10",
+                                    "description": "Number of records to return (optional)"
+                                },
+                                {
+                                    "key": "month",
+                                    "value": "8",
+                                    "description": "Month filter (optional, 1-12)"
+                                },
+                                {
+                                    "key": "year",
+                                    "value": "2025",
+                                    "description": "Year filter (optional, YYYY format)"
+                                }
+                            ]
+                        },
+                        "description": "Get attendance history for the authenticated user with optional filters"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/history?limit=10&month=8&year=2025",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "history"],
+                                    "query": [
+                                        {
+                                            "key": "limit",
+                                            "value": "10"
+                                        },
+                                        {
+                                            "key": "month",
+                                            "value": "8"
+                                        },
+                                        {
+                                            "key": "year",
+                                            "value": "2025"
+                                        }
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Data riwayat absensi\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"date\": \"2025-08-11\",\n            \"day_name\": \"Monday\",\n            \"check_in_time\": \"08:00:00\",\n            \"check_out_time\": \"17:00:00\",\n            \"status\": \"on_time\",\n            \"status_text\": \"Tepat Waktu\",\n            \"location\": \"Kantor Pusat\",\n            \"keterangan\": null,\n            \"working_hours\": {\n                \"hours\": 9,\n                \"minutes\": 0\n            }\n        }\n    ]\n}"
+                        }
+                    ]
+                }
+            ],
+            "description": "Attendance management endpoints for users (requires Bearer {{token}})"
+        },
+        {
             "name": "User Management",
             "item": [
                 {
@@ -679,6 +952,108 @@
         {
             "name": "Absences",
             "item": [
+                {
+                    "name": "Get All Absences",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/absences",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "absences"]
+                        },
+                        "description": "Get all absence records with pagination (Admin only)"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/absences",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "absences"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Data absensi berhasil diambil\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"user_id\": 1,\n            \"user_name\": \"John Doe\",\n            \"date_start\": \"2025-08-11\",\n            \"date_end\": \"2025-08-11\",\n            \"type\": \"sakit\",\n            \"is_approved\": false,\n            \"description\": \"Demam tinggi\",\n            \"upload_attachment\": null\n        }\n    ]\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Get Today's Attendance",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/absences/today",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "absences", "today"]
+                        },
+                        "description": "Get today's attendance records for all users (Admin only)"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/absences/today",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "absences", "today"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Data absensi hari ini berhasil diambil\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"user_id\": 1,\n            \"user_name\": \"John Doe\",\n            \"date\": \"2025-08-11\",\n            \"check_in_time\": \"08:00:00\",\n            \"check_out_time\": null,\n            \"type\": \"mobile\",\n            \"location\": \"Kantor Pusat\",\n            \"status\": \"present\"\n        }\n    ]\n}"
+                        }
+                    ]
+                },
                 {
                     "name": "Approve Absence for a User",
                     "request": {
@@ -1200,7 +1575,8 @@
                 }
             ],
             "description": "Work schedule and location settings management"
-        },        {
+        },
+        {
             "name": "Attendance",
             "description": "Attendance endpoints: Check In, Check Out, and Attendance History",
             "item": [
@@ -1209,9 +1585,15 @@
                     "request": {
                         "method": "POST",
                         "header": [
-                            { "key": "Content-Type", "value": "application/json" },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
                             { "key": "Accept", "value": "application/json" },
-                            { "key": "Authorization", "value": "Bearer {{token}}" }
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
                         ],
                         "body": {
                             "mode": "raw",
@@ -1239,9 +1621,15 @@
                     "request": {
                         "method": "POST",
                         "header": [
-                            { "key": "Content-Type", "value": "application/json" },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
                             { "key": "Accept", "value": "application/json" },
-                            { "key": "Authorization", "value": "Bearer {{token}}" }
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
                         ],
                         "body": {
                             "mode": "raw",
@@ -1270,7 +1658,10 @@
                         "method": "GET",
                         "header": [
                             { "key": "Accept", "value": "application/json" },
-                            { "key": "Authorization", "value": "Bearer {{token}}" }
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
                         ],
                         "url": {
                             "raw": "{{base_url}}/api/history?user_id={{user_id}}&limit=10&month=8&year=2025",

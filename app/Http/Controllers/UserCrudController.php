@@ -337,6 +337,7 @@ class UserCrudController extends Controller
 
         return response()->json([
             'status' => 'success',
+            'message' => 'Current activity retrieved successfully',
             'data' => $currentActivity + ['expected_check_in_time' => $expectedCheckIn]
         ]);
     }

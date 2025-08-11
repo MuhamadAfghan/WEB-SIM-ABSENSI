@@ -32,10 +32,10 @@ class DatabaseSeeder extends Seeder
             'name' => 'Sample User',
             'password' => bcrypt('password123'),
             'nip' => '123456789',
-            'email' => 'sampleuser@example.com',
+            'email' => 'user@example.com',
             'telepon' => '08123456789',
-            'divisi' => 'IT',
-            'mapel' => 'Programming',
+            'divisi' => 'STAFF',
+            'mapel' => 'PJOK',
         ]);
 
         // Create 100 users using factory

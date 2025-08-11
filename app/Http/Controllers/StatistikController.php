@@ -24,13 +24,13 @@ class StatistikController extends Controller
         // User hadir tepat waktu
         $totalHadir = DB::table('attendances')
             ->whereDate('date', $today)
-            ->whereTime('time', '<=', $jamTerlambat)
+            ->whereTime('check_in_time', '<=', $jamTerlambat)
             ->count();
 
         // User hadir terlambat
         $totalTerlambat = DB::table('attendances')
             ->whereDate('date', $today)
-            ->whereTime('time', '>', $jamTerlambat)
+            ->whereTime('check_in_time', '>', $jamTerlambat)
             ->count();
 
         // Semua user yang hadir (tepat waktu + terlambat)
@@ -93,73 +93,87 @@ class StatistikController extends Controller
 
             $tahun = (int) $request->input('year');
             $data = [];
+            $userIds = DB::table('users')->pluck('id')->toArray();
 
             // Siapkan struktur data 12 bulan
             for ($i = 1; $i <= 12; $i++) {
                 $namaBulan = Carbon::createFromDate($tahun, $i, 1)->locale('id')->translatedFormat('F');
                 $data[$i] = [
                     'bulan' => $namaBulan,
-                    'hadir' => 0,
-                    'sakit' => 0,
-                    'izin' => 0,
-                    'tanpa_keterangan' => 0,
+                    'total_karyawan' => count($userIds),
+                    'total_hadir' => 0,
+                    'total_terlambat' => 0,
+                    'total_tidak_hadir' => 0,
                 ];
             }
 
-            // Hitung user yang hadir per bulan (user unik)
-            $hadir = DB::table('attendances')
-                ->selectRaw('MONTH(date) as bulan, COUNT(DISTINCT user_id) as total')
-                ->whereYear('date', $tahun)
-                ->groupBy(DB::raw('MONTH(date)'))
-                ->get();
+            // Ambil setting jam terlambat per hari
+            $setting = DB::table('settings')->first();
 
-            foreach ($hadir as $h) {
-                $data[$h->bulan]['hadir'] = $h->total;
-            }
-
-            // Ambil semua absensi selain hadir (izin, sakit, tanpa_keterangan)
-            $absences = DB::table('absences')
-                ->select('user_id', 'type', 'date-start', 'date-end')
-                ->where(function ($q) use ($tahun) {
-                    $q->whereYear('date-start', $tahun)
-                        ->orWhereYear('date-end', $tahun);
-                })
-                ->get();
-
-            $userBulanTipe = []; // Cegah duplikat hitungan user di bulan yang sama
-
-            foreach ($absences as $row) {
-                $start = Carbon::parse($row->{'date-start'});
-                $end = Carbon::parse($row->{'date-end'});
-
-                while ($start <= $end) {
-                    if ($start->year == $tahun) {
-                        $bulan = $start->month;
-                        $key = $row->user_id . '-' . $bulan . '-' . $row->type;
-
-                        if (!isset($userBulanTipe[$key])) {
-                            if (isset($data[$bulan][$row->type])) {
-                                $data[$bulan][$row->type]++;
-                                $userBulanTipe[$key] = true;
-                            }
-                        }
-                    }
-                    $start->addDay();
+            // Loop tiap bulan
+            foreach ($data as $bulanNum => &$bulanData) {
+                // Ambil semua tanggal di bulan ini
+                $datesInMonth = [];
+                $startDate = Carbon::create($tahun, $bulanNum, 1);
+                $endDate = $startDate->copy()->endOfMonth();
+                for ($date = $startDate->copy(); $date <= $endDate; $date->addDay()) {
+                    $datesInMonth[] = $date->toDateString();
                 }
+
+                $hadirIds = [];
+                $terlambatIds = [];
+                $tidakHadirIds = [];
+
+                foreach ($datesInMonth as $tgl) {
+                    $dayName = strtolower(Carbon::parse($tgl)->format('l'));
+                    $jamTerlambat = $setting->{$dayName . '_start_time'} ?? '08:00:00';
+
+                    // Hadir tepat waktu
+                    $hadirHariIni = DB::table('attendances')
+                        ->whereDate('date', $tgl)
+                        ->whereTime('check_in_time', '<=', $jamTerlambat)
+                        ->pluck('user_id')
+                        ->toArray();
+
+                    // Hadir terlambat
+                    $terlambatHariIni = DB::table('attendances')
+                        ->whereDate('date', $tgl)
+                        ->whereTime('check_in_time', '>', $jamTerlambat)
+                        ->pluck('user_id')
+                        ->toArray();
+
+                    // Izin/sakit
+                    $absenHariIni = DB::table('absences')
+                        ->whereDate('date-start', '<=', $tgl)
+                        ->whereDate('date-end', '>=', $tgl)
+                        ->pluck('user_id')
+                        ->toArray();
+
+                    // Tidak hadir tanpa izin
+                    $tidakHadirTanpaIzin = array_diff($userIds, $hadirHariIni, $terlambatHariIni, $absenHariIni);
+
+                    $hadirIds = array_merge($hadirIds, $hadirHariIni);
+                    $terlambatIds = array_merge($terlambatIds, $terlambatHariIni);
+                    $tidakHadirIds = array_merge($tidakHadirIds, $tidakHadirTanpaIzin);
+                }
+
+                // Hitung unik user tiap kategori per bulan
+                $bulanData['total_hadir'] = count(array_unique($hadirIds));
+                $bulanData['total_terlambat'] = count(array_unique($terlambatIds));
+                $bulanData['total_tidak_hadir'] = count(array_unique($tidakHadirIds));
             }
 
-            // Total tahunan semua jenis
+            // Rekap tahunan
             $rekapTahunan = [
-                'hadir' => 0,
-                'sakit' => 0,
-                'izin' => 0,
-                'tanpa_keterangan' => 0,
+                'total_karyawan' => count($userIds),
+                'total_hadir' => 0,
+                'total_terlambat' => 0,
+                'total_tidak_hadir' => 0,
             ];
-
             foreach ($data as $bulan) {
-                foreach ($rekapTahunan as $key => $_) {
-                    $rekapTahunan[$key] += $bulan[$key];
-                }
+                $rekapTahunan['total_hadir'] += $bulan['total_hadir'];
+                $rekapTahunan['total_terlambat'] += $bulan['total_terlambat'];
+                $rekapTahunan['total_tidak_hadir'] += $bulan['total_tidak_hadir'];
             }
 
             return response()->json([

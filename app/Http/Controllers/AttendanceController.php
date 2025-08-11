@@ -75,7 +75,6 @@ class AttendanceController extends Controller
     public function checkIn(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'user_id' => 'required|exists:users,id',
             'latitude' => 'required|numeric',
             'type' => 'required|in:card,mobile',
             'longitude' => 'required|numeric',
@@ -91,8 +90,7 @@ class AttendanceController extends Controller
         }
 
         try {
-            // $userId = auth()->id();
-            $userId = $request->user_id;
+            $userId = auth()->id();
             if (!$userId) {
                 return response()->json([
                     'status' => "error",
@@ -268,7 +266,6 @@ class AttendanceController extends Controller
     public function checkOut(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            "user_id" => "required|exists:users,id",
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
             'keterangan' => 'nullable|string|max:255'
@@ -283,8 +280,7 @@ class AttendanceController extends Controller
         }
 
         try {
-            // $userId = auth()->id();
-            $userId = $request->user_id;
+            $userId = auth()->id();
             $today = Carbon::today()->format('Y-m-d');
             $currentTime = Carbon::now();
 
