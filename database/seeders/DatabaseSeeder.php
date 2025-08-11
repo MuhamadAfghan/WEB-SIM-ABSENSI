@@ -22,9 +22,9 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         // Admin Seeder
-        Admin::create([
-            'username' => 'admin',
-            'password' => bcrypt('admin123'),
-        ]);
+        Admin::firstOrCreate(
+            ['username' => 'admin'], // cari dulu
+            ['password' => bcrypt('admin123')]
+        );
     }
 }
