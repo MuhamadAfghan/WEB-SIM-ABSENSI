@@ -6,6 +6,7 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\UserCrudController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\AbsenceController;
 use App\Http\Controllers\StatistikController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -52,3 +53,6 @@ Route::post('/check-in', [AttendanceController::class, 'checkIn']);
 Route::post('/check-out', [AttendanceController::class, 'checkOut']);
 Route::get('/history', [AttendanceController::class, 'history']);
 Route::get('/today-status', [AttendanceController::class, 'todayStatus']);
+
+Route::post('/absence', [AbsenceController::class, 'absence']); //Create absence record
+Route::patch('/absence/{id}/approve', [AbsenceController::class, 'approve']);

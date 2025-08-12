@@ -796,7 +796,8 @@
                 }
             ],
             "description": "Work schedule and location settings management"
-        },        {
+        },        
+        {
             "name": "Attendance",
             "description": "Attendance endpoints: Check In, Check Out, and Attendance History",
             "item": [
@@ -891,8 +892,81 @@
                         }
                     ]
                 }
+
+            ]
+        },
+        {
+    "name": "Absence",
+    "description": "Absence endpoints: Pengajuan izin/sakit dan approval",
+    "item": [
+        {
+            "name": "Ajukan Izin/Sakit (Create Absence)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    { "key": "Accept", "value": "application/json" },
+                    { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "body": {
+                    "mode": "formdata",
+                    "formdata": [
+                        { "key": "user_id", "value": "{{user_id}}", "type": "text" },
+                        { "key": "date-start", "value": "2025-08-10", "type": "text" },
+                        { "key": "date-end", "value": "2025-08-12", "type": "text" },
+                        { "key": "type", "value": "sakit", "type": "text" },
+                        { "key": "description", "value": "Demam tinggi", "type": "text" },
+                        { "key": "upload_attachment", "type": "file", "src": [] }
+                    ]
+                },
+                "url": {
+                    "raw": "{{base_url}}/api/absence",
+                    "host": ["{{base_url}}"],
+                    "path": ["api", "absence"]
+                },
+                "description": "Mengajukan izin atau sakit. Attachment opsional (jpg, jpeg, png, pdf, max 2MB)."
+            },
+            "response": [
+                {
+                    "name": "Success Response",
+                    "status": "Created",
+                    "code": 201,
+                    "_postman_previewlanguage": "json",
+                    "body": "{\n    \"status\": \"success\",\n    \"data\": {\n        \"id\": 1,\n        \"user_id\": 1,\n        \"date-start\": \"2025-08-10\",\n        \"date-end\": \"2025-08-12\",\n        \"type\": \"sakit\",\n        \"is_approved\": false,\n        \"description\": \"Demam tinggi\",\n        \"upload_attachment\": \"attachments/abc123.pdf\"\n    }\n}"
+                }
+            ]
+        },
+        {
+            "name": "Approval Izin/Sakit (Approve/Reject Absence)",
+            "request": {
+                "method": "PATCH",
+                "header": [
+                    { "key": "Content-Type", "value": "application/json" },
+                    { "key": "Accept", "value": "application/json" },
+                    { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"is_approved\": true\n}"
+                },
+                "url": {
+                    "raw": "{{base_url}}/api/absence/1/approve",
+                    "host": ["{{base_url}}"],
+                    "path": ["api", "absence", "1", "approve"]
+                },
+                "description": "Approve/reject pengajuan izin/sakit. is_approved: true (approve), false (reject)."
+            },
+            "response": [
+                {
+                    "name": "Success Response",
+                    "status": "OK",
+                    "code": 200,
+                    "_postman_previewlanguage": "json",
+                    "body": "{\n    \"status\": \"success\",\n    \"message\": \"Absence has been approved\",\n    \"data\": {\n        \"id\": 1,\n        \"user_id\": 1,\n        \"date-start\": \"2025-08-10\",\n        \"date-end\": \"2025-08-12\",\n        \"type\": \"sakit\",\n        \"is_approved\": true,\n        \"description\": \"Demam tinggi\",\n        \"upload_attachment\": \"attachments/abc123.pdf\"\n    }\n}"
+                }
             ]
         }
+    ]
+}
     ],
     "event": [
         {
