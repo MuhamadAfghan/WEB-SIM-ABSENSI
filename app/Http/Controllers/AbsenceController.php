@@ -13,19 +13,19 @@ use Exception;
 
 class AbsenceController extends Controller
 {
-    public function approveAbsence(User $user)
-    {
-        $absence = Absence::where('user_id', $user->id)->first();
+    // public function approveAbsence(User $user)
+    // {
+    //     $absence = Absence::where('user_id', $user->id)->first();
 
-        if (!$absence) {
-            return response()->json(['status' => 'error', 'message' => 'Absence not found'], 404);
-        }
+    //     if (!$absence) {
+    //         return response()->json(['status' => 'error', 'message' => 'Absence not found'], 404);
+    //     }
 
-        $absence->is_approved = true;
-        $absence->save();
+    //     $absence->is_approved = true;
+    //     $absence->save();
 
-        return response()->json(['status' => 'success', 'message' => 'Absence approved successfully']);
-    }
+    //     return response()->json(['status' => 'success', 'message' => 'Absence approved successfully']);
+    // }
 
     /**
      * Display a listing of the resource.

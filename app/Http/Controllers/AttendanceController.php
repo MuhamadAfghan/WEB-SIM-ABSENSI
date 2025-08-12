@@ -10,6 +10,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use App\Models\Setting;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -78,6 +79,7 @@ class AttendanceController extends Controller
             'latitude' => 'required|numeric',
             'type' => 'required|in:card,mobile',
             'longitude' => 'required|numeric',
+            'nip' => 'nullable|string|max:20',
             'keterangan' => 'nullable|string|max:255'
         ]);
 
@@ -90,14 +92,6 @@ class AttendanceController extends Controller
         }
 
         try {
-            $userId = auth()->id();
-            if (!$userId) {
-                return response()->json([
-                    'status' => "error",
-                    'message' => 'User ID tidak ditemukan'
-                ], 400);
-            }
-
             $type = $request->type;
             if (!in_array($type, ['card', 'mobile'])) {
                 return response()->json([
@@ -105,6 +99,35 @@ class AttendanceController extends Controller
                     'message' => 'Tipe absensi tidak valid'
                 ], 400);
             }
+
+            $userId = null;
+
+            if ($type === 'card') {
+                if (!$request->has('nip')) {
+                    return response()->json([
+                        'status' => "error",
+                        'message' => 'NIP harus diisi untuk absensi dengan kartu'
+                    ], 400);
+                }
+
+                $userId = User::where('nip', $request->nip)->value('id');
+                if (!$userId) {
+                    return response()->json([
+                        'status' => "error",
+                        'message' => 'User tidak ditemukan'
+                    ], 400);
+                }
+            } else {
+                if (!auth()->check()) {
+                    return response()->json([
+                        'status' => "error",
+                        'message' => 'Unauthenticated.'
+                    ], 401);
+                }
+
+                $userId = auth()->id();
+            }
+
             $today = Carbon::today()->format('Y-m-d');
             $currentTime = Carbon::now();
             $dayName = strtolower($currentTime->format('l')); // monday, tuesday, etc.
@@ -268,6 +291,8 @@ class AttendanceController extends Controller
         $validator = Validator::make($request->all(), [
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
+            'type' => 'required|in:card,mobile',
+            'nip' => 'nullable|string|max:20',
             'keterangan' => 'nullable|string|max:255'
         ]);
 
@@ -280,7 +305,43 @@ class AttendanceController extends Controller
         }
 
         try {
-            $userId = auth()->id();
+            $type = $request->type;
+            if (!in_array($type, ['card', 'mobile'])) {
+                return response()->json([
+                    'status' => "error",
+                    'message' => 'Tipe absensi tidak valid'
+                ], 400);
+            }
+
+            $userId = null;
+
+            if ($type === 'card') {
+                if (!$request->has('nip')) {
+                    return response()->json([
+                        'status' => "error",
+                        'message' => 'NIP harus diisi untuk absensi dengan kartu'
+                    ], 400);
+                }
+
+                $userId = User::where('nip', $request->nip)->value('id');
+                if (!$userId) {
+                    return response()->json([
+                        'status' => "error",
+                        'message' => 'User tidak ditemukan'
+                    ], 400);
+                }
+            } else {
+                // check login session
+                if (!auth()->check()) {
+                    return response()->json([
+                        'status' => "error",
+                        'message' => 'Unauthenticated.'
+                    ], 401);
+                }
+
+                $userId = auth()->id();
+            }
+
             $today = Carbon::today()->format('Y-m-d');
             $currentTime = Carbon::now();
 
