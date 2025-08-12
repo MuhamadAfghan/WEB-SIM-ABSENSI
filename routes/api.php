@@ -22,6 +22,7 @@ Route::middleware(['auth:sanctum', 'auth.user'])->group(function () {
     Route::get('/user/current-activity', [UserCrudController::class, 'getMyCurrentActivity']);
     Route::get('/user/statistik', [UserCrudController::class, 'getMyStatistik']);
 
+    Route::post('/absence', [AbsenceController::class, 'absence']); //Create absence record
     Route::post('/check-in', [AttendanceController::class, 'checkIn']);
     Route::post('/check-out', [AttendanceController::class, 'checkOut']);
 
@@ -47,13 +48,12 @@ Route::middleware(['auth:sanctum', 'auth.admin'])->group(function () {
     Route::get('/statistik-tahunan', [StatistikController::class, 'statistikTahunan']);
     Route::get('/statistik-bulanan', [StatistikController::class, 'statistikBulanan']); //statistik bulanan
 
+    Route::patch('/absence/{id}/approve', [AbsenceController::class, 'approve']);
+
     Route::prefix('/absences')->group(function () {
         Route::get('/', [AbsenceController::class, 'showAbsences']);
         Route::get('/today', [AttendanceController::class, 'showTodayAttendance']);
         Route::put('/{user:id}/approve', [AbsenceController::class, 'approveAbsence']);
         Route::get('/export', [AbsenceController::class, 'export']);
-
-        // absence / attendance by pagination
-        // Route::get('/attendances', [AttendanceController::class, 'showAttendanceByPagination']);
     });
 });
