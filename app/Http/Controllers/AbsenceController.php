@@ -3,56 +3,218 @@
 namespace App\Http\Controllers;
 
 use App\Models\Absence;
+use App\Models\User;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\AbsenceExport;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use App\Models\Attendance;
+use Exception;
 
 class AbsenceController extends Controller
 {
+    // public function approveAbsence(User $user)
+    // {
+    //     $absence = Absence::where('user_id', $user->id)->first();
+
+    //     if (!$absence) {
+    //         return response()->json(['status' => 'error', 'message' => 'Absence not found'], 404);
+    //     }
+
+    //     $absence->is_approved = true;
+    //     $absence->save();
+
+    //     return response()->json(['status' => 'success', 'message' => 'Absence approved successfully']);
+    // }
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function absence(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|exists:users,id',
+            'date-start' => 'required|date',
+            'date-end' => 'required|date|after_or_equal:date-start',
+            'type' => 'required|string|max:255',
+            'is_approved' => 'boolean',
+            'description' => 'nullable|string|max:1000',
+            'upload_attachment' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048'
+
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $validator->errors()
+            ], 400);
+        }
+
+        try {
+            $absence = Absence::create([
+                // 'user_id' => Auth()->id(),
+                'user_id' => $request->user_id,
+                'date-start' => $request->input('date-start'),
+                'date-end' => $request->input('date-end'),
+                'type' => $request->type,
+                'is_approved' => $request->is_approved ?? false,
+                'description' => $request->description,
+                'upload_attachment' => $request->file('upload_attachment') ? $request->file('upload_attachment')->store('attachments') : null
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $absence
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to create absence record: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function approve(Request $request, $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'is_approved' => 'required|boolean'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $validator->errors()
+            ], 400);
+        }
+
+        try {
+            $absence = Absence::find($id);
+
+            if (!$absence) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Absence record not found'
+                ], 404);
+            }
+
+            $absence->update([
+                'is_approved' => $request->is_approved
+            ]);
+
+            $status = $request->is_approved ? 'approved' : 'rejected';
+
+            return response()->json([
+                'status' => 'success',
+                'message' => "Absence has been {$status}",
+                'data' => $absence
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to update absence: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    protected $rules = [
+        'date_start' => 'required|date',
+        'date_end' => 'required|date|after_or_equal:date_start',
+        'type' => 'nullable|string|in:izin,sakit,alpa',
+    ];
+
+    // Add error messages
+    protected $messages = [
+        'date_start.required' => 'Tanggal mulai wajib diisi',
+        'date_end.required' => 'Tanggal selesai wajib diisi',
+        'date_end.after_or_equal' => 'Tanggal selesai harus setelah atau sama dengan tanggal mulai'
+    ];
+
+    public function showAbsences(Request $request)
     {
-        //
+        try {
+            // Get Absence and Attendance data, merge before filtering
+            $absenceQuery = Absence::query()->with('user');
+            $attendanceQuery = Attendance::query()->with('user');
+
+            // Merge collections
+            $absences = $absenceQuery->get();
+            $attendances = $attendanceQuery->get();
+
+            // Combine and convert to collection
+            $merged = $absences->concat($attendances);
+
+            // Apply filters
+            if ($request->has('date_start')) {
+                $merged = $merged->filter(function ($item) use ($request) {
+                    return isset($item->date_start)
+                        ? $item->date_start >= $request->date_start
+                        : (isset($item->date) ? $item->date >= $request->date_start : true);
+                });
+            }
+
+            if ($request->has('date_end')) {
+                $merged = $merged->filter(function ($item) use ($request) {
+                    return isset($item->date_end)
+                        ? $item->date_end <= $request->date_end
+                        : (isset($item->date) ? $item->date <= $request->date_end : true);
+                });
+            }
+
+            if ($request->has('type')) {
+                $merged = $merged->filter(function ($item) use ($request) {
+                    return isset($item->type) ? $item->type == $request->type : true;
+                });
+            }
+
+            // Paginate manually
+            $page = $request->get('page', 1);
+            $perPage = 10;
+            $items = $merged->slice(($page - 1) * $perPage, $perPage)->values();
+            $total = $merged->count();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Absences and attendances filtered successfully',
+                'data' => [
+                    'filters_applied' => [
+                        'date_start' => $request->date_start,
+                        'date_end' => $request->date_end,
+                        'type' => $request->type ?? 'all'
+                    ],
+                    'items' => $items,
+                    'total_records' => $total,
+                    'current_page' => $page,
+                    'per_page' => $perPage,
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to filter absences and attendances',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Absence $absence)
+    public function export(Request $request)
     {
-        //
-    }
+        try {
+            // Validate request
+            $validated = $request->validate([
+                'date_start' => 'required|date',
+                'date_end' => 'required|date|after_or_equal:date_start',
+            ], $this->messages);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Absence $absence)
-    {
-        //
-    }
+            $fileName = 'absences-report-' . date('Y-m-d') . '.xlsx';
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Absence $absence)
-    {
-        //
+            // Simplified return without headers
+            return Excel::download(new AbsenceExport($request->date_start, $request->date_end), $fileName);
+        } catch (\Exception $e) {
+            \Log::error('Export error: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Failed to export data: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

@@ -42,8 +42,8 @@ Route::get('/employees', function () {
     return view('data-karyawan');
 })->name('employees');
 
-Route::get('/employee-details', function () {
-    return view('detail-data-karyawan');
+Route::get('/employees/{id}', function ($id) {
+    return view('detail-data-karyawan', ['id' => $id]);
 })->name('employee.details');
 
 // Attendance Routes
