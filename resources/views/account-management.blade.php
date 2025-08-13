@@ -12,12 +12,12 @@
             <!-- Search -->
             <div class="relative w-full md:w-96 lg:w-[400px]">
                 <i class="fas fa-search pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                <input type="text" placeholder="Cari" class="w-full rounded-xl border-0 bg-white py-3 pl-11 pr-4 text-gray-700 shadow-sm ring-1 ring-transparent focus:ring-2 focus:ring-blue-400" />
+                <input id="searchInput" type="text" placeholder="Cari" class="w-full rounded-xl border-0 bg-white py-3 pl-11 pr-4 text-gray-700 shadow-sm ring-1 ring-transparent focus:ring-2 focus:ring-blue-400" />
             </div>
 
             <!-- Role Filter -->
             <div class="relative min-w-[140px]">
-                <select class="w-full appearance-none rounded-xl border-0 bg-white py-3 pl-4 pr-10 text-gray-700 shadow-sm ring-1 ring-transparent focus:ring-2 focus:ring-blue-400">
+                <select id="roleFilter" class="w-full appearance-none rounded-xl border-0 bg-white py-3 pl-4 pr-10 text-gray-700 shadow-sm ring-1 ring-transparent focus:ring-2 focus:ring-blue-400">
                     <option selected>Guru</option>
                     <option>Staff</option>
                     <option>Admin</option>
@@ -27,7 +27,7 @@
 
             <!-- Division Filter -->
             <div class="relative min-w-[140px]">
-                <select class="w-full appearance-none rounded-xl border-0 bg-white py-3 pl-4 pr-10 text-gray-700 shadow-sm ring-1 ring-transparent focus:ring-2 focus:ring-blue-400">
+                <select id="divisionFilter" class="w-full appearance-none rounded-xl border-0 bg-white py-3 pl-4 pr-10 text-gray-700 shadow-sm ring-1 ring-transparent focus:ring-2 focus:ring-blue-400">
                     <option selected>Divisi</option>
                     <option>Akademik</option>
                     <option>Keuangan</option>
@@ -38,34 +38,164 @@
         </div>
     </div>
 
-    <!-- Cards Grid -->
-    <div class="mt-15 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
-        @for ($i = 0; $i < 9; $i++)
-            <div class="rounded-2xl bg-white p-5 shadow-sm">
-                <div class="flex items-center gap-3">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-500">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <p class="text-base font-semibold text-gray-800">Siti Nurhaliza</p>
-                </div>
+    <!-- Cards Grid (dynamic) -->
+    <div id="usersGrid" class="mt-15 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3"></div>
+    <!-- Pagination -->
+    <div id="paginationControls" class="mt-6 flex flex-wrap items-center justify-center gap-2"></div>
 
-                <div class="mt-4 space-y-1 text-sm">
-                    <div class="flex items-center justify-between text-black-600">
-                        <span>Divisi :</span>
-                        <span class="font-medium text-black-800">Guru</span>
-                    </div>
-                    <div class="flex items-center justify-between text-black-600">
-                        <span>NIP    :</span>
-                        <span class="font-medium text-black-800">123456789101112131415161718</span>
-                    </div>
-                </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const usersGrid = document.getElementById('usersGrid');
+            const paginationControls = document.getElementById('paginationControls');
+            const searchInput = document.getElementById('searchInput');
 
-                <button type="button" class="mt-4 w-full rounded-xl bg-[#60B5FF] px-4 py-2.5 font-medium text-white transition-colors hover:bg-blue-400">
-                    <img src="{{ asset('img-icon-acount-management/edit_white.png') }}" alt="Edit" class=" inline h-5 w-5 mr-1">
-                    Profil
-                </button>
-            </div>
-        @endfor
-    </div>
+            const API_ENDPOINT = `${window.location.origin}/api/user`;
+
+            const viewState = {
+                page: 1,
+                perPage: 9,
+                sortField: 'id',
+                sortOrder: 'asc',
+                searchQuery: ''
+            };
+
+            function buildRequestUrl() {
+                const params = new URLSearchParams();
+                params.set('page', String(viewState.page));
+                params.set('per_page', String(viewState.perPage));
+                params.set('sort_field', viewState.sortField);
+                params.set('sort_order', viewState.sortOrder);
+                const q = viewState.searchQuery?.trim();
+                if (q) params.set('search', q);
+                return `${API_ENDPOINT}?${params.toString()}`;
+            }
+
+            function renderLoading() {
+                usersGrid.innerHTML = '<div class="col-span-full text-center text-gray-500">Memuat data...</div>';
+            }
+
+            function renderError() {
+                usersGrid.innerHTML = '<div class="col-span-full text-center text-red-500">Gagal memuat data</div>';
+                paginationControls.innerHTML = '';
+            }
+
+            function escapeHtml(text) {
+                const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+                return String(text ?? '').replace(/[&<>"']/g, m => map[m]);
+            }
+
+            function renderUsers(users) {
+                if (!users || users.length === 0) {
+                    usersGrid.innerHTML = '<div class="col-span-full text-center text-gray-500">Tidak ada data</div>';
+                    return;
+                }
+
+                usersGrid.innerHTML = users.map(user => {
+                    const name = escapeHtml(user.name);
+                    const division = escapeHtml(user.divisi ?? '-');
+                    const nip = escapeHtml(user.nip ?? '-');
+                    return `
+                        <div class="rounded-2xl bg-white p-5 shadow-sm">
+                            <div class="flex items-center gap-3">
+                                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-500">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <p class="text-base font-semibold text-gray-800">${name}</p>
+                            </div>
+                            <div class="mt-4 space-y-1 text-sm">
+                                <div class="flex items-center justify-between text-black-600">
+                                    <span>Divisi :</span>
+                                    <span class="font-medium text-black-800">${division}</span>
+                                </div>
+                                <div class="flex items-center justify-between text-black-600">
+                                    <span>NIP    :</span>
+                                    <span class="font-medium text-black-800">${nip}</span>
+                                </div>
+                            </div>
+                            <button type="button" class="mt-4 w-full rounded-xl bg-[#60B5FF] px-4 py-2.5 font-medium text-white transition-colors hover:bg-blue-400">
+                                <img src="{{ asset('img-icon-acount-management/edit_white.png') }}" alt="Edit" class=" inline h-5 w-5 mr-1">
+                                Profil
+                            </button>
+                        </div>`;
+                }).join('');
+            }
+
+            function renderPagination(meta) {
+                if (!meta || meta.last_page <= 1) {
+                    paginationControls.innerHTML = '';
+                    return;
+                }
+
+                const current = Number(meta.current_page) || 1;
+                const last = Number(meta.last_page) || 1;
+
+                const buttonHtml = (label, page, { disabled = false, active = false } = {}) => {
+                    const base = 'px-3 py-2 rounded-lg border text-sm';
+                    const classes = [
+                        base,
+                        active ? 'bg-[#60B5FF] text-white border-[#60B5FF]' : 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50',
+                        disabled ? 'opacity-50 cursor-not-allowed' : ''
+                    ].join(' ');
+                    return `<button class="${classes}" ${disabled ? 'disabled' : ''} data-page="${page}">${label}</button>`;
+                };
+
+                const windowSize = 5;
+                const half = Math.floor(windowSize / 2);
+                let start = Math.max(1, current - half);
+                let end = Math.min(last, start + windowSize - 1);
+                start = Math.max(1, end - windowSize + 1);
+
+                let html = '';
+                html += buttonHtml('Prev', Math.max(1, current - 1), { disabled: current === 1 });
+                for (let p = start; p <= end; p++) {
+                    html += buttonHtml(String(p), p, { active: p === current });
+                }
+                html += buttonHtml('Next', Math.min(last, current + 1), { disabled: current === last });
+
+                paginationControls.innerHTML = html;
+                paginationControls.querySelectorAll('button[data-page]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const target = Number(btn.getAttribute('data-page'));
+                        if (target && target !== viewState.page) {
+                            updateState({ page: target });
+                            usersGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    });
+                });
+            }
+
+            async function fetchAndRender() {
+                renderLoading();
+                try {
+                    const response = await fetch(buildRequestUrl(), { headers: { 'Accept': 'application/json' } });
+                    const json = await response.json();
+                    renderUsers(Array.isArray(json?.data) ? json.data : []);
+                    renderPagination(json?.meta);
+                } catch (e) {
+                    renderError();
+                }
+            }
+
+            function updateState(partial) {
+                Object.assign(viewState, partial);
+                fetchAndRender();
+            }
+
+            function debounce(fn, delay) {
+                let timerId;
+                return (...args) => {
+                    clearTimeout(timerId);
+                    timerId = setTimeout(() => fn(...args), delay);
+                };
+            }
+
+            const handleSearch = debounce((event) => {
+                updateState({ searchQuery: event.target.value, page: 1 });
+            }, 300);
+            searchInput?.addEventListener('input', handleSearch);
+
+            updateState({ page: 1, perPage: 9 });
+        });
+    </script>
 </div>
 @endsection
