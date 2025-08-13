@@ -569,4 +569,385 @@ class AttendanceController extends Controller
 
         return $earthRadius * $c; // jarak dalam meter
     }
+
+    /**
+     * Card-based Check In (menggunakan NIP)
+     */
+    public function cardCheckIn(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'nip' => 'required|string|max:20'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => "error",
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 400);
+        }
+
+        try {
+            // Cari user berdasarkan NIP
+            $user = User::where('nip', $request->nip)->first();
+            if (!$user) {
+                return response()->json([
+                    'status' => "error",
+                    'message' => 'User dengan NIP tersebut tidak ditemukan'
+                ], 404);
+            }
+
+            $today = Carbon::today()->format('Y-m-d');
+            $currentTime = Carbon::now();
+
+            // Cek apakah sudah absen masuk hari ini
+            $existingAttendance = Attendance::where('user_id', $user->id)
+                ->whereDate('date', $today)
+                ->whereNotNull('check_in_time')
+                ->first();
+
+            if ($existingAttendance) {
+                return response()->json([
+                    'status' => "error",
+                    'message' => 'Anda sudah melakukan absen masuk hari ini'
+                ], 400);
+            }
+
+            // Ambil setting lokasi kantor (default location untuk card)
+            $setting = Setting::first();
+            if (!$setting) {
+                return response()->json([
+                    'status' => "error",
+                    'message' => 'Setting lokasi belum dikonfigurasi'
+                ], 500);
+            }
+
+            // Buat record attendance baru
+            $attendance = Attendance::create([
+                'user_id' => $user->id,
+                'type' => 'card',
+                'longitude' => $setting->longitude ?? 0,
+                'latitude' => $setting->latitude ?? 0,
+                'date' => $today,
+                'check_in_time' => $currentTime->format('H:i:s'),
+                'keterangan' => 'Absen masuk menggunakan kartu',
+                'lokasi' => $setting->location_name ?? 'Kantor'
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Absen masuk berhasil',
+                'data' => [
+                    'attendance_id' => $attendance->id,
+                    'user_name' => $user->name,
+                    'nip' => $user->nip,
+                    'check_in_time' => $attendance->check_in_time,
+                    'type' => 'card',
+                    'location' => $attendance->lokasi
+                ]
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Server error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Card-based Check Out (menggunakan NIP)
+     */
+    public function cardCheckOut(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'nip' => 'required|string|max:20'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => "error",
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 400);
+        }
+
+        try {
+            // Cari user berdasarkan NIP
+            $user = User::where('nip', $request->nip)->first();
+            if (!$user) {
+                return response()->json([
+                    'status' => "error",
+                    'message' => 'User dengan NIP tersebut tidak ditemukan'
+                ], 404);
+            }
+
+            $today = Carbon::today()->format('Y-m-d');
+            $currentTime = Carbon::now();
+
+            // Cari attendance hari ini yang sudah check-in tapi belum check-out
+            $attendance = Attendance::where('user_id', $user->id)
+                ->whereDate('date', $today)
+                ->whereNotNull('check_in_time')
+                ->whereNull('check_out_time')
+                ->first();
+
+            if (!$attendance) {
+                return response()->json([
+                    'status' => "error",
+                    'message' => 'Anda belum melakukan absen masuk hari ini atau sudah absen pulang'
+                ], 400);
+            }
+
+            // Update check-out time
+            $attendance->update([
+                'check_out_time' => $currentTime->format('H:i:s')
+            ]);
+
+            // Hitung total jam kerja
+            $checkInTime = Carbon::createFromFormat('H:i:s', $attendance->check_in_time);
+            $checkOutTime = Carbon::createFromFormat('H:i:s', $attendance->check_out_time);
+            $workingMinutes = $checkOutTime->diffInMinutes($checkInTime);
+            $workingHours = floor($workingMinutes / 60);
+            $remainingMinutes = $workingMinutes % 60;
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Absen pulang berhasil',
+                'data' => [
+                    'attendance_id' => $attendance->id,
+                    'user_name' => $user->name,
+                    'nip' => $user->nip,
+                    'check_in_time' => $attendance->check_in_time,
+                    'check_out_time' => $attendance->check_out_time,
+                    'working_hours' => "{$workingHours} jam {$remainingMinutes} menit",
+                    'total_minutes' => $workingMinutes,
+                    'type' => 'card',
+                    'location' => $attendance->lokasi
+                ]
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Server error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Mobile-based Check In (menggunakan GPS)
+     */
+    public function mobileCheckIn(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'keterangan' => 'nullable|string|max:255'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => "error",
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 400);
+        }
+
+        try {
+            // Untuk mobile, user harus login dan menggunakan token
+            $user = auth()->user();
+            if (!$user) {
+                return response()->json([
+                    'status' => "error",
+                    'message' => 'Unauthenticated. Mobile check-in requires user authentication'
+                ], 401);
+            }
+
+            $today = Carbon::today()->format('Y-m-d');
+            $currentTime = Carbon::now();
+
+            // Cek apakah sudah absen masuk hari ini
+            $existingAttendance = Attendance::where('user_id', $user->id)
+                ->whereDate('date', $today)
+                ->whereNotNull('check_in_time')
+                ->first();
+
+            if ($existingAttendance) {
+                return response()->json([
+                    'status' => "error",
+                    'message' => 'Anda sudah melakukan absen masuk hari ini'
+                ], 400);
+            }
+
+            // Ambil setting lokasi untuk validasi radius
+            $setting = Setting::first();
+            if (!$setting) {
+                return response()->json([
+                    'status' => "error",
+                    'message' => 'Setting lokasi belum dikonfigurasi'
+                ], 500);
+            }
+
+            // Validasi radius lokasi
+            $distance = $this->calculateDistance(
+                $setting->latitude,
+                $setting->longitude,
+                $request->latitude,
+                $request->longitude
+            );
+
+            if ($distance > $setting->radius) {
+                return response()->json([
+                    'status' => "error",
+                    'message' => 'Anda berada di luar radius kantor',
+                    'data' => [
+                        'distance' => round($distance),
+                        'max_radius' => $setting->radius
+                    ]
+                ], 400);
+            }
+
+            // Buat record attendance baru
+            $attendance = Attendance::create([
+                'user_id' => $user->id,
+                'type' => 'mobile',
+                'longitude' => $request->longitude,
+                'latitude' => $request->latitude,
+                'date' => $today,
+                'check_in_time' => $currentTime->format('H:i:s'),
+                'keterangan' => $request->keterangan ?? 'Absen masuk via mobile',
+                'lokasi' => $setting->location_name ?? 'Kantor'
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Absen masuk berhasil',
+                'data' => [
+                    'attendance_id' => $attendance->id,
+                    'user_name' => $user->name,
+                    'check_in_time' => $attendance->check_in_time,
+                    'type' => 'mobile',
+                    'location' => $attendance->lokasi,
+                    'distance_from_office' => round($distance) . ' meter'
+                ]
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Server error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Mobile-based Check Out (menggunakan GPS)
+     */
+    public function mobileCheckOut(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'keterangan' => 'nullable|string|max:255'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => "error",
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 400);
+        }
+
+        try {
+            // Untuk mobile, user harus login dan menggunakan token
+            $user = auth()->user();
+            if (!$user) {
+                return response()->json([
+                    'status' => "error",
+                    'message' => 'Unauthenticated. Mobile check-out requires user authentication'
+                ], 401);
+            }
+
+            $today = Carbon::today()->format('Y-m-d');
+            $currentTime = Carbon::now();
+
+            // Cari attendance hari ini yang sudah check-in tapi belum check-out
+            $attendance = Attendance::where('user_id', $user->id)
+                ->whereDate('date', $today)
+                ->whereNotNull('check_in_time')
+                ->whereNull('check_out_time')
+                ->first();
+
+            if (!$attendance) {
+                return response()->json([
+                    'status' => "error",
+                    'message' => 'Anda belum melakukan absen masuk hari ini atau sudah absen pulang'
+                ], 400);
+            }
+
+            // Ambil setting lokasi untuk validasi radius
+            $setting = Setting::first();
+            if (!$setting) {
+                return response()->json([
+                    'status' => "error",
+                    'message' => 'Setting lokasi belum dikonfigurasi'
+                ], 500);
+            }
+
+            // Validasi radius lokasi
+            $distance = $this->calculateDistance(
+                $setting->latitude,
+                $setting->longitude,
+                $request->latitude,
+                $request->longitude
+            );
+
+            if ($distance > $setting->radius) {
+                return response()->json([
+                    'status' => "error",
+                    'message' => 'Anda berada di luar radius kantor',
+                    'data' => [
+                        'distance' => round($distance),
+                        'max_radius' => $setting->radius
+                    ]
+                ], 400);
+            }
+
+            // Update check-out time
+            $attendance->update([
+                'check_out_time' => $currentTime->format('H:i:s')
+            ]);
+
+            // Hitung total jam kerja
+            $checkInTime = Carbon::createFromFormat('H:i:s', $attendance->check_in_time);
+            $checkOutTime = Carbon::createFromFormat('H:i:s', $attendance->check_out_time);
+            $workingMinutes = $checkOutTime->diffInMinutes($checkInTime);
+            $workingHours = floor($workingMinutes / 60);
+            $remainingMinutes = $workingMinutes % 60;
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Absen pulang berhasil',
+                'data' => [
+                    'attendance_id' => $attendance->id,
+                    'user_name' => $user->name,
+                    'check_in_time' => $attendance->check_in_time,
+                    'check_out_time' => $attendance->check_out_time,
+                    'working_hours' => "{$workingHours} jam {$remainingMinutes} menit",
+                    'total_minutes' => $workingMinutes,
+                    'type' => 'mobile',
+                    'location' => $attendance->lokasi,
+                    'distance_from_office' => round($distance) . ' meter'
+                ]
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Server error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

@@ -15,8 +15,10 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [UserAuthController::class, 'login']);         // user login (email+password)
 Route::post('/login/admin', [AdminAuthController::class, 'loginAdmin']); // admin login (username+password)
 Route::get('/settings', [SettingController::class, 'index']);
-Route::post('/check-in', [AttendanceController::class, 'checkIn']);
-Route::post('/check-out', [AttendanceController::class, 'checkOut']);
+
+// Card-based attendance (menggunakan NIP - public access)
+Route::post('/card/check-in', [AttendanceController::class, 'cardCheckIn']);
+Route::post('/card/check-out', [AttendanceController::class, 'cardCheckOut']);
 
 // User-protected endpoints
 Route::middleware(['auth:sanctum', 'auth.user'])->group(function () {
@@ -28,6 +30,10 @@ Route::middleware(['auth:sanctum', 'auth.user'])->group(function () {
 
     Route::get('/today-status', [AttendanceController::class, 'todayStatus']);
     Route::get('/history', [AttendanceController::class, 'history']);
+    
+    // Mobile attendance endpoints (require user authentication)
+    Route::post('/mobile/check-in', [AttendanceController::class, 'mobileCheckIn']);
+    Route::post('/mobile/check-out', [AttendanceController::class, 'mobileCheckOut']);
 });
 
 // Admin-protected endpoints
