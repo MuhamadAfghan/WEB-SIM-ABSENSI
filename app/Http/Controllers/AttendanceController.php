@@ -118,14 +118,13 @@ class AttendanceController extends Controller
                     ], 400);
                 }
             } else {
-                if (!auth()->check()) {
+                $userId = auth()->id();
+                if (!$userId) {
                     return response()->json([
                         'status' => "error",
                         'message' => 'Unauthenticated.'
                     ], 401);
                 }
-
-                $userId = auth()->id();
             }
 
             $today = Carbon::today()->format('Y-m-d');
@@ -331,15 +330,13 @@ class AttendanceController extends Controller
                     ], 400);
                 }
             } else {
-                // check login session
-                if (!auth()->check()) {
+                $userId = auth()->id();
+                if (!$userId) {
                     return response()->json([
                         'status' => "error",
                         'message' => 'Unauthenticated.'
                     ], 401);
                 }
-
-                $userId = auth()->id();
             }
 
             $today = Carbon::today()->format('Y-m-d');
