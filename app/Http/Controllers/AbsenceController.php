@@ -33,14 +33,12 @@ class AbsenceController extends Controller
     public function absence(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'user_id' => 'required|exists:users,id',
             'date-start' => 'required|date',
             'date-end' => 'required|date|after_or_equal:date-start',
             'type' => 'required|string|max:255',
             'is_approved' => 'boolean',
             'description' => 'nullable|string|max:1000',
             'upload_attachment' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048'
-
         ]);
 
         if ($validator->fails()) {
@@ -52,8 +50,7 @@ class AbsenceController extends Controller
 
         try {
             $absence = Absence::create([
-                // 'user_id' => Auth()->id(),
-                'user_id' => $request->user_id,
+                'user_id' => Auth()->id(),
                 'date-start' => $request->input('date-start'),
                 'date-end' => $request->input('date-end'),
                 'type' => $request->type,

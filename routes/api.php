@@ -30,7 +30,7 @@ Route::middleware(['auth:sanctum', 'auth.user'])->group(function () {
 
     Route::get('/today-status', [AttendanceController::class, 'todayStatus']);
     Route::get('/history', [AttendanceController::class, 'history']);
-    
+
     // Mobile attendance endpoints (require user authentication)
     Route::post('/mobile/check-in', [AttendanceController::class, 'mobileCheckIn']);
     Route::post('/mobile/check-out', [AttendanceController::class, 'mobileCheckOut']);

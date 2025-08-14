@@ -646,7 +646,6 @@ class AttendanceController extends Controller
                     'location' => $attendance->lokasi
                 ]
             ]);
-
         } catch (Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -726,7 +725,6 @@ class AttendanceController extends Controller
                     'location' => $attendance->lokasi
                 ]
             ]);
-
         } catch (Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -832,7 +830,6 @@ class AttendanceController extends Controller
                     'distance_from_office' => round($distance) . ' meter'
                 ]
             ]);
-
         } catch (Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -942,7 +939,6 @@ class AttendanceController extends Controller
                     'distance_from_office' => round($distance) . ' meter'
                 ]
             ]);
-
         } catch (Exception $e) {
             return response()->json([
                 'status' => 'error',
