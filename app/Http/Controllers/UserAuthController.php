@@ -53,9 +53,11 @@ class UserAuthController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Login sukses',
-                'token' => $token,
-                'serial_number' => $serialNumber,
-                'user' => $user,
+                'data' => [
+                    'token' => $token,
+                    'serial_number' => $serialNumber,
+                    'user' => $user,
+                ]
             ]);
         } catch (ValidationException $e) {
             return response()->json([

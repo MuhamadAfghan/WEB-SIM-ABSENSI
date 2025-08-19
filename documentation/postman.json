@@ -232,6 +232,515 @@
             "description": "Endpoints for the authenticated user (requires Bearer {{token}})"
         },
         {
+            "name": "Card-based Attendance",
+            "item": [
+                {
+                    "name": "Card Check In",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nip\": \"123456789\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/card/check-in",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "card", "check-in"]
+                        },
+                        "description": "Check in using card/NIP. System will automatically fill location data based on office settings."
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"latitude\": -6.2088,\n    \"longitude\": 106.8456,\n    \"keterangan\": \"Tepat waktu\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/card/check-in",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "card", "check-in"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Absen masuk berhasil\",\n    \"data\": {\n        \"attendance_id\": 1,\n        \"user_name\": \"John Doe\",\n        \"nip\": \"123456789\",\n        \"check_in_time\": \"08:00:00\",\n        \"type\": \"card\",\n        \"location\": \"Kantor Pusat\"\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Card Check Out",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nip\": \"123456789\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/card/check-out",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "card", "check-out"]
+                        },
+                        "description": "Check out using card/NIP. Calculates total working hours automatically."
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"latitude\": -6.2088,\n    \"longitude\": 106.8456,\n    \"keterangan\": \"Pulang tepat waktu\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/card/check-out",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "card", "check-out"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Absen pulang berhasil\",\n    \"data\": {\n        \"attendance_id\": 1,\n        \"user_name\": \"John Doe\",\n        \"nip\": \"123456789\",\n        \"check_in_time\": \"08:00:00\",\n        \"check_out_time\": \"17:00:00\",\n        \"working_hours\": \"9 jam 0 menit\",\n        \"total_minutes\": 540,\n        \"type\": \"card\",\n        \"location\": \"Kantor Pusat\"\n    }\n}"
+                        }
+                    ]
+                }
+            ],
+            "description": "Card-based attendance endpoints using NIP (no authentication required)"
+        },
+        {
+            "name": "Mobile-based Attendance",
+            "item": [
+                {
+                    "name": "Mobile Check In",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"latitude\": -6.2088,\n    \"longitude\": 106.8456,\n    \"keterangan\": \"Tepat waktu\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/mobile/check-in",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "mobile", "check-in"]
+                        },
+                        "description": "Mobile check in using GPS coordinates. Validates location radius and requires user authentication."
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"latitude\": -6.2088,\n    \"longitude\": 106.8456,\n    \"keterangan\": \"Tepat waktu\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/mobile/check-in",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "mobile", "check-in"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Absen masuk berhasil\",\n    \"data\": {\n        \"attendance_id\": 1,\n        \"user_name\": \"John Doe\",\n        \"check_in_time\": \"08:00:00\",\n        \"type\": \"mobile\",\n        \"location\": \"Kantor Pusat\",\n        \"distance_from_office\": \"15 meter\"\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Mobile Check Out",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"latitude\": -6.2088,\n    \"longitude\": 106.8456,\n    \"keterangan\": \"Pulang tepat waktu\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/mobile/check-out",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "mobile", "check-out"]
+                        },
+                        "description": "Mobile check out using GPS coordinates. Validates location radius and calculates working hours."
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"latitude\": -6.2088,\n    \"longitude\": 106.8456,\n    \"keterangan\": \"Pulang tepat waktu\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/mobile/check-out",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "mobile", "check-out"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Absen pulang berhasil\",\n    \"data\": {\n        \"attendance_id\": 1,\n        \"user_name\": \"John Doe\",\n        \"check_in_time\": \"08:00:00\",\n        \"check_out_time\": \"17:00:00\",\n        \"working_hours\": \"9 jam 0 menit\",\n        \"total_minutes\": 540,\n        \"type\": \"mobile\",\n        \"location\": \"Kantor Pusat\",\n        \"distance_from_office\": \"20 meter\"\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Get Today Status",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/today-status",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "today-status"]
+                        },
+                        "description": "Get today's attendance status for the authenticated user"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/today-status",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "today-status"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"data\": {\n        \"date\": \"2025-08-11\",\n        \"has_checked_in\": true,\n        \"has_checked_out\": false,\n        \"check_in_time\": \"08:00:00\",\n        \"check_out_time\": null,\n        \"is_late\": false\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Get Attendance History",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/history?limit=10&month=8&year=2025",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "history"],
+                            "query": [
+                                {
+                                    "key": "limit",
+                                    "value": "10",
+                                    "description": "Number of records to return (optional)"
+                                },
+                                {
+                                    "key": "month",
+                                    "value": "8",
+                                    "description": "Month filter (optional, 1-12)"
+                                },
+                                {
+                                    "key": "year",
+                                    "value": "2025",
+                                    "description": "Year filter (optional, YYYY format)"
+                                }
+                            ]
+                        },
+                        "description": "Get attendance history for the authenticated user with optional filters"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/history?limit=10&month=8&year=2025",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "history"],
+                                    "query": [
+                                        {
+                                            "key": "limit",
+                                            "value": "10"
+                                        },
+                                        {
+                                            "key": "month",
+                                            "value": "8"
+                                        },
+                                        {
+                                            "key": "year",
+                                            "value": "2025"
+                                        }
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Data riwayat absensi\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"date\": \"2025-08-11\",\n            \"day_name\": \"Monday\",\n            \"check_in_time\": \"08:00:00\",\n            \"check_out_time\": \"17:00:00\",\n            \"status\": \"on_time\",\n            \"status_text\": \"Tepat Waktu\",\n            \"location\": \"Kantor Pusat\",\n            \"keterangan\": null,\n            \"working_hours\": {\n                \"hours\": 9,\n                \"minutes\": 0\n            }\n        }\n    ]\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Create Absence Record",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "date_start",
+                                    "value": "2025-08-12",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "date_end",
+                                    "value": "2025-08-12",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "type",
+                                    "value": "sakit",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "description",
+                                    "value": "Demam tinggi",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "upload_attachment",
+                                    "type": "file",
+                                    "src": [],
+                                    "description": "Optional file attachment (e.g. medical certificate)"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/absence",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "absence"]
+                        },
+                        "description": "Create a new absence record for the authenticated user. Use form-data for file upload."
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "formdata",
+                                    "formdata": [
+                                        {
+                                            "key": "date_start",
+                                            "value": "2025-08-12",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "date_end",
+                                            "value": "2025-08-12",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "type",
+                                            "value": "sakit",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "description",
+                                            "value": "Demam tinggi",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "upload_attachment",
+                                            "type": "file",
+                                            "src": []
+                                        }
+                                    ]
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/absence",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "absence"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Absensi berhasil dibuat\",\n    \"data\": {\n        \"id\": 1,\n        \"user_id\": 1,\n        \"date_start\": \"2025-08-12\",\n        \"date_end\": \"2025-08-12\",\n        \"type\": \"sakit\",\n        \"description\": \"Demam tinggi\",\n        \"upload_attachment\": null,\n        \"is_approved\": false\n    }\n}"
+                        }
+                    ]
+                }
+            ],
+            "description": "Mobile-based attendance endpoints using GPS (requires Bearer {{token}})"
+        },
+        {
             "name": "User Management",
             "item": [
                 {
@@ -680,9 +1189,9 @@
             "name": "Absences",
             "item": [
                 {
-                    "name": "Approve Absence for a User",
+                    "name": "Get All Absences",
                     "request": {
-                        "method": "PUT",
+                        "method": "GET",
                         "header": [
                             {
                                 "key": "Accept",
@@ -694,22 +1203,119 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/api/absences/{{user_id}}/approve",
+                            "raw": "{{base_url}}/api/absences",
                             "host": ["{{base_url}}"],
-                            "path": [
-                                "api",
-                                "absences",
-                                "{{user_id}}",
-                                "approve"
-                            ]
+                            "path": ["api", "absences"]
                         },
-                        "description": "Approve the most recent absence record for the specified user (Admin only)"
+                        "description": "Get all absence records with pagination (Admin only)"
                     },
                     "response": [
                         {
                             "name": "Success Response",
                             "originalRequest": {
-                                "method": "PUT",
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/absences",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "absences"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Data absensi berhasil diambil\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"user_id\": 1,\n            \"user_name\": \"John Doe\",\n            \"date_start\": \"2025-08-11\",\n            \"date_end\": \"2025-08-11\",\n            \"type\": \"sakit\",\n            \"is_approved\": false,\n            \"description\": \"Demam tinggi\",\n            \"upload_attachment\": null\n        }\n    ]\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Get Today's Attendance",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/absences/today",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "absences", "today"]
+                        },
+                        "description": "Get today's attendance records for all users (Admin only)"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/absences/today",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "absences", "today"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Data absensi hari ini berhasil diambil\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"user_id\": 1,\n            \"user_name\": \"John Doe\",\n            \"date\": \"2025-08-11\",\n            \"check_in_time\": \"08:00:00\",\n            \"check_out_time\": null,\n            \"type\": \"mobile\",\n            \"location\": \"Kantor Pusat\",\n            \"status\": \"present\"\n        }\n    ]\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Approve Absence for a User",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/absences/{{id}}/approve",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "absences", "{{id}}", "approve"]
+                        },
+                        "description": "Approve the absence record by ID (Admin only)"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "PATCH",
                                 "header": [
                                     {
                                         "key": "Accept",
@@ -1200,6 +1806,118 @@
                 }
             ],
             "description": "Work schedule and location settings management"
+        },
+        {
+            "name": "Attendance",
+            "description": "Attendance endpoints: Check In, Check Out, and Attendance History",
+            "item": [
+                {
+                    "name": "Absen Masuk (Check In)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            { "key": "Accept", "value": "application/json" },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"user_id\": {{user_id}},\n    \"latitude\": -6.2,\n    \"longitude\": 106.8,\n    \"type\": \"mobile\",\n    \"keterangan\": \"Tepat waktu\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/check-in",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "check-in"]
+                        },
+                        "description": "Melakukan absen masuk untuk user. Validasi lokasi, jadwal kerja, dan status keterlambatan."
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Absen masuk berhasil\",\n    \"data\": {\n        \"attendance_id\": 1,\n        \"check_in_time\": \"2025-08-09T08:00:00.000000Z\",\n        \"status\": \"mobile\",\n        \"location\": \"Kantor Pusat\",\n        \"is_late\": false,\n        \"distance\": 10.5\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Absen Pulang (Check Out)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            { "key": "Accept", "value": "application/json" },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"user_id\": {{user_id}},\n    \"latitude\": -6.2,\n    \"longitude\": 106.8,\n    \"keterangan\": \"Pulang tepat waktu\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/check-out",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "check-out"]
+                        },
+                        "description": "Melakukan absen pulang untuk user. Menghitung total jam kerja."
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Absen pulang berhasil\",\n    \"data\": {\n        \"attendance_id\": 1,\n        \"check_in_time\": \"2025-08-09T08:00:00.000000Z\",\n        \"check_out_time\": \"2025-08-09T17:00:00.000000Z\",\n        \"working_hours\": \"9 jam 0 menit\",\n        \"total_minutes\": 540,\n        \"location\": \"Kantor Pusat\",\n        \"distance\": 10.5\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Riwayat Absensi (Attendance History)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/history?user_id={{user_id}}&limit=10&month=8&year=2025",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "history"],
+                            "query": [
+                                { "key": "user_id", "value": "{{user_id}}" },
+                                { "key": "limit", "value": "10" },
+                                { "key": "month", "value": "8" },
+                                { "key": "year", "value": "2025" }
+                            ]
+                        },
+                        "description": "Mengambil riwayat absensi user dengan filter bulan, tahun, dan paginasi."
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Data riwayat absensi\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"date\": \"2025-08-09\",\n            \"day_name\": \"Saturday\",\n            \"check_in_time\": \"08:00:00\",\n            \"check_out_time\": \"17:00:00\",\n            \"status\": \"on_time\",\n            \"status_text\": \"Tepat Waktu\",\n            \"location\": \"Kantor Pusat\",\n            \"keterangan\": null,\n            \"working_hours\": {\n                \"hours\": 9,\n                \"minutes\": 0\n            }\n        }\n    ]\n}"
+                        }
+                    ]
+                }
+            ]
         }
     ],
     "event": [

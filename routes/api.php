@@ -6,8 +6,9 @@ use App\Http\Controllers\AdminCrudController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\UserCrudController;
-use App\Http\Controllers\StatistikController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\StatistikController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Public auth
@@ -15,11 +16,24 @@ Route::post('/login', [UserAuthController::class, 'login']);         // user log
 Route::post('/login/admin', [AdminAuthController::class, 'loginAdmin']); // admin login (username+password)
 Route::get('/settings', [SettingController::class, 'index']);
 
+// Card-based attendance (menggunakan NIP - public access)
+Route::post('/card/check-in', [AttendanceController::class, 'cardCheckIn']);
+Route::post('/card/check-out', [AttendanceController::class, 'cardCheckOut']);
+
 // User-protected endpoints
 Route::middleware(['auth:sanctum', 'auth.user'])->group(function () {
     // User profile
     Route::get('/user/current-activity', [UserCrudController::class, 'getMyCurrentActivity']);
     Route::get('/user/statistik', [UserCrudController::class, 'getMyStatistik']);
+
+    Route::post('/absence', [AbsenceController::class, 'absence']); //Create absence record
+
+    Route::get('/today-status', [AttendanceController::class, 'todayStatus']);
+    Route::get('/history', [AttendanceController::class, 'history']);
+
+    // Mobile attendance endpoints (require user authentication)
+    Route::post('/mobile/check-in', [AttendanceController::class, 'mobileCheckIn']);
+    Route::post('/mobile/check-out', [AttendanceController::class, 'mobileCheckOut']);
 });
 
 // Admin-protected endpoints
@@ -41,8 +55,9 @@ Route::middleware(['auth:sanctum', 'auth.admin'])->group(function () {
     Route::get('/statistik-bulanan', [StatistikController::class, 'statistikBulanan']); //statistik bulanan
 
     Route::prefix('/absences')->group(function () {
-        Route::put('/{user:id}/approve', [AbsenceController::class, 'approveAbsence']);
-        Route::get('/filter', [AbsenceController::class, 'filter']);
+        Route::get('/', [AbsenceController::class, 'showAbsences']);
+        Route::get('/today', [AttendanceController::class, 'showTodayAttendance']);
+        Route::patch('/{id}/approve', [AbsenceController::class, 'approve']);
         Route::get('/export', [AbsenceController::class, 'export']);
     });
 });
