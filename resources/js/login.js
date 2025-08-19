@@ -10,9 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const formData = new FormData(form);
 
             try {
-                const res = await axios.post('/api/login/admin', formData, {withCredentials: true});
-                const token = res.data.data.token;
-                localStorage.setItem('auth_token', token);
+                await axios.post('/api/login/admin', formData);
                 window.location.href = '/dashboard';
             } catch (err) {
                 alertBox.textContent = err.response?.data?.message || 'Login failed';

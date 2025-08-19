@@ -30,6 +30,7 @@ Route::get('/login', function () {
     return view('login');
 })->name('login');
 
+Route::middleware(['islogin'])->group(function () {
 // Dashboard Routes
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -58,4 +59,5 @@ Route::get('/account-management', function () {
 
 Route::get('/preview/form-karyawan', function () {
     return view('preview-form-karyawan');
+});
 });
