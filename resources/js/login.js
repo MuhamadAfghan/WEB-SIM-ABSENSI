@@ -10,10 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const formData = new FormData(form);
 
             try {
-                const res = await axios.post('/api/login/admin', formData);
-                if (res.data.status === 'success') {
-                    window.location.href = '/dashboard';
-                }
+                await axios.post('/api/login/admin', formData);
+                window.location.href = '/dashboard';
             } catch (err) {
                 alertBox.textContent = err.response?.data?.message || 'Login failed';
                 alertBox.classList.remove('hidden');
