@@ -85,7 +85,7 @@ class StatistikController extends Controller
 
             if ($validator->fails()) {
                 return response()->json([
-                    'success' => false,
+                    'status' => 'error',
                     'message' => 'Validasi gagal',
                     'errors' => $validator->errors(),
                 ], 422);
@@ -177,7 +177,7 @@ class StatistikController extends Controller
             }
 
             return response()->json([
-                'success' => true,
+                'status' => 'success',
                 "message" => "Data Statistik Tahunan",
                 "data" => [
                     'tahun' => $tahun,
@@ -187,7 +187,7 @@ class StatistikController extends Controller
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'success' => false,
+                'status' => 'error',
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ], 500);
         }
@@ -203,7 +203,7 @@ class StatistikController extends Controller
 
             if ($validator->fails()) {
                 return response()->json([
-                    'success' => false,
+                    'status' => 'error',
                     'message' => 'Validasi gagal',
                     'errors' => $validator->errors(),
                 ], 422);
@@ -243,7 +243,7 @@ class StatistikController extends Controller
 
             if (!$month) {
                 return response()->json([
-                    'success' => false,
+                    'status' => 'error',
                     'message' => 'Nama bulan tidak valid',
                 ], 422);
             }
@@ -268,7 +268,7 @@ class StatistikController extends Controller
                 ->translatedFormat('F');
 
             return response()->json([
-                'success' => true,
+                'status' => 'success',
                 'message' => 'Data Statistik Bulanan',
                 'data' => [
                     'bulan' => strtolower($indonesianMonth),
@@ -280,7 +280,7 @@ class StatistikController extends Controller
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'success' => false,
+                'status' => 'error',
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ], 500);
         }
