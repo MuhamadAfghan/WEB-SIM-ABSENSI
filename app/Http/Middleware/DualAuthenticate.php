@@ -12,7 +12,7 @@ class DualAuthenticate
 {
     public function handle(Request $request, Closure $next)
     {
-        $token = $request->bearerToken() ?? $request->cookie('auth_token');
+        $token = $request->cookie('auth_token') ?? $request->bearerToken();
 
         if (!$token) {
             return response()->json(['status' => 'error', 'message' => 'Token tidak ditemukan', 'data' => $token], 401);
