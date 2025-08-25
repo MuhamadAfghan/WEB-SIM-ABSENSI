@@ -118,7 +118,8 @@ class AttendanceController extends Controller
                     ], 400);
                 }
             } else {
-                $userId = $request->user()->id();
+                $userId = auth()->id();
+                //    $userId = $request->user_id;
                 if (!$userId) {
                     return response()->json([
                         'status' => "error",

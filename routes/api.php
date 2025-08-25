@@ -20,35 +20,8 @@ Route::get('/settings', [SettingController::class, 'index']);
 Route::post('/card/check-in', [AttendanceController::class, 'cardCheckIn']);
 Route::post('/card/check-out', [AttendanceController::class, 'cardCheckOut']);
 
-// Dual authentication endpoints (accessible by both users and admins)
-Route::middleware(['auth.dual'])->group(function () {
-    Route::get('/profile', function (Request $request) {
-        $user = $request->user();
-        return response()->json([
-            'status' => 'success',
-            'data' => [
-                'user' => $user,
-                'type' => $user instanceof \App\Models\User ? 'user' : 'admin'
-            ]
-        ]);
-    });
-
-    Route::post('/logout', function (Request $request) {
-        try {
-            $request->user()->currentAccessToken()->delete();
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Logout berhasil'
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Gagal logout',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    });
-});
+Route::post('/check-in', [AttendanceController::class, 'checkIn']);
+Route::post('/check-out', [AttendanceController::class, 'checkOut']);
 
 // User-protected endpoints
 Route::middleware(['auth.dual', 'auth.user'])->group(function () {
