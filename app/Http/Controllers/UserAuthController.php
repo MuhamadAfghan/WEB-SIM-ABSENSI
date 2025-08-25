@@ -29,7 +29,7 @@ class UserAuthController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['status' => false, 'message' => $validator->errors()->first()], 400);
+                return response()->json(['status' => "error", 'message' => $validator->errors()->first()], 400);
             }
 
             $user = User::where('email', $request->email)->first();
@@ -37,12 +37,12 @@ class UserAuthController extends Controller
 
             if (!$user) {
                 RateLimiter::hit($this->throttleKey($request));
-                return response()->json(['status' => false, 'message' => 'Email tidak ditemukan'], 404);
+                return response()->json(['status' => "error", 'message' => 'Email tidak ditemukan'], 404);
             }
 
             if (!Hash::check($request->password, $user->password)) {
                 RateLimiter::hit($this->throttleKey($request));
-                return response()->json(['status' => false, 'message' => 'Password salah'], 401);
+                return response()->json(['status' => "error", 'message' => 'Password salah'], 401);
             }
 
             $token = $user->createToken('auth_token')->plainTextToken;
@@ -53,9 +53,11 @@ class UserAuthController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Login sukses',
-                'token' => $token,
-                'serial_number' => $serialNumber,
-                'user' => $user,
+                'data' => [
+                    'token' => $token,
+                    'serial_number' => $serialNumber,
+                    'user' => $user,
+                ]
             ]);
         } catch (ValidationException $e) {
             return response()->json([
@@ -101,26 +103,28 @@ class UserAuthController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'name' => 'required',
-                'username' => 'required',
+                'username' => 'required|unique:users,username',
                 'password' => 'required|min:6',
                 'nip' => 'required',
-                'email' => 'required',
+                'email' => 'required|email|unique:users,email',
                 'telepon' => 'required',
                 'divisi' => 'required',
                 'mapel' => 'required',
-                
             ]);
 
             if ($validator->fails()) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Gagal menyimpan data', 'data' => $validator->errors()], 400);
+                    'message' => 'Gagal menyimpan data',
+                    'data' => $validator->errors()
+                ], 400);
             }
 
             if (User::where('username', $request->username)->exists()) {
                 return response()->json([
                     'status' => 'waring',
-                    'message' => 'Username sudah digunakan'], 400);
+                    'message' => 'Username sudah digunakan'
+                ], 400);
             }
 
             $userdata = new User;
@@ -136,29 +140,32 @@ class UserAuthController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                 'message' => 'Data berhasil disimpan']);
+                'message' => 'Data berhasil disimpan'
+            ]);
         } catch (Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Server error', 'error' => $e->getMessage()], 500);
+                'message' => 'Server error',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
     public function logout(Request $request)
-{
-    try {
-        $request->user()->currentAccessToken()->delete();
+    {
+        try {
+            $request->user()->currentAccessToken()->delete();
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Logout berhasil'
-        ]);
-    } catch (Exception $e) {
-        return response()->json([
-            'status' => false,
-            'message' => 'Gagal logout',
-            'error' => $e->getMessage()
-        ], 500);
+            return response()->json([
+                'status' => true,
+                'message' => 'Logout berhasil'
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => "error",
+                'message' => 'Gagal logout',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
-}
 }
