@@ -331,7 +331,7 @@ class AttendanceController extends Controller
                     ], 400);
                 }
             } else {
-                $userId = $request->user()->id();
+                $userId = $request->user()->id;
                 if (!$userId) {
                     return response()->json([
                         'status' => "error",
@@ -434,7 +434,7 @@ class AttendanceController extends Controller
     public function history(Request $request)
     {
         try {
-            $userId = $request->user()->id();
+            $userId = $request->user()->id;
             $limit = $request->get('limit', 10);
             $month = $request->get('month');
             $year = $request->get('year');
@@ -504,15 +504,13 @@ class AttendanceController extends Controller
 
 
     // Option 3: Just the Essential Data
-
-
     /**
      * Status Absensi Hari Ini
      */
     public function todayStatus(Request $request)
     {
         try {
-            $userId = $request->user()->id();
+            $userId = $request->user()->id;
             $today = Carbon::today()->format('Y-m-d');
 
             // Get attendance data (kehadiran)
