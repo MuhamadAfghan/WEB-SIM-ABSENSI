@@ -18,7 +18,11 @@
         <div class="w-full md:w-[60%] flex flex-col justify-center login-container">
             <h1 class="text-5xl font-bold text-black mb-2">Selamat datang!</h1>
             <p class="text-gray-600 mb-6 text-left">Silakan masuk untuk manajemen absensi</p>
-
+            @if (session('error'))
+                <div id="session-alert" class="text-red-500 mb-4">
+                    {{ session('error') }}
+                </div>
+            @endif
             <div id="alert-box" class="hidden text-red-500"></div>
             <form id="login-form" class="w-full max-w-lg space-y-4 mt-5">
                 @csrf

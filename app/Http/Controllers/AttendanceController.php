@@ -118,7 +118,7 @@ class AttendanceController extends Controller
                     ], 400);
                 }
             } else {
-                $userId = auth()->id();
+                $userId = $request->user()->id();
                 if (!$userId) {
                     return response()->json([
                         'status' => "error",
@@ -330,7 +330,7 @@ class AttendanceController extends Controller
                     ], 400);
                 }
             } else {
-                $userId = auth()->id();
+                $userId = $request->user()->id();
                 if (!$userId) {
                     return response()->json([
                         'status' => "error",
@@ -433,7 +433,7 @@ class AttendanceController extends Controller
     public function history(Request $request)
     {
         try {
-            $userId = auth()->id();
+            $userId = $request->user()->id();
             $limit = $request->get('limit', 10);
             $month = $request->get('month');
             $year = $request->get('year');
@@ -511,16 +511,56 @@ class AttendanceController extends Controller
     public function todayStatus()
     {
         try {
-            $userId = auth()->id();
+            $userId = $request->user()->id();
             $today = Carbon::today()->format('Y-m-d');
 
+            // Get attendance data (kehadiran)
             $attendance = Attendance::where('user_id', $userId)
                 ->where('date', $today)
+                ->first();
+
+            // Get absence data (ketidakhadiran)
+            $absence = Absence::where('user_id', $userId)
+                ->whereDate('date-start', $today)
                 ->first();
 
             $workSchedule = Setting::first();
             $dayName = strtolower(Carbon::now()->format('l'));
             $isWorkingDay = $workSchedule ? $workSchedule->{$dayName . '_is_active'} : false;
+
+            // Determine status and data source
+            $statusData = null;
+            $statusType = null;
+
+            if ($attendance) {
+                // User has attendance record (kehadiran)
+                $isLate = $attendance->check_in_time && $workSchedule
+                    ? Carbon::parse($attendance->check_in_time)->format('H:i:s') > $workSchedule->{$dayName . '_start_time'}
+                    : false;
+
+                $statusData = [
+                    'source' => 'attendance',
+                    'has_checked_in' => !is_null($attendance->check_in_time),
+                    'has_checked_out' => !is_null($attendance->check_out_time),
+                    'check_in_time' => $attendance->check_in_time,
+                    'check_out_time' => $attendance->check_out_time,
+                    'type' => $attendance->type,
+                    'keterangan' => $attendance->keterangan,
+                    'is_late' => $isLate
+                ];
+                $statusType = 'kehadiran';
+            } elseif ($absence) {
+                // User has absence record (ketidakhadiran)
+                $statusData = [
+                    'source' => 'absence',
+                    'type' => $absence->type,
+                    'date_start' => $absence->{'date-start'},
+                    'date_end' => $absence->{'date-end'},
+                    'description' => $absence->description,
+                    'status' => $absence->status
+                ];
+                $statusType = 'ketidakhadiran';
+            }
 
             return response()->json([
                 'status' => "success",
@@ -528,11 +568,8 @@ class AttendanceController extends Controller
                 'data' => [
                     'date' => $today,
                     'is_working_day' => $isWorkingDay,
-                    'has_checked_in' => $attendance ? !is_null($attendance->check_in_time) : false,
-                    'has_checked_out' => $attendance ? !is_null($attendance->check_out_time) : false,
-                    'check_in_time' => $attendance ? $attendance->check_in_time : null,
-                    'check_out_time' => $attendance ? $attendance->check_out_time : null,
-                    'type' => $attendance ? $attendance->type : null,
+                    'status_type' => $statusType, // 'kehadiran', 'ketidakhadiran', or null
+                    'status_data' => $statusData,
                     'work_schedule' => $workSchedule ? [
                         'start_time' => $workSchedule->{$dayName . '_start_time'},
                         'end_time' => $workSchedule->{$dayName . '_end_time'},
@@ -646,7 +683,6 @@ class AttendanceController extends Controller
                     'location' => $attendance->lokasi
                 ]
             ]);
-
         } catch (Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -726,7 +762,6 @@ class AttendanceController extends Controller
                     'location' => $attendance->lokasi
                 ]
             ]);
-
         } catch (Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -756,7 +791,7 @@ class AttendanceController extends Controller
 
         try {
             // Untuk mobile, user harus login dan menggunakan token
-            $user = auth()->user();
+            $user = $request->user();
             if (!$user) {
                 return response()->json([
                     'status' => "error",
@@ -832,7 +867,6 @@ class AttendanceController extends Controller
                     'distance_from_office' => round($distance) . ' meter'
                 ]
             ]);
-
         } catch (Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -862,7 +896,7 @@ class AttendanceController extends Controller
 
         try {
             // Untuk mobile, user harus login dan menggunakan token
-            $user = auth()->user();
+            $user = $request->user();
             if (!$user) {
                 return response()->json([
                     'status' => "error",
@@ -942,7 +976,6 @@ class AttendanceController extends Controller
                     'distance_from_office' => round($distance) . ' meter'
                 ]
             ]);
-
         } catch (Exception $e) {
             return response()->json([
                 'status' => 'error',

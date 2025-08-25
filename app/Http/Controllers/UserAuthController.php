@@ -58,7 +58,8 @@ class UserAuthController extends Controller
                     'serial_number' => $serialNumber,
                     'user' => $user,
                 ]
-            ]);
+            ])
+                ->cookie('auth_token', $token, 60, '/', null, false, true);
         } catch (ValidationException $e) {
             return response()->json([
                 'status' => 'warning',

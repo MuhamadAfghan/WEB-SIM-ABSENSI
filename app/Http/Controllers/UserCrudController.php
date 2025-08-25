@@ -294,7 +294,7 @@ class UserCrudController extends Controller
 
     public function getMyCurrentActivity()
     {
-        $user = auth()->user();
+        $user = $request->user();
 
         $currentActivity = [
             'check_in_time' => null,
@@ -344,7 +344,7 @@ class UserCrudController extends Controller
 
     public function getMyStatistik()
     {
-        $user = auth()->user();
+        $user = $request->user();
 
         // jumlah dia masuk kerja
         $totalMasuk = Attendance::where('user_id', $user->id)->where('keterangan', 'masuk')->count();

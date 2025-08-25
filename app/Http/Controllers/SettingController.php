@@ -17,7 +17,7 @@ class SettingController extends Controller
         }
 
         return response()->json([
-            'success' => true,
+            'status' => 'success',
             'message' => 'Settings retrieved successfully',
             'data' => $setting
         ]);
@@ -72,7 +72,7 @@ class SettingController extends Controller
         }
 
         return response()->json([
-            'success' => true,
+            'status' => 'success',
             'message' => 'Settings saved successfully',
             'data' => $setting
         ]);
