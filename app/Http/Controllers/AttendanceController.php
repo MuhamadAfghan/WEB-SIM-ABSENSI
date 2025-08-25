@@ -508,7 +508,7 @@ class AttendanceController extends Controller
     /**
      * Status Absensi Hari Ini
      */
-    public function todayStatus()
+    public function todayStatus(Request $request)
     {
         try {
             $userId = $request->user()->id();

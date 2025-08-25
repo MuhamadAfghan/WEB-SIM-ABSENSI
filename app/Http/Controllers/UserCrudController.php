@@ -292,7 +292,7 @@ class UserCrudController extends Controller
         }
     }
 
-    public function getMyCurrentActivity()
+    public function getMyCurrentActivity(Request $request)
     {
         $user = $request->user();
 
@@ -342,7 +342,7 @@ class UserCrudController extends Controller
         ]);
     }
 
-    public function getMyStatistik()
+    public function getMyStatistik(Request $request)
     {
         $user = $request->user();
 
