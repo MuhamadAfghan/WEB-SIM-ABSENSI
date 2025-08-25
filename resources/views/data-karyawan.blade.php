@@ -28,15 +28,20 @@
                 <img src="{{ asset('image/plus_white.png') }}" alt="Icon" class="w-5 h-5 inline">
             </button>
 
-            <button class="bg-orange-400 text-white p-2 rounded hover:bg-orange-500">
+            {{-- filter --}}
+            <button id="filterBtn" class="relative bg-orange-400 text-white p-2 rounded hover:bg-orange-500">
                 <img src="{{ asset('image/filter_white.png') }}" alt="Icon" class="w-5 h-5 inline">
+                    @include('components.filter-dropdown')
             </button>
 
-            <div class="relative">
-                <img src="{{ asset('image/search_grey.png') }}" alt="Search"
-                    class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2">
-                <input type="text" placeholder="Cari Guru" class="rounded px-3 py-2 text-sm border pl-10 w-50" />
-            </div>
+        {{-- search --}}
+        <div class="relative flex items-center">
+            <img src="{{ asset('image/search_grey.png') }}" alt="Search"
+                class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2" />
+            <input id="searchInput" type="text" placeholder="Cari Nama"
+                class="rounded px-3 py-2 text-sm border pl-10 w-50" />
+        </div>
+
         </div>
     </div>
 
@@ -98,14 +103,14 @@
                 </tr>
                 <tr>
                     <td class="px-4 py-3">7</td>
-                    <td class="px-4 py-3">Siti Nurhaliza</td>
+                    <td class="px-4 py-3">zahran</td>
                     <td class="px-4 py-3">123456789012134567818</td>
                     <td class="px-4 py-3">Guru</td>
                     <td class="px-4 py-3">PPLG</td>
                 </tr>
                 <tr>
                     <td class="px-4 py-3 rounded-tr-lg">8</td>
-                    <td class="px-4 py-3">Siti Nurhaliza</td>
+                    <td class="px-4 py-3">safa</td>
                     <td class="px-4 py-3">123456789012134567818</td>
                     <td class="px-4 py-3">Guru</td>
                     <td class="px-4 py-3 rounded-tr-lg">PPLG</td>
@@ -130,3 +135,37 @@
     </div>
 
 @endsection
+
+<script>
+    // fitur filter
+    document.addEventListener('DOMContentLoaded', () => {
+        const filterBtn = document.getElementById('filterBtn');
+        const filterDropdown = document.getElementById('filterDropdown');
+
+        filterBtn.addEventListener('click', () => filterDropdown.classList.toggle('hidden'));
+
+        document.addEventListener('click', (e) => {
+            if (!filterBtn.contains(e.target) && !filterDropdown.contains(e.target))
+                filterDropdown.classList.add('hidden');
+        });
+
+        // fitur search
+        const searchInput = document.getElementById('searchInput');
+        const tableRows = document.querySelectorAll('tbody tr');
+
+        searchInput.addEventListener('keyup', () => {
+            const keyword = searchInput.value.toLowerCase();
+            let nomor = 1;
+
+            tableRows.forEach(row => {
+                const nama = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                if (nama.includes(keyword)) {
+                    row.style.display = '';
+                    row.querySelector('td:nth-child(1)').textContent = nomor++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
