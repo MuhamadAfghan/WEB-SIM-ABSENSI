@@ -30,18 +30,21 @@ Route::get('/login', function () {
     return view('login');
 })->name('login');
 
+Route::middleware(['islogin'])->group(function () {
 // Dashboard Routes
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
+
+
 
 // Employee Management Routes
 Route::get('/employees', function () {
     return view('data-karyawan');
 })->name('employees');
 
-Route::get('/employee-details', function () {
-    return view('detail-data-karyawan');
+Route::get('/employees/{id}', function ($id) {
+    return view('detail-data-karyawan', ['id' => $id]);
 })->name('employee.details');
 
 // Attendance Routes
@@ -53,3 +56,8 @@ Route::get('/attendance', function () {
 Route::get('/account-management', function () {
     return view('account-management');
 })->name('account.management');
+
+Route::get('/preview/form-karyawan', function () {
+    return view('preview-form-karyawan');
+});
+});
