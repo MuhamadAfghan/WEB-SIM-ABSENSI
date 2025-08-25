@@ -15,16 +15,6 @@
                 <input id="searchInput" type="text" placeholder="Cari" class="w-full rounded-xl border-0 bg-white py-3 pl-11 pr-4 text-gray-700 shadow-sm ring-1 ring-transparent focus:ring-2 focus:ring-blue-400" />
             </div>
 
-            <!-- Role Filter -->
-            <div class="relative min-w-[140px]">
-                <select id="roleFilter" class="w-full appearance-none rounded-xl border-0 bg-white py-3 pl-4 pr-10 text-gray-700 shadow-sm ring-1 ring-transparent focus:ring-2 focus:ring-blue-400">
-                    <option selected>Guru</option>
-                    <option>Staff</option>
-                    <option>Admin</option>
-                </select>
-                <i class="fas fa-chevron-down pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-            </div>
-
             <!-- Division Filter -->
             <div class="relative min-w-[140px]">
                 <select id="divisionFilter" class="w-full appearance-none rounded-xl border-0 bg-white py-3 pl-4 pr-10 text-gray-700 shadow-sm ring-1 ring-transparent focus:ring-2 focus:ring-blue-400">
@@ -177,12 +167,19 @@
             async function fetchAndRender() {
                 renderLoading();
                 try {
-                    const response = await window.axios.get(API_ENDPOINT, { params: buildParams() });
-                    const json = response.data;
+                    const params = new URLSearchParams(buildParams()).toString();
+                    const response = await fetch(`${API_ENDPOINT}?${params}`);
+                    const json = await response.json();
+
+                    if (!response.ok) {
+                        if (response.status === 401) return renderUnauthorized();
+                        throw new Error(json.message || 'Gagal memuat data');
+                    }
+
                     renderUsers(Array.isArray(json?.data) ? json.data : []);
                     renderPagination(json?.meta);
                 } catch (e) {
-                    if (e?.response?.status === 401) return renderUnauthorized();
+                    console.error('Error fetching data:', e);
                     renderError();
                 }
             }
@@ -212,15 +209,13 @@
 
             async function loadDivisions() {
                 try {
-                    // Ambil beberapa halaman untuk daftar divisi unik (batasi agar ringan)
                     const collected = new Set();
                     let page = 1;
                     const maxPages = 5; // batasi maksimal 5 halaman
                     while (page <= maxPages) {
-                        const res = await window.axios.get(API_ENDPOINT, {
-                            params: { page, per_page: 50, sort_field: 'divisi', sort_order: 'asc' }
-                        });
-                        const json = res.data;
+                        const params = new URLSearchParams({ page, per_page: 50, sort_field: 'divisi', sort_order: 'asc' }).toString();
+                        const res = await fetch(`${API_ENDPOINT}?${params}`);
+                        const json = await res.json();
                         const items = Array.isArray(json?.data) ? json.data : [];
                         items.forEach(u => { if (u?.divisi) collected.add(u.divisi); });
                         const meta = json?.meta;
@@ -235,19 +230,19 @@
                         return `<option ${selected ? 'selected' : ''}>${opt}</option>`;
                     }).join('');
                 } catch (e) {
+                    console.error('Error loading divisions:', e);
                     // Jika gagal, biarkan opsi default
                 }
             }
 
-            const token = localStorage.getItem('admin_token');
-            if (token) {
-                window.axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            }
-
-            if (!token) {
-                renderUnauthorized();
-                return;
-            }
+            // const token = localStorage.getItem('admin_token');
+            // if (token) {
+            //     window.axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            // }
+            // if (!token) {
+            //     renderUnauthorized();
+            //     return;
+            // }
 
             loadDivisions();
             updateState({ page: 1, perPage: 9 });
