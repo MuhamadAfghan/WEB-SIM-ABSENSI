@@ -50,7 +50,7 @@ class AbsenceController extends Controller
 
         try {
             $absence = Absence::create([
-                'user_id' => Auth()->id(),
+                'user_id' => $request->user()->id(),
                 'date-start' => $request->input('date-start'),
                 'date-end' => $request->input('date-end'),
                 'type' => $request->type,

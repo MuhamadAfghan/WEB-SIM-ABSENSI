@@ -118,7 +118,7 @@ class AttendanceController extends Controller
                     ], 400);
                 }
             } else {
-                $userId = auth()->id();
+                $userId = $request->user()->id();
                 if (!$userId) {
                     return response()->json([
                         'status' => "error",
@@ -330,7 +330,7 @@ class AttendanceController extends Controller
                     ], 400);
                 }
             } else {
-                $userId = auth()->id();
+                $userId = $request->user()->id();
                 if (!$userId) {
                     return response()->json([
                         'status' => "error",
@@ -433,7 +433,7 @@ class AttendanceController extends Controller
     public function history(Request $request)
     {
         try {
-            $userId = auth()->id();
+            $userId = $request->user()->id();
             $limit = $request->get('limit', 10);
             $month = $request->get('month');
             $year = $request->get('year');
@@ -511,7 +511,7 @@ class AttendanceController extends Controller
     public function todayStatus()
     {
         try {
-            $userId = auth()->id();
+            $userId = $request->user()->id();
             $today = Carbon::today()->format('Y-m-d');
 
             // Get attendance data (kehadiran)
@@ -791,7 +791,7 @@ class AttendanceController extends Controller
 
         try {
             // Untuk mobile, user harus login dan menggunakan token
-            $user = auth()->user();
+            $user = $request->user();
             if (!$user) {
                 return response()->json([
                     'status' => "error",
@@ -896,7 +896,7 @@ class AttendanceController extends Controller
 
         try {
             // Untuk mobile, user harus login dan menggunakan token
-            $user = auth()->user();
+            $user = $request->user();
             if (!$user) {
                 return response()->json([
                     'status' => "error",
