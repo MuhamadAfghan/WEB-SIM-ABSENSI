@@ -9,6 +9,8 @@ use App\Exports\AbsenceExport;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\Models\Attendance;
+use App\Models\Setting;
+use Carbon\Carbon;
 use Exception;
 
 class AbsenceController extends Controller
@@ -35,7 +37,7 @@ class AbsenceController extends Controller
         $validator = Validator::make($request->all(), [
             'date-start' => 'required|date',
             'date-end' => 'required|date|after_or_equal:date-start',
-            'type' => 'required|string|max:255',
+            'type' => 'required|string|max:255|in:izin,sakit,tanpa_keterangan',
             'is_approved' => 'boolean',
             'description' => 'required|string|max:1000',
             'upload_attachment' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048'
@@ -48,9 +50,55 @@ class AbsenceController extends Controller
             ], 400);
         }
 
+        $userId = $request->user()->id;
+        $today = Carbon::today()->format('Y-m-d');
+        $currentTime = Carbon::now();
+        $dayName = strtolower($currentTime->format('l')); // monday, tuesday, etc.
+
+        // Cek apakah sudah absen masuk hari ini
+        $existingAttendance = Attendance::where('user_id', $userId)
+            ->where('date', $today)
+            ->whereNotNull('check_in_time')
+            ->exists();
+
+        // cek from absence
+        $existingAbsence = Absence::where('user_id', $userId)
+            ->where('created_at', '>=', $today . ' 00:00:00')
+            ->where('created_at', '<=', $today . ' 23:59:59')
+            ->exists();
+
+        if ($existingAttendance || $existingAbsence) {
+            return response()->json([
+                'status' => "error",
+                'message' => 'Anda sudah absen masuk hari ini'
+            ], 400);
+        }
+
+        // Ambil jadwal kerja
+        $workSchedule = Setting::first(); // Sesuaikan query sesuai kebutuhan
+
+        if (!$workSchedule) {
+            return response()->json([
+                'status' => "error",
+                'message' => 'Jadwal kerja belum diatur'
+            ], 400);
+        }
+
+        // Validasi apakah hari ini adalah hari kerja
+        $isActiveField = $dayName . '_is_active';
+        $startTimeField = $dayName . '_start_time';
+        $endTimeField = $dayName . '_end_time';
+
+        if (!$workSchedule->$isActiveField) {
+            return response()->json([
+                'status' => "error",
+                'message' => 'Hari ini bukan hari kerja'
+            ], 400);
+        }
+
         try {
             $absence = Absence::create([
-                'user_id' => $request->user()->id(),
+                'user_id' => $request->user()->id,
                 'date-start' => $request->input('date-start'),
                 'date-end' => $request->input('date-end'),
                 'type' => $request->type,
