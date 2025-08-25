@@ -48,26 +48,31 @@
             const usersGrid = document.getElementById('usersGrid');
             const paginationControls = document.getElementById('paginationControls');
             const searchInput = document.getElementById('searchInput');
+            const divisionFilter = document.getElementById('divisionFilter');
 
-            const API_ENDPOINT = `${window.location.origin}/api/user`;
+            const API_ENDPOINT = `{{ url('/api/user') }}`;
 
             const viewState = {
                 page: 1,
                 perPage: 9,
                 sortField: 'id',
                 sortOrder: 'asc',
-                searchQuery: ''
+                searchQuery: '',
+                divisi: ''
             };
 
-            function buildRequestUrl() {
-                const params = new URLSearchParams();
-                params.set('page', String(viewState.page));
-                params.set('per_page', String(viewState.perPage));
-                params.set('sort_field', viewState.sortField);
-                params.set('sort_order', viewState.sortOrder);
+            function buildParams() {
+                const params = {
+                    page: viewState.page,
+                    per_page: viewState.perPage,
+                    sort_field: viewState.sortField,
+                    sort_order: viewState.sortOrder,
+                };
                 const q = viewState.searchQuery?.trim();
-                if (q) params.set('search', q);
-                return `${API_ENDPOINT}?${params.toString()}`;
+                if (q) params.search = q;
+                const d = viewState.divisi?.trim();
+                if (d) params.divisi = d;
+                return params;
             }
 
             function renderLoading() {
@@ -76,6 +81,11 @@
 
             function renderError() {
                 usersGrid.innerHTML = '<div class="col-span-full text-center text-red-500">Gagal memuat data</div>';
+                paginationControls.innerHTML = '';
+            }
+
+            function renderUnauthorized() {
+                usersGrid.innerHTML = '<div class="col-span-full text-center text-red-500">Unauthorized. Silakan login sebagai admin terlebih dahulu.</div>';
                 paginationControls.innerHTML = '';
             }
 
@@ -167,11 +177,12 @@
             async function fetchAndRender() {
                 renderLoading();
                 try {
-                    const response = await fetch(buildRequestUrl(), { headers: { 'Accept': 'application/json' } });
-                    const json = await response.json();
+                    const response = await window.axios.get(API_ENDPOINT, { params: buildParams() });
+                    const json = response.data;
                     renderUsers(Array.isArray(json?.data) ? json.data : []);
                     renderPagination(json?.meta);
                 } catch (e) {
+                    if (e?.response?.status === 401) return renderUnauthorized();
                     renderError();
                 }
             }
@@ -194,6 +205,51 @@
             }, 300);
             searchInput?.addEventListener('input', handleSearch);
 
+            divisionFilter?.addEventListener('change', (e) => {
+                const value = e.target.value;
+                updateState({ divisi: value === 'Divisi' || value === '' ? '' : value, page: 1 });
+            });
+
+            async function loadDivisions() {
+                try {
+                    // Ambil beberapa halaman untuk daftar divisi unik (batasi agar ringan)
+                    const collected = new Set();
+                    let page = 1;
+                    const maxPages = 5; // batasi maksimal 5 halaman
+                    while (page <= maxPages) {
+                        const res = await window.axios.get(API_ENDPOINT, {
+                            params: { page, per_page: 50, sort_field: 'divisi', sort_order: 'asc' }
+                        });
+                        const json = res.data;
+                        const items = Array.isArray(json?.data) ? json.data : [];
+                        items.forEach(u => { if (u?.divisi) collected.add(u.divisi); });
+                        const meta = json?.meta;
+                        if (!meta || page >= meta.last_page) break;
+                        page += 1;
+                    }
+
+                    const current = divisionFilter.value;
+                    const options = ['Divisi', ...Array.from(collected).sort()];
+                    divisionFilter.innerHTML = options.map((opt, idx) => {
+                        const selected = opt === current || (idx === 0 && current === '');
+                        return `<option ${selected ? 'selected' : ''}>${opt}</option>`;
+                    }).join('');
+                } catch (e) {
+                    // Jika gagal, biarkan opsi default
+                }
+            }
+
+            const token = localStorage.getItem('admin_token');
+            if (token) {
+                window.axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            }
+
+            if (!token) {
+                renderUnauthorized();
+                return;
+            }
+
+            loadDivisions();
             updateState({ page: 1, perPage: 9 });
         });
     </script>
