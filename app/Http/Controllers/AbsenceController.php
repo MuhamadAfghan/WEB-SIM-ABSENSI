@@ -37,8 +37,8 @@ class AbsenceController extends Controller
             'date-end' => 'required|date|after_or_equal:date-start',
             'type' => 'required|string|max:255',
             'is_approved' => 'boolean',
-            'description' => 'nullable|string|max:1000',
-            'upload_attachment' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048'
+            'description' => 'required|string|max:1000',
+            'upload_attachment' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048'
         ]);
 
         if ($validator->fails()) {
