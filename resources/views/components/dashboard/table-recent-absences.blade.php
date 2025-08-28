@@ -76,7 +76,7 @@
                     <th class="px-4 py-3 font-bold border-b border-gray-200">Keterangan</th>
                     <th class="px-4 py-3 font-bold border-b border-gray-200">Waktu Kedatangan</th>
                     <th class="px-4 py-3 font-bold border-b border-gray-200">Waktu Kepulangan</th>
-                    <th class="px-4 py-3 font-bold rounded-tr-lg border-b border-gray-200">Status</th>
+                    <th class="px-4 py-3 font-bold rounded-tr-lg border-b border-gray-200">Metode Absen</th>
                 </tr>
             </thead>
             <tbody id="attendanceBody" class="divide-y border-gray-200 bg-gray-100">
@@ -146,19 +146,19 @@
                 currentData.forEach((item, index) => {
                     const rowNumber = index + 1;
                     const userName = item.user && item.user.name ? item.user.name : '-';
-                    const tipe = item.type || '-';
+                    const keterangan = item.keterangan || '-';
                     const arrivalTime = item.check_in_time || '--:--';
                     const departureTime = item.check_out_time || '--:--';
-                    const keterangan = item.keterangan || '-';
+                    const tipe = item.type || '-';
 
                     tableBody.innerHTML += `
                 <tr>
                     <td class="px-4 py-1.5">${rowNumber}</td>
                     <td class="px-4 py-1.5">${userName}</td>
-                    <td class="px-4 py-1.5">${tipe}</td>
+                    <td class="px-4 py-1.5">${keterangan}</td>
                     <td class="px-4 py-1.5">${arrivalTime}</td>
                     <td class="px-4 py-1.5">${departureTime}</td>
-                    <td class="px-4 py-1.5">${keterangan}</td>
+                    <td class="px-4 py-1.5">${tipe}</td>
                 </tr>
             `;
                 });
