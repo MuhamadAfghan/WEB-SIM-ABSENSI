@@ -118,7 +118,8 @@ class AttendanceController extends Controller
                     ], 400);
                 }
             } else {
-                $userId = auth()->id();
+                $userId = $request->user()->id;
+                //    $userId = $request->user_id;
                 if (!$userId) {
                     return response()->json([
                         'status' => "error",
@@ -135,9 +136,15 @@ class AttendanceController extends Controller
             $existingAttendance = Attendance::where('user_id', $userId)
                 ->where('date', $today)
                 ->whereNotNull('check_in_time')
-                ->first();
+                ->exists();
 
-            if ($existingAttendance) {
+            // cek from absence
+            $existingAbsence = Absence::where('user_id', $userId)
+                ->where('created_at', '>=', $today . ' 00:00:00')
+                ->where('created_at', '<=', $today . ' 23:59:59')
+                ->exists();
+
+            if ($existingAttendance || $existingAbsence) {
                 return response()->json([
                     'status' => "error",
                     'message' => 'Anda sudah absen masuk hari ini'
@@ -330,7 +337,7 @@ class AttendanceController extends Controller
                     ], 400);
                 }
             } else {
-                $userId = auth()->id();
+                $userId = $request->user()->id;
                 if (!$userId) {
                     return response()->json([
                         'status' => "error",
@@ -433,7 +440,7 @@ class AttendanceController extends Controller
     public function history(Request $request)
     {
         try {
-            $userId = auth()->id();
+            $userId = $request->user()->id;
             $limit = $request->get('limit', 10);
             $month = $request->get('month');
             $year = $request->get('year');
@@ -503,15 +510,13 @@ class AttendanceController extends Controller
 
 
     // Option 3: Just the Essential Data
-
-
     /**
      * Status Absensi Hari Ini
      */
-    public function todayStatus()
+    public function todayStatus(Request $request)
     {
         try {
-            $userId = auth()->id();
+            $userId = $request->user()->id;
             $today = Carbon::today()->format('Y-m-d');
 
             // Get attendance data (kehadiran)
@@ -791,7 +796,7 @@ class AttendanceController extends Controller
 
         try {
             // Untuk mobile, user harus login dan menggunakan token
-            $user = auth()->user();
+            $user = $request->user();
             if (!$user) {
                 return response()->json([
                     'status' => "error",
@@ -896,7 +901,7 @@ class AttendanceController extends Controller
 
         try {
             // Untuk mobile, user harus login dan menggunakan token
-            $user = auth()->user();
+            $user = $request->user();
             if (!$user) {
                 return response()->json([
                     'status' => "error",
