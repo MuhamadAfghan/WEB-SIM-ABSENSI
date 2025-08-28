@@ -94,7 +94,7 @@
         async function fetchAttendanceData() {
             showLoading();
             try {
-                const response = await fetch("/api/absences");
+                const response = await fetch("/api/today-status");
                 const contentType = response.headers.get("content-type");
                 if (!response.ok) {
                     throw new Error('Gagal memuat data absensi: ' + response.status);
