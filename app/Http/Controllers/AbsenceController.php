@@ -182,8 +182,14 @@ class AbsenceController extends Controller
             $attendanceQuery = Attendance::query()->with('user');
 
             // Merge collections
-            $absences = $absenceQuery->get();
-            $attendances = $attendanceQuery->get();
+            $absences = $absenceQuery->get()->map(function ($absence) {
+                $absence->absence_status = 'tidak hadir';
+                return $absence;
+            });
+            $attendances = $attendanceQuery->get()->map(function ($attendance) {
+                $attendance->absence_status = 'hadir';
+                return $attendance;
+            });
 
             // Combine and convert to collection
             $merged = $absences->concat($attendances);
@@ -215,6 +221,8 @@ class AbsenceController extends Controller
             $page = $request->get('page', 1);
             $perPage = 10;
             $items = $merged->slice(($page - 1) * $perPage, $perPage)->values();
+            // sort by created_at
+            $items = $items->sortByDesc('created_at');
             $total = $merged->count();
 
             return response()->json([
