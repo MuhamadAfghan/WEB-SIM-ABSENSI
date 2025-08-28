@@ -45,8 +45,8 @@ Route::middleware(['auth.dual', 'auth.admin'])->group(function () {
     Route::post('/user', [UserCrudController::class, 'addUser']);
     Route::get('/user', [UserCrudController::class, 'readAllUser']);
     Route::get('/user/{id?}', [UserCrudController::class, 'showUserById']);
-    Route::get('/user/{id?}/absences', [UserCrudController::class, 'showDetailWithAttendance']);
     Route::put('/user/{id?}', [UserCrudController::class, 'updateUser']);
+    Route::get('/user/{id?}/absences', [UserCrudController::class, 'showDetailWithAttendance']);
     Route::delete('/user/{id?}', [UserCrudController::class, 'deleteUser']);
     Route::post('/user/import', [UserCrudController::class, 'import']);
 
@@ -60,6 +60,7 @@ Route::middleware(['auth.dual', 'auth.admin'])->group(function () {
     Route::prefix('/absences')->group(function () {
         Route::get('/', [AbsenceController::class, 'showAbsences']);
         Route::get('/today', [AttendanceController::class, 'showTodayAttendance']);
+        Route::get('/{id}', [AbsenceController::class, 'showAbsenceById']);
         Route::patch('/{id}/approve', [AbsenceController::class, 'approve']);
         Route::get('/export', [AbsenceController::class, 'export']);
     });

@@ -1291,6 +1291,59 @@
                     ]
                 },
                 {
+                    "name": "Get Absence By ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/absences/1",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "absences", "1"]
+                        }
+                    },
+                    "response": [
+                        {
+                            "name": "Success",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/absences/1",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "absences", "1"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "body": "{\n  \"status\": \"success\",\n  \"data\": {\n    \"id\": 1,\n    \"user_id\": 1,\n    \"date_start\": \"2025-08-12\",\n    \"date_end\": \"2025-08-12\",\n    \"type\": \"sakit\",\n    \"is_approved\": false,\n    \"description\": \"Demam tinggi\",\n    \"upload_attachment\": \"attachments/xxx.png\",\n    \"user\": {\n      \"id\": 1,\n      \"name\": \"Nama User\"\n    }\n  }\n}"
+                        },
+                        {
+                            "name": "Not Found",
+                            "status": "Not Found",
+                            "code": 404,
+                            "body": "{\n  \"status\": \"error\",\n  \"message\": \"Absence record not found\"\n}"
+                        }
+                    ]
+                },
+                {
                     "name": "Approve Absence for a User",
                     "request": {
                         "method": "PATCH",

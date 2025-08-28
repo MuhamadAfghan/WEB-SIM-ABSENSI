@@ -174,6 +174,30 @@ class AbsenceController extends Controller
         'date_end.after_or_equal' => 'Tanggal selesai harus setelah atau sama dengan tanggal mulai'
     ];
 
+    public function showAbsenceById($id)
+    {
+        try {
+            $absence = Absence::with('user')->find($id);
+
+            if (!$absence) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Absence record not found'
+                ], 404);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $absence
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to retrieve absence record: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function showAbsences(Request $request)
     {
         try {
