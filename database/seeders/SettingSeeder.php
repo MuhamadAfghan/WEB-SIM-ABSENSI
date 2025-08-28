@@ -45,8 +45,8 @@ class SettingSeeder extends Seeder
 
             // Location settings - SMK Wikrama Bogor
             'location_name' => 'SMK Wikrama Bogor',
-            'latitude' => -6.6476344,
-            'longitude' => 106.8169444,
+            'latitude' => -6.6453,
+            'longitude' => 106.8440,
             'radius' => 100
         ]);
     }
