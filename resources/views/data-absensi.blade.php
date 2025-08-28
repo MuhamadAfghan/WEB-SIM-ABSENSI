@@ -9,13 +9,27 @@
             width: 50px;
             text-align: center;
         }
+
         table * {
             border-color: #e5e7eb;
         }
-        .status-sakit { color: #F87171; }
-        .status-hadir { color: #22C55E; }
-        .status-izin { color: #F59E42; }
-        .status-pending { color: #6B7280; }
+
+        .status-sakit {
+            color: #F87171;
+        }
+
+        .status-hadir {
+            color: #22C55E;
+        }
+
+        .status-izin {
+            color: #F59E42;
+        }
+
+        .status-pending {
+            color: #6B7280;
+        }
+
         .loading-spinner {
             border: 4px solid #f3f3f3;
             border-top: 4px solid #3B82F6;
@@ -25,10 +39,17 @@
             animation: spin 1s linear infinite;
             margin: 20px auto;
         }
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
+
         .error-message {
             background-color: #FEF2F2;
             border: 1px solid #FECACA;
@@ -42,24 +63,27 @@
     <!-- Pastikan Alpine.js terpasang -->
     <script src="//unpkg.com/alpinejs" defer></script>
 
-    <div class="flex justify-between items-center mb-4" x-data="{ openFilter: false }">
+    <div class="mb-4 flex items-center justify-between" x-data="{ openFilter: false }">
         <h1 class="text-3xl font-black tracking-wide">Data Absensi</h1>
-        <div class="flex gap-2 relative">
+        <div class="relative flex gap-2">
             <!-- Filter -->
             <div class="relative">
-                <button @click="openFilter = !openFilter" class="bg-white border px-4 py-2 rounded">
-                    <img src="{{ asset('image/filter_black.png') }}" alt="Icon" class="w-5 h-5 inline text-gray-500">
+                <button @click="openFilter = !openFilter" class="rounded border bg-white px-4 py-2">
+                    <img src="{{ asset('image/filter_black.png') }}" alt="Icon" class="inline h-5 w-5 text-gray-500">
                 </button>
                 <!-- Dropdown Filter -->
-                <div x-show="openFilter" @click.away="openFilter = false" 
-                     class="absolute z-10 mt-2 w-48 bg-white border rounded shadow-lg text-sm">
-                    <button class="block w-full text-left px-4 py-2 hover:bg-blue-50" @click="setFilter('7days'); openFilter = false">
+                <div x-show="openFilter" @click.away="openFilter = false"
+                    class="absolute z-10 mt-2 w-48 rounded border bg-white text-sm shadow-lg">
+                    <button class="block w-full px-4 py-2 text-left hover:bg-blue-50"
+                        @click="setFilter('7days'); openFilter = false">
                         7 hari yang lalu
                     </button>
-                    <button class="block w-full text-left px-4 py-2 hover:bg-blue-50" @click="setFilter('30days'); openFilter = false">
+                    <button class="block w-full px-4 py-2 text-left hover:bg-blue-50"
+                        @click="setFilter('30days'); openFilter = false">
                         30 hari yang lalu
                     </button>
-                    <button class="block w-full text-left px-4 py-2 hover:bg-blue-50" @click="setFilter('all'); openFilter = false">
+                    <button class="block w-full px-4 py-2 text-left hover:bg-blue-50"
+                        @click="setFilter('all'); openFilter = false">
                         Semua Data
                     </button>
                 </div>
@@ -67,34 +91,32 @@
 
             <!-- Search -->
             <div class="relative">
-                <input 
-                    type="text" 
-                    id="searchInput"
-                    placeholder="Cari nama..." 
-                    class="rounded px-3 py-2 text-sm border pl-10 w-56 bg-white"
-                >
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <input type="text" id="searchInput" placeholder="Cari nama..."
+                    class="w-56 rounded border bg-white px-3 py-2 pl-10 text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-500" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
             </div>
 
             <!-- Export -->
-            <button class="bg-white border px-4 py-2 rounded flex items-center gap-2 text-sm" onclick="exportData()">
-                <img src="{{ asset('image/upload_file_black.png') }}" alt="Icon" class="w-5 h-5 inline text-gray-500">
+            <button class="flex items-center gap-2 rounded border bg-white px-4 py-2 text-sm" onclick="exportData()">
+                <img src="{{ asset('image/upload_file_black.png') }}" alt="Icon" class="inline h-5 w-5 text-gray-500">
                 Export berdasarkan waktu
             </button>
 
             <!-- Cari berdasarkan waktu -->
             <div class="relative">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 4h10M5 11h14m-9 4h4m-7 4h10a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-500" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 7V3m8 4V3m-9 4h10M5 11h14m-9 4h4m-7 4h10a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                <input
-                    type="date"
-                    id="dateFilter"
-                    onchange="filterByDate(this.value)"
-                    class="rounded px-3 py-2 text-sm border pl-10 w-56 bg-white"
-                />
+                <input type="date" id="dateFilter" onchange="filterByDate(this.value)"
+                    class="w-56 rounded border bg-white px-3 py-2 pl-10 text-sm" />
             </div>
         </div>
     </div>
@@ -107,12 +129,12 @@
         <table class="w-full text-left text-sm" id="attendanceTable">
             <thead class="bg-white">
                 <tr>
-                    <th class="px-4 py-3 font-bold rounded-tl-lg border-b border-gray-200">NO</th>
-                    <th class="px-4 py-3 font-bold border-b border-gray-200">Nama</th>
-                    <th class="px-4 py-3 font-bold border-b border-gray-200">Keterangan</th>
-                    <th class="px-4 py-3 font-bold border-b border-gray-200">Waktu Kedatangan</th>
-                    <th class="px-4 py-3 font-bold border-b border-gray-200">Waktu Kepulangan</th>
-                    <th class="px-4 py-3 font-bold border-b border-gray-200">Metode Absen</th>
+                    <th class="rounded-tl-lg border-b border-gray-200 px-4 py-3 font-bold">NO</th>
+                    <th class="border-b border-gray-200 px-4 py-3 font-bold">Nama</th>
+                    <th class="border-b border-gray-200 px-4 py-3 font-bold">Keterangan</th>
+                    <th class="border-b border-gray-200 px-4 py-3 font-bold">Waktu Kedatangan</th>
+                    <th class="border-b border-gray-200 px-4 py-3 font-bold">Waktu Kepulangan</th>
+                    <th class="border-b border-gray-200 px-4 py-3 font-bold">Metode Absen</th>
                 </tr>
             </thead>
             <tbody id="attendanceBody" class="divide-y border-gray-200 bg-gray-100">
@@ -122,7 +144,7 @@
     </div>
 
     <!-- Pagination -->
-    <div class="flex justify-end items-center p-4 gap-2" id="paginationContainer">
+    <div class="flex items-center justify-end gap-2 p-4" id="paginationContainer">
         <!-- Pagination akan diisi oleh JavaScript -->
     </div>
 
@@ -236,7 +258,7 @@
                             <td class="px-4 py-1.5">${tipe}</td>
                             <td class="px-4 py-1.5">${arrivalTime}</td>
                             <td class="px-4 py-1.5">${departureTime}</td>
-                            <td class="px-4 py-1.5">${type}</td>
+                            <td class="px-4 py-1.5">${tipe == 'hadir' ? tipe : type}</td>
                         </tr>
                     `;
                 });
@@ -249,43 +271,43 @@
         // Fungsi untuk render pagination
         function renderPagination(totalPages) {
             const paginationContainer = document.getElementById('paginationContainer');
-            
+
             if (totalPages <= 1) {
                 paginationContainer.innerHTML = '';
                 return;
             }
-            
+
             let paginationHTML = `
-                <button 
-                    onclick="changePage(${currentPage - 1})" 
+                <button
+                    onclick="changePage(${currentPage - 1})"
                     ${currentPage === 1 ? 'disabled' : ''}
                     class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 hover:bg-blue-100 hover:text-gray-700 ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}"
                 >
                     &lt;
                 </button>
             `;
-            
+
             for (let i = 1; i <= totalPages; i++) {
                 paginationHTML += `
-                    <button 
-                        onclick="changePage(${i})" 
+                    <button
+                        onclick="changePage(${i})"
                         class="flex items-center justify-center px-3 h-8 ms-0 leading-tight ${currentPage === i ? 'bg-blue-500 text-white' : 'text-gray-500 hover:bg-blue-100 hover:text-gray-700'}"
                     >
                         ${i}
                     </button>
                 `;
             }
-            
+
             paginationHTML += `
-                <button 
-                    onclick="changePage(${currentPage + 1})" 
+                <button
+                    onclick="changePage(${currentPage + 1})"
                     ${currentPage === totalPages ? 'disabled' : ''}
                     class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 hover:bg-blue-100 hover:text-gray-700 ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}"
                 >
                     &gt;
                 </button>
             `;
-            
+
             paginationContainer.innerHTML = paginationHTML;
         }
 
@@ -337,7 +359,9 @@
                 });
             }
             const csvContent = convertToCSV(exportData);
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const blob = new Blob([csvContent], {
+                type: 'text/csv;charset=utf-8;'
+            });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.setAttribute('href', url);
@@ -388,11 +412,11 @@
         // Inisialisasi ketika halaman dimuat
         document.addEventListener('DOMContentLoaded', function() {
             fetchAttendanceData();
-            
+
             // Setup pencarian real-time
             const searchInput = document.getElementById('searchInput');
             let searchTimeout;
-            
+
             searchInput.addEventListener('input', function() {
                 clearTimeout(searchTimeout);
                 searchTimeout = setTimeout(() => {
