@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Hadir.in')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -17,7 +18,7 @@
 <body class="bg-gray-50">
     <div class="flex h-screen">
         <!-- Sidebar -->
-        <div id="sidebar" class="sidebar-transition relative flex h-screen w-64 flex-shrink-0 flex-col overflow-hidden">
+        <div id="sidebar" class="sidebar-transition fixed left-0 top-0 flex h-screen w-64 flex-shrink-0 flex-col overflow-hidden">
             <!-- Background Image -->
             <img src="{{ asset('images/background-sidebar.png') }}" alt="Sidebar Background"
                 class="absolute inset-0 z-0 h-full w-full object-cover">
@@ -81,9 +82,9 @@
         </div>
 
         <!-- Main Content Area -->
-        <div class="flex min-w-0 flex-1 flex-col">
+        <div class="flex min-w-0 flex-1 flex-col ml-64 h-screen overflow-y-auto">
             <!-- Top Header/Navbar -->
-            <header class="border-b border-gray-200 bg-white px-6 py-5 shadow-sm">
+            <header class="sticky top-0 z-20 border-b border-gray-200 bg-white px-6 py-5 shadow-sm">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
                         <!-- Collapse Button di Navbar -->
@@ -126,6 +127,7 @@
     <script>
         document.getElementById('sidebarToggle').addEventListener('click', function() {
             const sidebar = document.getElementById('sidebar');
+            const mainContent = document.querySelector('.flex.min-w-0.flex-1.flex-col');
             const labels = document.querySelectorAll('.sidebar-label');
             const toggleIcon = document.getElementById('toggleIcon');
 
@@ -134,12 +136,16 @@
             if (isCollapsed) {
                 sidebar.classList.remove('w-64');
                 sidebar.classList.add('w-20');
+                mainContent.classList.remove('ml-64');
+                mainContent.classList.add('ml-20');
                 labels.forEach(label => label.classList.add('hidden'));
                 toggleIcon.classList.remove('fa-angle-double-left');
                 toggleIcon.classList.add('fa-angle-double-right');
             } else {
                 sidebar.classList.remove('w-20');
                 sidebar.classList.add('w-64');
+                mainContent.classList.remove('ml-20');
+                mainContent.classList.add('ml-64');
                 labels.forEach(label => label.classList.remove('hidden'));
                 toggleIcon.classList.remove('fa-angle-double-right');
                 toggleIcon.classList.add('fa-angle-double-left');
