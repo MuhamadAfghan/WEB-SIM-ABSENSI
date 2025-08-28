@@ -9,9 +9,39 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Exception;
-
+use Illuminate\Support\Facades\Storage;
 class UserCrudController extends Controller
 {
+  
+
+public function uploadUserExcel(Request $request)
+{
+    try {
+        // Validasi file
+        $request->validate([
+            'file' => 'required|mimes:xls,xlsx,csv|max:25000'
+        ]);
+
+        // Simpan file ke storage
+        $path = $request->file('file')->store('uploads/users');
+
+        // TODO: kalau mau langsung proses datanya (import ke tabel User)
+        // bisa pakai Laravel Excel (maatwebsite/excel), sementara ini kita hanya simpan file
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'File berhasil diupload',
+            'path' => $path
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Gagal upload file',
+            'error' => $e->getMessage()
+        ], 400);
+    }
+}
+
     // public function readAllUser()
     // {
     //     try {

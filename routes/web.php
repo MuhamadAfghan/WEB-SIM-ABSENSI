@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 use Illuminate\Support\Facades\DB;
+Route::post('/users/upload', [App\Http\Controllers\UserCrudController::class, 'uploadUserExcel'])
+    ->name('users.upload');
 
 Route::get('/', function () {
     try {
@@ -24,6 +26,7 @@ Route::get('/', function () {
     }
     return view('welcome');
 });
+
 
 // Authentication Routes
 Route::get('/login', function () {
