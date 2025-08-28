@@ -28,17 +28,16 @@
             {{-- filter --}}
             <button id="filterBtn" class="relative bg-orange-400 text-white p-2 rounded hover:bg-orange-500">
                 <img src="{{ asset('image/filter_white.png') }}" alt="Icon" class="w-5 h-5 inline">
-                    @include('components.filter-dropdown')
+                @include('components.filter-dropdown')
             </button>
 
-        {{-- search --}}
-        <div class="relative flex items-center">
-            <img src="{{ asset('image/search_grey.png') }}" alt="Search"
-                class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2" />
-            <input id="searchInput" type="text" placeholder="Cari Nama"
-                class="rounded px-3 py-2 text-sm border pl-10 w-50" />
-        </div>
-
+            {{-- search --}}
+            <div class="relative flex items-center">
+                <img src="{{ asset('image/search_grey.png') }}" alt="Search"
+                    class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                <input id="searchInput" type="text" placeholder="Cari Nama"
+                    class="rounded px-3 py-2 text-sm border pl-10 w-50" />
+            </div>
         </div>
     </div>
 
@@ -54,91 +53,22 @@
                 </tr>
             </thead>
 
-            <tbody class="divide-y border-gray-200 bg-gray-100">
-                <tr>
-                    <td class="px-4 py-3">1</td>
-                    <td class="px-4 py-3">Siti Nurhaliza</td>
-                    <td class="px-4 py-3">123456789012134567818</td>
-                    <td class="px-4 py-3">Guru</td>
-                    <td class="px-4 py-3">PPLG</td>
-                </tr>
-                <tr>
-                    <td class="px-4 py-3">2</td>
-                    <td class="px-4 py-3">Siti Nurhaliza</td>
-                    <td class="px-4 py-3">123456789012134567818</td>
-                    <td class="px-4 py-3">Guru</td>
-                    <td class="px-4 py-3">PPLG</td>
-                </tr>
-                <tr>
-                    <td class="px-4 py-3">3</td>
-                    <td class="px-4 py-3">Siti Nurhaliza</td>
-                    <td class="px-4 py-3">123456789012134567818</td>
-                    <td class="px-4 py-3">Guru</td>
-                    <td class="px-4 py-3">PPLG</td>
-                </tr>
-                <tr>
-                    <td class="px-4 py-3">4</td>
-                    <td class="px-4 py-3">Siti Nurhaliza</td>
-                    <td class="px-4 py-3">123456789012134567818</td>
-                    <td class="px-4 py-3">Guru</td>
-                    <td class="px-4 py-3">PPLG</td>
-                </tr>
-                <tr>
-                    <td class="px-4 py-3">5</td>
-                    <td class="px-4 py-3">Siti Nurhaliza</td>
-                    <td class="px-4 py-3">123456789012134567818</td>
-                    <td class="px-4 py-3">Guru</td>
-                    <td class="px-4 py-3">PPLG</td>
-                </tr>
-                <tr>
-                    <td class="px-4 py-3">6</td>
-                    <td class="px-4 py-3">Siti Nurhaliza</td>
-                    <td class="px-4 py-3">123456789012134567818</td>
-                    <td class="px-4 py-3">Guru</td>
-                    <td class="px-4 py-3">PPLG</td>
-                </tr>
-                <tr>
-                    <td class="px-4 py-3">7</td>
-                    <td class="px-4 py-3">zahran</td>
-                    <td class="px-4 py-3">123456789012134567818</td>
-                    <td class="px-4 py-3">Guru</td>
-                    <td class="px-4 py-3">PPLG</td>
-                </tr>
-                <tr>
-                    <td class="px-4 py-3 rounded-tr-lg">8</td>
-                    <td class="px-4 py-3">safa</td>
-                    <td class="px-4 py-3">123456789012134567818</td>
-                    <td class="px-4 py-3">Guru</td>
-                    <td class="px-4 py-3 rounded-tr-lg">PPLG</td>
-                </tr>
-
             <tbody class="divide-y border-gray-200 bg-gray-100" id="karyawanTableBody">
-                <!-- Data will be loaded here dynamically -->
-
+                <!-- Data akan di-load via API -->
             </tbody>
         </table>
     </div>
 
-    <!-- Pagination -->
+    <!-- Pagination (nanti bisa dihubungkan ke API meta) -->
     <div class="flex justify-end items-center p-4 gap-2">
-        <button class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 hover:bg-blue-100 hover:text-gray-700 dark:bg-blue-100 dark:bg-blue-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-            &lt;
-        </button>
-        <button class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 hover:bg-blue-100 hover:text-gray-700 dark:bg-blue-100 dark:bg-blue-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-            1
-        </button>
-        <button class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 hover:bg-blue-100 hover:text-gray-700 dark:bg-blue-100 dark:bg-blue-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-            2
-        </button>
-        <button class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 hover:bg-blue-100 hover:text-gray-700 dark:bg-blue-100 dark:bg-blue-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-            3
-        </button>
-        <button class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 hover:bg-blue-100 hover:text-gray-700 dark:bg-blue-100 dark:bg-blue-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-            &gt;
-        </button>
+        <button class="px-3 h-8 text-gray-500 hover:bg-blue-100 hover:text-gray-700">&lt;</button>
+        <button class="px-3 h-8 text-gray-500 hover:bg-blue-100 hover:text-gray-700">1</button>
+        <button class="px-3 h-8 text-gray-500 hover:bg-blue-100 hover:text-gray-700">2</button>
+        <button class="px-3 h-8 text-gray-500 hover:bg-blue-100 hover:text-gray-700">3</button>
+        <button class="px-3 h-8 text-gray-500 hover:bg-blue-100 hover:text-gray-700">&gt;</button>
     </div>
 
-        @include('components.karyawan.form')
+    @include('components.karyawan.form')
 
     <!-- Tambahkan ini sebelum script JavaScript custom -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -147,12 +77,12 @@
         function openModal() {
             document.getElementById('modalTambahKaryawan').classList.remove('hidden');
         }
-        
+
         function closeModal() {
             document.getElementById('modalTambahKaryawan').classList.add('hidden');
         }
-        
-        document.getElementById('togglePassword').addEventListener('click', function () {
+
+        document.getElementById('togglePassword').addEventListener('click', function() {
             const passwordField = document.getElementById('password');
             if (passwordField.type === 'password') {
                 passwordField.type = 'text';
@@ -180,7 +110,7 @@
                 });
 
                 let result = await response.json();
-                
+
                 if (!response.ok) {
                     throw new Error(result.message || 'Gagal menambah karyawan');
                 }
@@ -210,17 +140,26 @@
                 console.error('Error:', error);
             }
         }
+    </script>
+
+    <script>
+        // ========== SCRIPT BARU DENGAN FILTER & SEARCH ==========
+        let currentFilter = null;
+        let currentSearch = "";
 
         async function loadDataKaryawan() {
             try {
-                let response = await fetch('/api/user');
+                let url = '/api/user?per_page=50';
+
+                if (currentFilter) url += `&mapel=${encodeURIComponent(currentFilter)}`;
+                if (currentSearch) url += `&search=${encodeURIComponent(currentSearch)}`;
+
+                let response = await fetch(url);
                 if (!response.ok) throw new Error('Gagal memuat data karyawan');
-                
+
                 let result = await response.json();
-                
-                if (result.status !== 'success') {
-                    throw new Error(result.message || 'Gagal memuat data karyawan');
-                }
+
+                if (result.status !== 'success') throw new Error(result.message || 'Gagal memuat data karyawan');
 
                 let tbody = document.getElementById('karyawanTableBody');
                 tbody.innerHTML = '';
@@ -245,44 +184,39 @@
             } catch (error) {
                 console.error('Error:', error);
                 let tbody = document.getElementById('karyawanTableBody');
-                tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-3 text-center text-red-500">${error.message}</td></tr>`;
+                tbody.innerHTML =
+                    `<tr><td colspan="5" class="px-4 py-3 text-center text-red-500">${error.message}</td></tr>`;
             }
         }
 
-        document.addEventListener('DOMContentLoaded', loadDataKaryawan);
-    </script>
-@endsection
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDataKaryawan();
 
-<script>
-    // fitur filter
-    document.addEventListener('DOMContentLoaded', () => {
-        const filterBtn = document.getElementById('filterBtn');
-        const filterDropdown = document.getElementById('filterDropdown');
+            // toggle dropdown filter
+            const filterBtn = document.getElementById('filterBtn');
+            const filterDropdown = document.getElementById('filterDropdown');
 
-        filterBtn.addEventListener('click', () => filterDropdown.classList.toggle('hidden'));
-
-        document.addEventListener('click', (e) => {
-            if (!filterBtn.contains(e.target) && !filterDropdown.contains(e.target))
-                filterDropdown.classList.add('hidden');
-        });
-
-        // fitur search
-        const searchInput = document.getElementById('searchInput');
-        const tableRows = document.querySelectorAll('tbody tr');
-
-        searchInput.addEventListener('keyup', () => {
-            const keyword = searchInput.value.toLowerCase();
-            let nomor = 1;
-
-            tableRows.forEach(row => {
-                const nama = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
-                if (nama.includes(keyword)) {
-                    row.style.display = '';
-                    row.querySelector('td:nth-child(1)').textContent = nomor++;
-                } else {
-                    row.style.display = 'none';
+            filterBtn.addEventListener('click', () => filterDropdown.classList.toggle('hidden'));
+            document.addEventListener('click', (e) => {
+                if (!filterBtn.contains(e.target) && !filterDropdown.contains(e.target)) {
+                    filterDropdown.classList.add('hidden');
                 }
             });
+
+            // klik filter mapel
+            document.querySelectorAll('.filter-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    currentFilter = item.getAttribute('data-mapel');
+                    loadDataKaryawan();
+                    filterDropdown.classList.add('hidden');
+                });
+            });
+
+            // search real-time
+            document.getElementById('searchInput').addEventListener('keyup', () => {
+                currentSearch = document.getElementById('searchInput').value.trim();
+                loadDataKaryawan();
+            });
         });
-    });
-</script>
+    </script>
+@endsection

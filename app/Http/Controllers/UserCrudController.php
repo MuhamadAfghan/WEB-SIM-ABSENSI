@@ -79,6 +79,11 @@ class UserCrudController extends Controller
                 $query->where('divisi', $divisi);
             }
 
+             if ($request->has('mapel')) {
+            $mapel = $request->input('mapel');
+            $query->where('mapel', $mapel);
+        }
+
             // Fitur pencarian
             if ($request->has('search')) {
                 $search = $request->search;
