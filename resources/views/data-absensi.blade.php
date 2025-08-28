@@ -112,7 +112,7 @@
                     <th class="px-4 py-3 font-bold border-b border-gray-200">Keterangan</th>
                     <th class="px-4 py-3 font-bold border-b border-gray-200">Waktu Kedatangan</th>
                     <th class="px-4 py-3 font-bold border-b border-gray-200">Waktu Kepulangan</th>
-                    <th class="px-4 py-3 font-bold rounded-tr-lg border-b border-gray-200">Status</th>
+                    <th class="px-4 py-3 font-bold border-b border-gray-200">Metode Absen</th>
                 </tr>
             </thead>
             <tbody id="attendanceBody" class="divide-y border-gray-200 bg-gray-100">
@@ -154,8 +154,8 @@
                 }
                 const result = await response.json();
                 if (result.status === 'success') {
-                    // Ambil data dari result.data.items
-                    allAttendanceData = Array.isArray(result.data.items) ? result.data.items : [];
+                    // Ubah object ke array
+                    allAttendanceData = result.data.items ? Object.values(result.data.items) : [];
                     renderAttendanceData();
                 } else {
                     showError('Gagal memuat data absensi: ' + result.message);
@@ -221,8 +221,8 @@
                     const rowNumber = startIndex + index + 1;
                     const userName = item.user && item.user.name ? item.user.name : '-';
                     const userId = item.user && item.user.id ? item.user.id : '-';
-                    const tipe = item.type || '-';
-                    const keterangan = item.keterangan || '-';
+                    const tipe = item.absence_status || '-';
+                    const type = item.type || '-';
                     const arrivalTime = item.check_in_time || '--:--';
                     const departureTime = item.check_out_time || '--:--';
                     const lokasi = item.lokasi || '-';
@@ -236,7 +236,7 @@
                             <td class="px-4 py-1.5">${tipe}</td>
                             <td class="px-4 py-1.5">${arrivalTime}</td>
                             <td class="px-4 py-1.5">${departureTime}</td>
-                            <td class="px-4 py-1.5">${keterangan}</td>
+                            <td class="px-4 py-1.5">${type}</td>
                         </tr>
                     `;
                 });
