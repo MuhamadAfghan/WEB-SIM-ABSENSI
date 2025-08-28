@@ -20,8 +20,11 @@ Route::get('/settings', [SettingController::class, 'index']);
 Route::post('/card/check-in', [AttendanceController::class, 'cardCheckIn']);
 Route::post('/card/check-out', [AttendanceController::class, 'cardCheckOut']);
 
+Route::post('/check-in', [AttendanceController::class, 'checkIn']);
+Route::post('/check-out', [AttendanceController::class, 'checkOut']);
+
 // User-protected endpoints
-Route::middleware(['auth:sanctum', 'auth.user'])->group(function () {
+Route::middleware(['auth.dual', 'auth.user'])->group(function () {
     // User profile
     Route::get('/user/current-activity', [UserCrudController::class, 'getMyCurrentActivity']);
     Route::get('/user/statistik', [UserCrudController::class, 'getMyStatistik']);
@@ -37,7 +40,7 @@ Route::middleware(['auth:sanctum', 'auth.user'])->group(function () {
 });
 
 // Admin-protected endpoints
-Route::middleware(['auth:sanctum', 'auth.admin'])->group(function () {
+Route::middleware(['auth.dual', 'auth.admin'])->group(function () {
     // User management
     Route::post('/user', [UserCrudController::class, 'addUser']);
     Route::get('/user', [UserCrudController::class, 'readAllUser']);

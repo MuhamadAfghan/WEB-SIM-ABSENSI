@@ -19,7 +19,27 @@ class IsLogin
         if (!$token) {
             return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu');
         } else {
-            return $next($request);
+            try {
+                $accessToken = \Laravel\Sanctum\PersonalAccessToken::findToken($token);
+                if (!$accessToken || !$accessToken->tokenable) {
+                    return redirect()->route('login')->with('error', 'Token tidak valid');
+                }
+
+                $user = $accessToken->tokenable;
+
+                // Support both User and Admin models
+                if ($user instanceof \App\Models\User) {
+                    auth()->guard('sanctum')->setUser($user);
+                } elseif ($user instanceof \App\Models\Admin) {
+                    auth()->guard('admin-sanctum')->setUser($user);
+                } else {
+                    return redirect()->route('login')->with('error', 'User type tidak valid');
+                }
+
+                return $next($request);
+            } catch (\Exception $e) {
+                return redirect()->route('login')->with('error', 'Token tidak valid');
+            }
         }
     }
 }

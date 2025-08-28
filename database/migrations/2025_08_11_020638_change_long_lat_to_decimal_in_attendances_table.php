@@ -6,14 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
-    {
-        Schema::table('attendances', function (Blueprint $table) {
-            // Ubah ke double precision
-            $table->double('longitude')->change();
-            $table->double('latitude')->change();
-        });
-    }
+   public function up(): void
+{
+    Schema::table('attendances', function (Blueprint $table) {
+        $table->dropColumn(['longitude', 'latitude']);
+    });
+
+    Schema::table('attendances', function (Blueprint $table) {
+        $table->double('longitude')->nullable(false);
+        $table->double('latitude')->nullable(false);
+    });
+}
+
 
     public function down(): void
     {
