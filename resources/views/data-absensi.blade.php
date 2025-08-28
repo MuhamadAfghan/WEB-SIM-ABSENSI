@@ -37,6 +37,28 @@
             border-radius: 6px;
             margin-bottom: 20px;
         }
+        .date-range-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .date-range-input {
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 8px;
+            width: 150px;
+        }
+        .apply-filter-btn {
+            background-color: #3B82F6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+        .apply-filter-btn:hover {
+            background-color: #2563EB;
+        }
     </style>
 
     <!-- Pastikan Alpine.js terpasang -->
@@ -61,6 +83,10 @@
                     </button>
                     <button class="block w-full text-left px-4 py-2 hover:bg-blue-50" @click="setFilter('all'); openFilter = false">
                         Semua Data
+                    </button>
+                    <hr class="my-1">
+                    <button class="block w-full text-left px-4 py-2 hover:bg-blue-50" @click="openCustomDateRange(); openFilter = false">
+                        Rentang Tanggal Kustom
                     </button>
                 </div>
             </div>
@@ -95,6 +121,25 @@
                     onchange="filterByDate(this.value)"
                     class="rounded px-3 py-2 text-sm border pl-10 w-56 bg-white"
                 />
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal untuk rentang tanggal kustom -->
+    <div id="customDateRangeModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white p-6 rounded-lg shadow-xl w-96">
+            <h3 class="text-lg font-bold mb-4">Filter Rentang Tanggal</h3>
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-1">Tanggal Mulai</label>
+                <input type="date" id="dateStart" class="date-range-input w-full">
+            </div>
+            <div class="mb-6">
+                <label class="block text-sm font-medium mb-1">Tanggal Akhir</label>
+                <input type="date" id="dateEnd" class="date-range-input w-full">
+            </div>
+            <div class="flex justify-end gap-2">
+                <button onclick="closeCustomDateRange()" class="px-4 py-2 border rounded">Batal</button>
+                <button onclick="applyCustomDateRange()" class="apply-filter-btn px-4 py-2">Terapkan</button>
             </div>
         </div>
     </div>
@@ -134,16 +179,38 @@
         let currentFilter = 'all';
         let currentSearch = '';
         let currentDate = '';
+        let dateStart = '';
+        let dateEnd = '';
+        let currentType = '';
 
         // Fungsi untuk memuat data absensi
         async function fetchAttendanceData() {
             showLoading();
             try {
-                const response = await fetch("/api/absences");
+                // Build URL dengan parameter
+                let url = "/api/absences";
+                const params = [];
+                
+                if (dateStart && dateEnd) {
+                    params.push(`date_start=${dateStart}`);
+                    params.push(`date_end=${dateEnd}`);
+                }
+                
+                if (currentType) {
+                    params.push(`type=${currentType}`);
+                }
+                
+                if (params.length > 0) {
+                    url += '?' + params.join('&');
+                }
+                
+                const response = await fetch(url);
                 const contentType = response.headers.get("content-type");
+                
                 if (!response.ok) {
                     throw new Error('Gagal memuat data absensi: ' + response.status);
                 }
+                
                 if (!contentType || !contentType.includes("application/json")) {
                     const text = await response.text();
                     if (text.includes('<!DOCTYPE html')) {
@@ -152,6 +219,7 @@
                     }
                     throw new Error('Respons server tidak valid.');
                 }
+                
                 const result = await response.json();
                 if (result.status === 'success') {
                     // Ubah object ke array
@@ -184,21 +252,6 @@
                 filteredData = filteredData.filter(item =>
                     item.date && item.date.startsWith(currentDate)
                 );
-            }
-
-            // Filter periode waktu
-            if (currentFilter !== 'all') {
-                const today = new Date();
-                let filterDate = new Date();
-                if (currentFilter === '7days') {
-                    filterDate.setDate(today.getDate() - 7);
-                } else if (currentFilter === '30days') {
-                    filterDate.setDate(today.getDate() - 30);
-                }
-                filteredData = filteredData.filter(item => {
-                    const itemDate = new Date(item.date);
-                    return itemDate >= filterDate;
-                });
             }
 
             // Pagination
@@ -299,7 +352,25 @@
         function setFilter(filterType) {
             currentFilter = filterType;
             currentPage = 1;
-            renderAttendanceData();
+            
+            // Set tanggal mulai dan akhir berdasarkan filter
+            const today = new Date();
+            dateStart = '';
+            dateEnd = '';
+            
+            if (filterType === '7days') {
+                const sevenDaysAgo = new Date();
+                sevenDaysAgo.setDate(today.getDate() - 7);
+                dateStart = formatDate(sevenDaysAgo);
+                dateEnd = formatDate(today);
+            } else if (filterType === '30days') {
+                const thirtyDaysAgo = new Date();
+                thirtyDaysAgo.setDate(today.getDate() - 30);
+                dateStart = formatDate(thirtyDaysAgo);
+                dateEnd = formatDate(today);
+            }
+            
+            fetchAttendanceData();
         }
 
         // Fungsi untuk filter berdasarkan tanggal
@@ -309,7 +380,38 @@
             renderAttendanceData();
         }
 
-        // Fungsi untuk export data
+        // Fungsi untuk membuka modal rentang tanggal kustom
+        function openCustomDateRange() {
+            document.getElementById('customDateRangeModal').classList.remove('hidden');
+        }
+
+        // Fungsi untuk menutup modal rentang tanggal kustom
+        function closeCustomDateRange() {
+            document.getElementById('customDateRangeModal').classList.add('hidden');
+        }
+
+        // Fungsi untuk menerapkan rentang tanggal kustom
+        function applyCustomDateRange() {
+            dateStart = document.getElementById('dateStart').value;
+            dateEnd = document.getElementById('dateEnd').value;
+            
+            if (!dateStart || !dateEnd) {
+                alert('Harap isi kedua tanggal');
+                return;
+            }
+            
+            if (dateStart > dateEnd) {
+                alert('Tanggal mulai tidak boleh lebih besar dari tanggal akhir');
+                return;
+            }
+            
+            currentFilter = 'custom';
+            currentPage = 1;
+            closeCustomDateRange();
+            fetchAttendanceData();
+        }
+
+        // Fungsi untuk mengekspor data ke CSV
         function exportData() {
             let exportData = allAttendanceData;
             if (currentSearch) {
@@ -323,19 +425,7 @@
                     item.date && item.date.startsWith(currentDate)
                 );
             }
-            if (currentFilter !== 'all') {
-                const today = new Date();
-                let filterDate = new Date();
-                if (currentFilter === '7days') {
-                    filterDate.setDate(today.getDate() - 7);
-                } else if (currentFilter === '30days') {
-                    filterDate.setDate(today.getDate() - 30);
-                }
-                exportData = exportData.filter(item => {
-                    const itemDate = new Date(item.date);
-                    return itemDate >= filterDate;
-                });
-            }
+            
             const csvContent = convertToCSV(exportData);
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
@@ -350,7 +440,7 @@
 
         // Fungsi untuk konversi data ke CSV
         function convertToCSV(data) {
-            const headers = ['Nama', 'User ID', 'Tipe', 'Tanggal', 'Check In', 'Check Out', 'Keterangan', 'Lokasi'];
+            const headers = ['Nama', 'User ID', 'Metode Absen', 'Tanggal', 'Check In', 'Check Out', 'Keterangan', 'Lokasi'];
             const rows = data.map(item => [
                 `"${item.user && item.user.name ? item.user.name : ''}"`,
                 item.user && item.user.id ? item.user.id : '',
@@ -358,10 +448,18 @@
                 item.date || '',
                 item.check_in_time || '',
                 item.check_out_time || '',
-                `"${item.keterangan || ''}"`,
+                `"${item.absence_status || ''}"`,
                 `"${item.lokasi || ''}"`
             ]);
             return [headers, ...rows].map(e => e.join(',')).join('\n');
+        }
+
+        // Fungsi untuk memformat tanggal ke YYYY-MM-DD
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
         }
 
         // Fungsi untuk menampilkan loading
