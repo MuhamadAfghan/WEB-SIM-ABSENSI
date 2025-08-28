@@ -94,7 +94,7 @@
         async function fetchAttendanceData() {
             showLoading();
             try {
-                const response = await fetch("/api/today-status");
+                const response = await fetch("/api/absences/today");
                 const contentType = response.headers.get("content-type");
                 if (!response.ok) {
                     throw new Error('Gagal memuat data absensi: ' + response.status);
@@ -124,13 +124,6 @@
         function renderAttendanceData() {
             const tableBody = document.getElementById('attendanceBody');
             let currentData = [...allAttendanceData];
-
-            // Urutkan berdasarkan tanggal + jam terbaru dulu
-            currentData.sort((a, b) => {
-                const dateA = new Date(a.date + " " + (a.check_in_time || "00:00"));
-                const dateB = new Date(b.date + " " + (b.check_in_time || "00:00"));
-                return dateB - dateA; // DESC
-            });
 
             // Ambil hanya 5 data terbaru
             currentData = currentData.slice(0, 5);
