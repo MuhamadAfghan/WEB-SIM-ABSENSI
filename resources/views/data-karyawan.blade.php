@@ -20,10 +20,6 @@
         <h1 class="text-3xl font-black tracking-wide">Daftar karyawan</h1>
         <div class="flex gap-2">
             <!-- Tombol Upload -->
-            <button onclick="openModal()"
-                class="bg-orange-400 text-white p-2 rounded hover:bg-orange-500 transition-colors duration-200 ease-in-out">
-                <img src="{{ asset('image/upload_file_white.png') }}" alt="Icon" class="w-5 h-5 inline">
-            </button>
 <button onclick="openUploadModal()"
     class="bg-orange-400 text-white p-2 rounded hover:bg-orange-500 transition-colors duration-200 ease-in-out">
     <img src="{{ asset('image/upload_file_white.png') }}" alt="Icon" class="w-5 h-5 inline">
@@ -175,7 +171,7 @@
             <button class="text-white font-bold text-[12px]">Selanjutnya</button>
         </a>
     </div>
-</div><!-- Script -->
+</div>
 <script>
     let selectedFile = null;
     // === Modal Control ===
