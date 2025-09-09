@@ -14,9 +14,9 @@
 
     <div class="w-full rounded-xl bg-white p-6 shadow-md">
         <h3 class="mb-4 text-xl font-bold">Chart Tahun 2025</h3>
-        <div class="w-full rounded-xl p-6" style="background-color: #EEEEEE">
-            <canvas id="myChart" class="h-72"></canvas>
-        </div>
+        <div class="w-full rounded-xl p-6" style="background-color: #EEEEEE; height: 288px;">
+    <canvas id="myChart" class="h-full w-full"></canvas>
+</div>
         <!-- legend -->
         <div class="mt-5 flex justify-center gap-5 text-sm" id="customLegend">
             <div class="flex items-center gap-2">
