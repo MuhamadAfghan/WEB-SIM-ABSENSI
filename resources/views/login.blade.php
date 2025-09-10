@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     @vite('resources/css/app.css')
+    @vite('resources/js/login.js')
     <title>Login</title>
 </head>
 
@@ -16,9 +17,14 @@
         <!-- Kiri (Form Login) - 60% -->
         <div class="w-full md:w-[60%] flex flex-col justify-center login-container">
             <h1 class="text-5xl font-bold text-black mb-2">Selamat datang!</h1>
-            <p class="text-gray-600 mb-6 text-left">Silahkan masuk untuk manajemen absensi</p>
-
-            <form action="/login" method="POST" class="w-full max-w-lg space-y-4 mt-5">
+            <p class="text-gray-600 mb-6 text-left">Silakan masuk untuk manajemen absensi</p>
+            @if (session('error'))
+                <div id="session-alert" class="text-red-500 mb-4">
+                    {{ session('error') }}
+                </div>
+            @endif
+            <div id="alert-box" class="hidden text-red-500"></div>
+            <form id="login-form" class="w-full max-w-lg space-y-4 mt-5">
                 @csrf
                 <input type="text" name="username" placeholder="Username"
                     class="w-full p-4 bg-white rounded-lg shadow-input border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"

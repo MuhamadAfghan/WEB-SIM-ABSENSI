@@ -1,412 +1,2052 @@
 {
-	"info": {
-		"_postman_id": "sim-absensi-api-collection",
-		"name": "SIM ABSENSI API",
-		"description": "API Documentation for SIM ABSENSI (Attendance Management System)",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "sim-absensi"
-	},
-	"item": [
-		{
-			"name": "Authentication",
-			"item": [
-				{
-					"name": "User Login",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/login",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"login"
-							]
-						},
-						"description": "Login endpoint for regular users"
-					}
-				},
-				{
-					"name": "Admin Login",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin123\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/login/admin",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"login",
-								"admin"
-							]
-						},
-						"description": "Login endpoint for admin users"
-					}
-				}
-			],
-			"description": "Authentication endpoints for users and admins"
-		},
-		{
-			"name": "User Management",
-			"item": [
-				{
-					"name": "Create User",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{admin_token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"password123\",\n    \"employee_id\": \"EMP001\",\n    \"department\": \"IT\",\n    \"position\": \"Developer\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/user",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"user"
-							]
-						},
-						"description": "Create a new user (employee)"
-					}
-				},
-				{
-					"name": "Get All Users",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{admin_token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/user",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"user"
-							]
-						},
-						"description": "Retrieve all users from the system"
-					}
-				},
-				{
-					"name": "Get User by ID",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/user/{{user_id}}",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"user",
-								"{{user_id}}"
-							]
-						},
-						"description": "Retrieve a specific user by their ID"
-					}
-				},
-				{
-					"name": "Update User",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"John Smith\",\n    \"email\": \"john.smith@example.com\",\n    \"department\": \"HR\",\n    \"position\": \"Manager\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/user/{{user_id}}",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"user",
-								"{{user_id}}"
-							]
-						},
-						"description": "Update an existing user's information"
-					}
-				},
-				{
-					"name": "Delete User",
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{admin_token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/user/{{user_id}}",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"user",
-								"{{user_id}}"
-							]
-						},
-						"description": "Delete a user from the system"
-					}
-				}
-			],
-			"description": "CRUD operations for user management"
-		},
-		{
-			"name": "Admin Management",
-			"item": [
-				{
-					"name": "Get All Admins",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{admin_token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/admin",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"admin"
-							]
-						},
-						"description": "Retrieve all admin users from the system"
-					}
-				},
-				{
-					"name": "Get Admin by ID",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{admin_token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/admin/{{admin_id}}",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"admin",
-								"{{admin_id}}"
-							]
-						},
-						"description": "Retrieve a specific admin by their ID"
-					}
-				},
-				{
-					"name": "Update Admin",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{admin_token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"Admin Name\",\n    \"email\": \"admin@example.com\",\n    \"role\": \"super_admin\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/admin/{{admin_id}}",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"admin",
-								"{{admin_id}}"
-							]
-						},
-						"description": "Update an existing admin's information"
-					}
-				},
-				{
-					"name": "Delete Admin",
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{admin_token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/admin/{{admin_id}}",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"admin",
-								"{{admin_id}}"
-							]
-						},
-						"description": "Delete an admin from the system"
-					}
-				}
-			],
-			"description": "CRUD operations for admin management"
-		}
-	],
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		},
-		{
-			"listen": "test",
-			"script": {
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		}
-	],
-	"variable": [
-		{
-			"key": "base_url",
-			"value": "http://localhost:8000",
-			"type": "string"
-		},
-		{
-			"key": "token",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "admin_token",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "user_id",
-			"value": "1",
-			"type": "string"
-		},
-		{
-			"key": "admin_id",
-			"value": "1",
-			"type": "string"
-		}
-	]
+    "info": {
+        "_postman_id": "sim-absensi-api-collection",
+        "name": "SIM ABSENSI API",
+        "description": "API Documentation for SIM ABSENSI (Attendance Management System)",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "_exporter_id": "sim-absensi"
+    },
+    "item": [
+        {
+            "name": "Authentication",
+            "item": [
+                {
+                    "name": "User Login",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/login",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "login"]
+                        },
+                        "description": "Login endpoint for regular users using email and password"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/login",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "login"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Login sukses\",\n    \"token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...\",\n    \"serial_number\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"user\": {\n        \"id\": 1,\n        \"name\": \"John Doe\",\n        \"email\": \"user@example.com\",\n        \"nip\": \"EMP001\",\n        \"telepon\": \"081234567890\",\n        \"divisi\": \"IT\",\n        \"mapel\": \"Programming\"\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Admin Login",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/login/admin",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "login", "admin"]
+                        },
+                        "description": "Login endpoint for admin users using username and password"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin123\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/login/admin",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "login", "admin"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Login sukses\",\n    \"data\": {\n        \"token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...\",\n        \"serial_number\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"admin\": {\n            \"id\": 1,\n            \"username\": \"admin\"\n        }\n    }\n}"
+                        }
+                    ]
+                }
+            ],
+            "description": "Authentication endpoints for users and admins"
+        },
+        {
+            "name": "User Profile",
+            "item": [
+                {
+                    "name": "Get My Current Activity",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/user/current-activity",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "user", "current-activity"]
+                        },
+                        "description": "Get current day's activity for the authenticated user, including expected_check_in_time and lateness info"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/user/current-activity",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "user", "current-activity"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"data\": {\n        \"check_in_time\": \"08:30:00\",\n        \"check_out_time\": \"17:01:12\",\n        \"is_late\": true,\n        \"late_duration_minutes\": 30,\n        \"expected_check_in_time\": \"08:00:00\"\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Get My Statistik",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/user/statistik",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "user", "statistik"]
+                        },
+                        "description": "Get personal statistics for the authenticated user"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/user/statistik",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "user", "statistik"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Statistik berhasil diambil\",\n    \"data\": {\n        \"persentase_kehadiran\": 95.5,\n        \"jumlah_tidak_masuk\": 3,\n        \"jumlah_masuk\": 22,\n        \"jumlah_telat\": 2,\n        \"jumlah_izin\": 1,\n        \"jumlah_sakit\": 2\n    }\n}"
+                        }
+                    ]
+                }
+            ],
+            "description": "Endpoints for the authenticated user (requires Bearer {{token}})"
+        },
+        {
+            "name": "Card-based Attendance",
+            "item": [
+                {
+                    "name": "Card Check In",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nip\": \"123456789\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/card/check-in",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "card", "check-in"]
+                        },
+                        "description": "Check in using card/NIP. System will automatically fill location data based on office settings."
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"latitude\": -6.2088,\n    \"longitude\": 106.8456,\n    \"keterangan\": \"Tepat waktu\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/card/check-in",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "card", "check-in"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Absen masuk berhasil\",\n    \"data\": {\n        \"attendance_id\": 1,\n        \"user_name\": \"John Doe\",\n        \"nip\": \"123456789\",\n        \"check_in_time\": \"08:00:00\",\n        \"type\": \"card\",\n        \"location\": \"Kantor Pusat\"\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Card Check Out",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nip\": \"123456789\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/card/check-out",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "card", "check-out"]
+                        },
+                        "description": "Check out using card/NIP. Calculates total working hours automatically."
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"latitude\": -6.2088,\n    \"longitude\": 106.8456,\n    \"keterangan\": \"Pulang tepat waktu\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/card/check-out",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "card", "check-out"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Absen pulang berhasil\",\n    \"data\": {\n        \"attendance_id\": 1,\n        \"user_name\": \"John Doe\",\n        \"nip\": \"123456789\",\n        \"check_in_time\": \"08:00:00\",\n        \"check_out_time\": \"17:00:00\",\n        \"working_hours\": \"9 jam 0 menit\",\n        \"total_minutes\": 540,\n        \"type\": \"card\",\n        \"location\": \"Kantor Pusat\"\n    }\n}"
+                        }
+                    ]
+                }
+            ],
+            "description": "Card-based attendance endpoints using NIP (no authentication required)"
+        },
+        {
+            "name": "Mobile-based Attendance",
+            "item": [
+                {
+                    "name": "Mobile Check In",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"latitude\": -6.2088,\n    \"longitude\": 106.8456,\n    \"keterangan\": \"Tepat waktu\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/mobile/check-in",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "mobile", "check-in"]
+                        },
+                        "description": "Mobile check in using GPS coordinates. Validates location radius and requires user authentication."
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"latitude\": -6.2088,\n    \"longitude\": 106.8456,\n    \"keterangan\": \"Tepat waktu\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/mobile/check-in",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "mobile", "check-in"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Absen masuk berhasil\",\n    \"data\": {\n        \"attendance_id\": 1,\n        \"user_name\": \"John Doe\",\n        \"check_in_time\": \"08:00:00\",\n        \"type\": \"mobile\",\n        \"location\": \"Kantor Pusat\",\n        \"distance_from_office\": \"15 meter\"\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Mobile Check Out",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"latitude\": -6.2088,\n    \"longitude\": 106.8456,\n    \"keterangan\": \"Pulang tepat waktu\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/mobile/check-out",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "mobile", "check-out"]
+                        },
+                        "description": "Mobile check out using GPS coordinates. Validates location radius and calculates working hours."
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"latitude\": -6.2088,\n    \"longitude\": 106.8456,\n    \"keterangan\": \"Pulang tepat waktu\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/mobile/check-out",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "mobile", "check-out"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Absen pulang berhasil\",\n    \"data\": {\n        \"attendance_id\": 1,\n        \"user_name\": \"John Doe\",\n        \"check_in_time\": \"08:00:00\",\n        \"check_out_time\": \"17:00:00\",\n        \"working_hours\": \"9 jam 0 menit\",\n        \"total_minutes\": 540,\n        \"type\": \"mobile\",\n        \"location\": \"Kantor Pusat\",\n        \"distance_from_office\": \"20 meter\"\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Get Today Status",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/today-status",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "today-status"]
+                        },
+                        "description": "Get today's attendance status for the authenticated user"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/today-status",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "today-status"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"data\": {\n        \"date\": \"2025-08-11\",\n        \"has_checked_in\": true,\n        \"has_checked_out\": false,\n        \"check_in_time\": \"08:00:00\",\n        \"check_out_time\": null,\n        \"is_late\": false\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Get Attendance History",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/history?limit=10&month=8&year=2025",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "history"],
+                            "query": [
+                                {
+                                    "key": "limit",
+                                    "value": "10",
+                                    "description": "Number of records to return (optional)"
+                                },
+                                {
+                                    "key": "month",
+                                    "value": "8",
+                                    "description": "Month filter (optional, 1-12)"
+                                },
+                                {
+                                    "key": "year",
+                                    "value": "2025",
+                                    "description": "Year filter (optional, YYYY format)"
+                                }
+                            ]
+                        },
+                        "description": "Get attendance history for the authenticated user with optional filters"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/history?limit=10&month=8&year=2025",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "history"],
+                                    "query": [
+                                        {
+                                            "key": "limit",
+                                            "value": "10"
+                                        },
+                                        {
+                                            "key": "month",
+                                            "value": "8"
+                                        },
+                                        {
+                                            "key": "year",
+                                            "value": "2025"
+                                        }
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Data riwayat absensi\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"date\": \"2025-08-11\",\n            \"day_name\": \"Monday\",\n            \"check_in_time\": \"08:00:00\",\n            \"check_out_time\": \"17:00:00\",\n            \"status\": \"on_time\",\n            \"status_text\": \"Tepat Waktu\",\n            \"location\": \"Kantor Pusat\",\n            \"keterangan\": null,\n            \"working_hours\": {\n                \"hours\": 9,\n                \"minutes\": 0\n            }\n        }\n    ]\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Create Absence Record",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "date_start",
+                                    "value": "2025-08-12",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "date_end",
+                                    "value": "2025-08-12",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "type",
+                                    "value": "sakit",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "description",
+                                    "value": "Demam tinggi",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "upload_attachment",
+                                    "type": "file",
+                                    "src": [],
+                                    "description": "Optional file attachment (e.g. medical certificate)"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/absence",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "absence"]
+                        },
+                        "description": "Create a new absence record for the authenticated user. Use form-data for file upload."
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "formdata",
+                                    "formdata": [
+                                        {
+                                            "key": "date_start",
+                                            "value": "2025-08-12",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "date_end",
+                                            "value": "2025-08-12",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "type",
+                                            "value": "sakit",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "description",
+                                            "value": "Demam tinggi",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "upload_attachment",
+                                            "type": "file",
+                                            "src": []
+                                        }
+                                    ]
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/absence",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "absence"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Absensi berhasil dibuat\",\n    \"data\": {\n        \"id\": 1,\n        \"user_id\": 1,\n        \"date_start\": \"2025-08-12\",\n        \"date_end\": \"2025-08-12\",\n        \"type\": \"sakit\",\n        \"description\": \"Demam tinggi\",\n        \"upload_attachment\": null,\n        \"is_approved\": false\n    }\n}"
+                        }
+                    ]
+                }
+            ],
+            "description": "Mobile-based attendance endpoints using GPS (requires Bearer {{token}})"
+        },
+        {
+            "name": "User Management",
+            "item": [
+                {
+                    "name": "Create User",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"password123\",\n    \"nip\": \"EMP001\",\n    \"telepon\": \"081234567890\",\n    \"divisi\": \"IT\",\n    \"mapel\": \"Programming\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/user",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "user"]
+                        },
+                        "description": "Create a new user (employee). Password is optional - if not provided, NIP will be used as default password."
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"password123\",\n    \"nip\": \"EMP001\",\n    \"telepon\": \"081234567890\",\n    \"divisi\": \"IT\",\n    \"mapel\": \"Programming\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/user",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "user"]
+                                }
+                            },
+                            "status": "Created",
+                            "code": 201,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": true,\n    \"message\": \"User created successfully\",\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"John Doe\",\n        \"email\": \"john.doe@example.com\",\n        \"nip\": \"EMP001\",\n        \"telepon\": \"081234567890\",\n        \"divisi\": \"IT\",\n        \"mapel\": \"Programming\",\n        \"created_at\": \"2025-08-09T00:00:00.000000Z\",\n        \"updated_at\": \"2025-08-09T00:00:00.000000Z\"\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Get All Users",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/user?search=&page=1&per_page=10&sort_field=id&sort_order=asc",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "user"],
+                            "query": [
+                                {
+                                    "key": "search",
+                                    "value": "",
+                                    "description": "Search term for name, email, nip, telepon, divisi, or mapel"
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "description": "Page number for pagination"
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "10",
+                                    "description": "Number of items per page"
+                                },
+                                {
+                                    "key": "sort_field",
+                                    "value": "id",
+                                    "description": "Field to sort by (id, name, email, nip, telepon, divisi, mapel, created_at, updated_at)"
+                                },
+                                {
+                                    "key": "sort_order",
+                                    "value": "asc",
+                                    "description": "Sort order (asc or desc)"
+                                }
+                            ]
+                        },
+                        "description": "Retrieve all users with pagination, search, and sorting functionality"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/user?page=1&per_page=10",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "user"],
+                                    "query": [
+                                        {
+                                            "key": "page",
+                                            "value": "1"
+                                        },
+                                        {
+                                            "key": "per_page",
+                                            "value": "10"
+                                        }
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Data found\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"name\": \"John Doe\",\n            \"email\": \"john.doe@example.com\",\n            \"nip\": \"EMP001\",\n            \"telepon\": \"081234567890\",\n            \"divisi\": \"IT\",\n            \"mapel\": \"Programming\",\n            \"created_at\": \"2025-08-09T00:00:00.000000Z\",\n            \"updated_at\": \"2025-08-09T00:00:00.000000Z\"\n        }\n    ],\n    \"meta\": {\n        \"current_page\": 1,\n        \"last_page\": 1,\n        \"per_page\": 10,\n        \"total\": 1,\n        \"sort_field\": \"id\",\n        \"sort_order\": \"asc\",\n        \"search_query\": null\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Get User by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/user/{{user_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "user", "{{user_id}}"]
+                        },
+                        "description": "Retrieve a specific user by their ID"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/user/1",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "user", "1"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Data found\",\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"John Doe\",\n        \"email\": \"john.doe@example.com\",\n        \"nip\": \"EMP001\",\n        \"telepon\": \"081234567890\",\n        \"divisi\": \"IT\",\n        \"mapel\": \"Programming\",\n        \"created_at\": \"2025-08-09T00:00:00.000000Z\",\n        \"updated_at\": \"2025-08-09T00:00:00.000000Z\"\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Get User Detail with Attendance History",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/user/{{user_id}}/absences",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "user", "{{user_id}}", "absences"]
+                        },
+                        "description": "Retrieve user details along with their complete attendance and absence history"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/user/1/absences",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "user", "1", "absences"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Detail data guru dan riwayat absensi berhasil diambil.\",\n    \"data\": {\n        \"user\": {\n            \"id\": 1,\n            \"name\": \"John Doe\",\n            \"email\": \"john.doe@example.com\",\n            \"nip\": \"EMP001\",\n            \"telepon\": \"081234567890\",\n            \"divisi\": \"IT\",\n            \"mapel\": \"Programming\"\n        },\n        \"riwayat_absensi\": [\n            {\n                \"tanggal\": \"2025-08-09\",\n                \"waktu\": \"08:30:00\",\n                \"metode-absen\": \"manual\",\n                \"lokasi\": \"Kantor Pusat\",\n                \"status\": \"Hadir\",\n                \"keterangan\": null\n            },\n            {\n                \"tanggal\": \"2025-08-08\",\n                \"waktu\": \"-\",\n                \"metode-absen\": \"sakit\",\n                \"lokasi\": \"-\",\n                \"status\": \"Tidak Hadir\",\n                \"keterangan\": \"sakit\"\n            }\n        ]\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Update User",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"John Smith\",\n    \"email\": \"john.smith@example.com\",\n    \"telepon\": \"081234567891\",\n    \"divisi\": \"HR\",\n    \"mapel\": \"Management\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/user/{{user_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "user", "{{user_id}}"]
+                        },
+                        "description": "Update an existing user's information. All fields are optional."
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"name\": \"John Smith\",\n    \"email\": \"john.smith@example.com\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/user/1",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "user", "1"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Success update data\"\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Delete User",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/user/{{user_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "user", "{{user_id}}"]
+                        },
+                        "description": "Delete a user from the system"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/user/1",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "user", "1"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Success delete data\"\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Import Users from Excel",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "src": [],
+                                    "description": "Excel file (.xlsx, .xls, .csv) with columns: nama, nip, email, no_telepon, divisi, mapel"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/user/import",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "user", "import"]
+                        },
+                        "description": "Import employee data from Excel file. File must be in xlsx, xls, or csv format with columns: nama, nip, email, no_telepon, divisi, mapel. Password will be set to NIP by default."
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "formdata",
+                                    "formdata": [
+                                        {
+                                            "key": "file",
+                                            "type": "file",
+                                            "src": []
+                                        }
+                                    ]
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/user/import",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "user", "import"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Data karyawan berhasil diimport.\"\n}"
+                        }
+                    ]
+                }
+            ],
+            "description": "CRUD operations for user management"
+        },
+        {
+            "name": "Absences",
+            "item": [
+                {
+                    "name": "Get All Absences",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/absences",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "absences"]
+                        },
+                        "description": "Get all absence records with pagination (Admin only)"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/absences",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "absences"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Data absensi berhasil diambil\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"user_id\": 1,\n            \"user_name\": \"John Doe\",\n            \"date_start\": \"2025-08-11\",\n            \"date_end\": \"2025-08-11\",\n            \"type\": \"sakit\",\n            \"is_approved\": false,\n            \"description\": \"Demam tinggi\",\n            \"upload_attachment\": null\n        }\n    ]\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Get Today's Attendance",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/absences/today",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "absences", "today"]
+                        },
+                        "description": "Get today's attendance records for all users (Admin only)"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/absences/today",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "absences", "today"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Data absensi hari ini berhasil diambil\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"user_id\": 1,\n            \"user_name\": \"John Doe\",\n            \"date\": \"2025-08-11\",\n            \"check_in_time\": \"08:00:00\",\n            \"check_out_time\": null,\n            \"type\": \"mobile\",\n            \"location\": \"Kantor Pusat\",\n            \"status\": \"present\"\n        }\n    ]\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Get Absence By ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/absences/1",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "absences", "1"]
+                        }
+                    },
+                    "response": [
+                        {
+                            "name": "Success",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/absences/1",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "absences", "1"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "body": "{\n  \"status\": \"success\",\n  \"data\": {\n    \"id\": 1,\n    \"user_id\": 1,\n    \"date_start\": \"2025-08-12\",\n    \"date_end\": \"2025-08-12\",\n    \"type\": \"sakit\",\n    \"is_approved\": false,\n    \"description\": \"Demam tinggi\",\n    \"upload_attachment\": \"attachments/xxx.png\",\n    \"user\": {\n      \"id\": 1,\n      \"name\": \"Nama User\"\n    }\n  }\n}"
+                        },
+                        {
+                            "name": "Not Found",
+                            "status": "Not Found",
+                            "code": 404,
+                            "body": "{\n  \"status\": \"error\",\n  \"message\": \"Absence record not found\"\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Approve Absence for a User",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/absences/{{id}}/approve",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "absences", "{{id}}", "approve"]
+                        },
+                        "description": "Approve the absence record by ID (Admin only)"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "PATCH",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/absences/1/approve",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "absences", "1", "approve"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Absence approved successfully\"\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Filter Absences",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/absences/filter?date_start=2024-01-01&date_end=2024-12-31&type=izin",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "absences", "filter"],
+                            "query": [
+                                {
+                                    "key": "date_start",
+                                    "value": "2024-01-01",
+                                    "description": "Start date filter (optional)"
+                                },
+                                {
+                                    "key": "date_end",
+                                    "value": "2024-12-31",
+                                    "description": "End date filter (optional)"
+                                },
+                                {
+                                    "key": "type",
+                                    "value": "izin",
+                                    "description": "Absence type: izin, sakit, alpa (optional)"
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "description": "Page number for pagination (optional)",
+                                    "disabled": true
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Export Absences",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/absences/export?date_start=2024-01-01&date_end=2024-12-31",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "absences", "export"],
+                            "query": [
+                                {
+                                    "key": "date_start",
+                                    "value": "2024-01-01",
+                                    "description": "Start date for export (required)"
+                                },
+                                {
+                                    "key": "date_end",
+                                    "value": "2024-12-31",
+                                    "description": "End date for export (required)"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ],
+            "description": "Absence management endpoints (Admin only)"
+        },
+        {
+            "name": "Statistics",
+            "item": [
+                {
+                    "name": "Get Dashboard Statistics",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/dashboard-statistik",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "dashboard-statistik"]
+                        },
+                        "description": "Get today's dashboard statistics including total employees, present employees, late arrivals, and absent employees"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/dashboard-statistik",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "dashboard-statistik"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Statistik harian berhasil diambil\",\n    \"data\": {\n        \"tanggal\": \"2025-08-10\",\n        \"total_karyawan\": 2,\n        \"total_hadir\": 0,\n        \"total_terlambat\": 0,\n        \"total_tidak_hadir\": 2\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Get Monthly Statistics",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/statistik-bulanan?month=januari&year={{current_year}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "statistik-bulanan"],
+                            "query": [
+                                {
+                                    "key": "month",
+                                    "value": "januari",
+                                    "description": "Month name in Indonesian (januari, februari, etc.) or English (january, february, etc.) - required"
+                                },
+                                {
+                                    "key": "year",
+                                    "value": "{{current_year}}",
+                                    "description": "Year in YYYY format (optional, defaults to current year)"
+                                }
+                            ]
+                        },
+                        "description": "Get monthly attendance statistics for a specific month and year, including attendance, sick leave, permission, and unauthorized absences"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/statistik-bulanan?month=januari&year=2025",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "statistik-bulanan"],
+                                    "query": [
+                                        {
+                                            "key": "month",
+                                            "value": "januari"
+                                        },
+                                        {
+                                            "key": "year",
+                                            "value": "2025"
+                                        }
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"success\": true,\n    \"message\": \"Data Statistik Bulanan\",\n    \"bulan\": \"januari\",\n    \"data\": {\n        \"hadir\": 38,\n        \"sakit\": 3,\n        \"izin\": 2,\n        \"tanpa_keterangan\": 1\n    }\n}"
+                        },
+                        {
+                            "name": "Validation Error Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/statistik-bulanan?month=invalid_month",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "statistik-bulanan"],
+                                    "query": [
+                                        {
+                                            "key": "month",
+                                            "value": "invalid_month"
+                                        }
+                                    ]
+                                }
+                            },
+                            "status": "Unprocessable Entity",
+                            "code": 422,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"success\": false,\n    \"message\": \"Nama bulan tidak valid\"\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Get Annual Statistics",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/statistik-tahunan?year={{current_year}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "statistik-tahunan"],
+                            "query": [
+                                {
+                                    "key": "year",
+                                    "value": "{{current_year}}",
+                                    "description": "Year for statistics (YYYY format, required)"
+                                }
+                            ]
+                        },
+                        "description": "Get annual attendance statistics including monthly breakdown and yearly totals for attendance, sick leave, permission, and unauthorized absences"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/statistik-tahunan?year=2025",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "statistik-tahunan"],
+                                    "query": [
+                                        {
+                                            "key": "year",
+                                            "value": "2025"
+                                        }
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"success\": true,\n    \"message\": \"Data Statistik Tahunan\",\n    \"data\": {\n        \"tahun\": 2025,\n        \"total_statistik_tahunan\": {\n            \"hadir\": 450,\n            \"sakit\": 25,\n            \"izin\": 15,\n            \"tanpa_keterangan\": 10\n        },\n        \"data_bulanan\": [\n            {\n                \"bulan\": \"Januari\",\n                \"hadir\": 38,\n                \"sakit\": 3,\n                \"izin\": 2,\n                \"tanpa_keterangan\": 1\n            },\n            {\n                \"bulan\": \"Februari\",\n                \"hadir\": 36,\n                \"sakit\": 2,\n                \"izin\": 1,\n                \"tanpa_keterangan\": 1\n            },\n            {\n                \"bulan\": \"Maret\",\n                \"hadir\": 40,\n                \"sakit\": 2,\n                \"izin\": 1,\n                \"tanpa_keterangan\": 0\n            }\n        ]\n    }\n}"
+                        }
+                    ]
+                }
+            ],
+            "description": "Statistical data and reports for attendance management"
+        },
+        {
+            "name": "Settings",
+            "item": [
+                {
+                    "name": "Get Settings",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/settings",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "settings"]
+                        },
+                        "description": "Retrieve work schedule and location settings. If no settings exist, it will create default settings."
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/settings",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "settings"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"success\": true,\n    \"message\": \"Settings retrieved successfully\",\n    \"data\": {\n        \"id\": 1,\n        \"monday_start_time\": \"08:00\",\n        \"monday_end_time\": \"17:00\",\n        \"monday_is_active\": true,\n        \"tuesday_start_time\": \"08:00\",\n        \"tuesday_end_time\": \"17:00\",\n        \"tuesday_is_active\": true,\n        \"wednesday_start_time\": \"08:00\",\n        \"wednesday_end_time\": \"17:00\",\n        \"wednesday_is_active\": true,\n        \"thursday_start_time\": \"08:00\",\n        \"thursday_end_time\": \"17:00\",\n        \"thursday_is_active\": true,\n        \"friday_start_time\": \"08:00\",\n        \"friday_end_time\": \"17:00\",\n        \"friday_is_active\": true,\n        \"saturday_start_time\": \"08:00\",\n        \"saturday_end_time\": \"12:00\",\n        \"saturday_is_active\": false,\n        \"location_name\": \"Kantor Pusat\",\n        \"latitude\": -6.2088,\n        \"longitude\": 106.8456,\n        \"radius\": 100,\n        \"created_at\": \"2025-08-09T00:00:00.000000Z\",\n        \"updated_at\": \"2025-08-09T00:00:00.000000Z\"\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Save Settings",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"monday_start_time\": \"08:00\",\n    \"monday_end_time\": \"17:00\",\n    \"monday_is_active\": true,\n    \"tuesday_start_time\": \"08:00\",\n    \"tuesday_end_time\": \"17:00\",\n    \"tuesday_is_active\": true,\n    \"wednesday_start_time\": \"08:00\",\n    \"wednesday_end_time\": \"17:00\",\n    \"wednesday_is_active\": true,\n    \"thursday_start_time\": \"08:00\",\n    \"thursday_end_time\": \"17:00\",\n    \"thursday_is_active\": true,\n    \"friday_start_time\": \"08:00\",\n    \"friday_end_time\": \"17:00\",\n    \"friday_is_active\": true,\n    \"saturday_start_time\": \"08:00\",\n    \"saturday_end_time\": \"12:00\",\n    \"saturday_is_active\": false,\n    \"location_name\": \"Kantor Pusat\",\n    \"latitude\": -6.2088,\n    \"longitude\": 106.8456,\n    \"radius\": 100\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/settings",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "settings"]
+                        },
+                        "description": "Save or update work schedule and location settings. All fields are required with specific validation rules."
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"monday_start_time\": \"08:00\",\n    \"monday_end_time\": \"17:00\",\n    \"monday_is_active\": true,\n    \"tuesday_start_time\": \"08:00\",\n    \"tuesday_end_time\": \"17:00\",\n    \"tuesday_is_active\": true,\n    \"wednesday_start_time\": \"08:00\",\n    \"wednesday_end_time\": \"17:00\",\n    \"wednesday_is_active\": true,\n    \"thursday_start_time\": \"08:00\",\n    \"thursday_end_time\": \"17:00\",\n    \"thursday_is_active\": true,\n    \"friday_start_time\": \"08:00\",\n    \"friday_end_time\": \"17:00\",\n    \"friday_is_active\": true,\n    \"saturday_start_time\": \"08:00\",\n    \"saturday_end_time\": \"12:00\",\n    \"saturday_is_active\": false,\n    \"location_name\": \"Kantor Pusat\",\n    \"latitude\": -6.2088,\n    \"longitude\": 106.8456,\n    \"radius\": 100\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/settings",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "settings"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"success\": true,\n    \"message\": \"Settings saved successfully\",\n    \"data\": {\n        \"id\": 1,\n        \"monday_start_time\": \"08:00\",\n        \"monday_end_time\": \"17:00\",\n        \"monday_is_active\": true,\n        \"tuesday_start_time\": \"08:00\",\n        \"tuesday_end_time\": \"17:00\",\n        \"tuesday_is_active\": true,\n        \"wednesday_start_time\": \"08:00\",\n        \"wednesday_end_time\": \"17:00\",\n        \"wednesday_is_active\": true,\n        \"thursday_start_time\": \"08:00\",\n        \"thursday_end_time\": \"17:00\",\n        \"thursday_is_active\": true,\n        \"friday_start_time\": \"08:00\",\n        \"friday_end_time\": \"17:00\",\n        \"friday_is_active\": true,\n        \"saturday_start_time\": \"08:00\",\n        \"saturday_end_time\": \"12:00\",\n        \"saturday_is_active\": false,\n        \"location_name\": \"Kantor Pusat\",\n        \"latitude\": -6.2088,\n        \"longitude\": 106.8456,\n        \"radius\": 100,\n        \"created_at\": \"2025-08-09T00:00:00.000000Z\",\n        \"updated_at\": \"2025-08-09T00:00:00.000000Z\"\n    }\n}"
+                        },
+                        {
+                            "name": "Validation Error Response",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"monday_start_time\": \"invalid_time\",\n    \"latitude\": 200\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/settings",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "settings"]
+                                }
+                            },
+                            "status": "Unprocessable Entity",
+                            "code": 422,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n    \"message\": \"The given data was invalid.\",\n    \"errors\": {\n        \"monday_start_time\": [\n            \"The monday start time does not match the format H:i.\"\n        ],\n        \"latitude\": [\n            \"The latitude must be between -90 and 90.\"\n        ]\n    }\n}"
+                        }
+                    ]
+                }
+            ],
+            "description": "Work schedule and location settings management"
+        },
+        {
+            "name": "Attendance",
+            "description": "Attendance endpoints: Check In, Check Out, and Attendance History",
+            "item": [
+                {
+                    "name": "Absen Masuk (Check In)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            { "key": "Accept", "value": "application/json" },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"user_id\": {{user_id}},\n    \"latitude\": -6.2,\n    \"longitude\": 106.8,\n    \"type\": \"mobile\",\n    \"keterangan\": \"Tepat waktu\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/check-in",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "check-in"]
+                        },
+                        "description": "Melakukan absen masuk untuk user. Validasi lokasi, jadwal kerja, dan status keterlambatan."
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Absen masuk berhasil\",\n    \"data\": {\n        \"attendance_id\": 1,\n        \"check_in_time\": \"2025-08-09T08:00:00.000000Z\",\n        \"status\": \"mobile\",\n        \"location\": \"Kantor Pusat\",\n        \"is_late\": false,\n        \"distance\": 10.5\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Absen Pulang (Check Out)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            { "key": "Accept", "value": "application/json" },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"user_id\": {{user_id}},\n    \"latitude\": -6.2,\n    \"longitude\": 106.8,\n    \"keterangan\": \"Pulang tepat waktu\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/check-out",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "check-out"]
+                        },
+                        "description": "Melakukan absen pulang untuk user. Menghitung total jam kerja."
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Absen pulang berhasil\",\n    \"data\": {\n        \"attendance_id\": 1,\n        \"check_in_time\": \"2025-08-09T08:00:00.000000Z\",\n        \"check_out_time\": \"2025-08-09T17:00:00.000000Z\",\n        \"working_hours\": \"9 jam 0 menit\",\n        \"total_minutes\": 540,\n        \"location\": \"Kantor Pusat\",\n        \"distance\": 10.5\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Riwayat Absensi (Attendance History)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/history?user_id={{user_id}}&limit=10&month=8&year=2025",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "history"],
+                            "query": [
+                                { "key": "user_id", "value": "{{user_id}}" },
+                                { "key": "limit", "value": "10" },
+                                { "key": "month", "value": "8" },
+                                { "key": "year", "value": "2025" }
+                            ]
+                        },
+                        "description": "Mengambil riwayat absensi user dengan filter bulan, tahun, dan paginasi."
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "body": "{\n    \"status\": \"success\",\n    \"message\": \"Data riwayat absensi\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"date\": \"2025-08-09\",\n            \"day_name\": \"Saturday\",\n            \"check_in_time\": \"08:00:00\",\n            \"check_out_time\": \"17:00:00\",\n            \"status\": \"on_time\",\n            \"status_text\": \"Tepat Waktu\",\n            \"location\": \"Kantor Pusat\",\n            \"keterangan\": null,\n            \"working_hours\": {\n                \"hours\": 9,\n                \"minutes\": 0\n            }\n        }\n    ]\n}"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    "// Set current year variable",
+                    "pm.globals.set('current_year', new Date().getFullYear());"
+                ]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    "// Check if response is successful",
+                    "pm.test('Status code is 200 or 201', function () {",
+                    "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                    "});",
+                    "",
+                    "// Parse response and set tokens",
+                    "if (pm.response.code === 200 || pm.response.code === 201) {",
+                    "    const responseJson = pm.response.json();",
+                    "    ",
+                    "    // Set token for user login",
+                    "    if (responseJson.token && pm.info.requestName === 'User Login') {",
+                    "        pm.globals.set('token', responseJson.token);",
+                    "    }",
+                    "    ",
+                    "    // Set token for admin login",
+                    "    if (responseJson.data && responseJson.data.token && pm.info.requestName === 'Admin Login') {",
+                    "        pm.globals.set('admin_token', responseJson.data.token);",
+                    "    }",
+                    "}"
+                ]
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8000",
+            "type": "string"
+        },
+        {
+            "key": "token",
+            "value": "",
+            "type": "string",
+            "description": "User authentication token"
+        },
+        {
+            "key": "admin_token",
+            "value": "",
+            "type": "string",
+            "description": "Admin authentication token"
+        },
+        {
+            "key": "user_id",
+            "value": "1",
+            "type": "string",
+            "description": "Sample user ID for testing"
+        },
+        {
+            "key": "admin_id",
+            "value": "1",
+            "type": "string",
+            "description": "Sample admin ID for testing"
+        },
+        {
+            "key": "current_year",
+            "value": "2025",
+            "type": "string",
+            "description": "Current year for statistics"
+        }
+    ]
 }

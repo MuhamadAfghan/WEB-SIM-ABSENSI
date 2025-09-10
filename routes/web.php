@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Support\Facades\DB;  
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,9 +13,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-use Illuminate\Support\Facades\DB;
-Route::post('/users/upload', [App\Http\Controllers\UserCrudController::class, 'uploadUserExcel'])
-    ->name('users.upload');
 
 Route::get('/', function () {
     try {
@@ -33,28 +30,32 @@ Route::get('/login', function () {
     return view('login');
 })->name('login');
 
-// Dashboard Routes
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->name('dashboard');
+Route::middleware(['islogin'])->group(function () {
+    // Dashboard Routes
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
 
+    // Employee Management Routes
+    Route::get('/employees', function () {
+        return view('data-karyawan');
+    })->name('employees');
 
+    Route::get('/employees/{id}', function ($id) {
+        return view('detail-data-karyawan', ['id' => $id]);
+    })->name('employee.details');
 
-// Employee Management Routes
-Route::get('/employees', function () {
-    return view('data-karyawan');
-})->name('employees');
+    // Attendance Routes
+    Route::get('/attendance', function () {
+        return view('data-absensi');
+    })->name('attendance');
 
-Route::get('/employee-details', function () {
-    return view('detail-data-karyawan');
-})->name('employee.details');
+    // Account Management Routes
+    Route::get('/account-management', function () {
+        return view('account-management');
+    })->name('account.management');
 
-// Attendance Routes
-Route::get('/attendance', function () {
-    return view('data-absensi');
-})->name('attendance');
-
-// Account Management Routes
-Route::get('/account-management', function () {
-    return view('account-management');
-})->name('account.management');
+    Route::get('/preview/form-karyawan', function () {
+        return view('preview-form-karyawan');
+    });
+});

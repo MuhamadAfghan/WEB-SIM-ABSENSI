@@ -59,7 +59,8 @@ class AdminAuthController extends Controller
                     'serial_number' => $serialNumber,
                     'admin' => $admin,
                 ]
-            ]);
+            ])
+            ->cookie('auth_token', $token, 60, '/', null, false, true);
         } catch (ValidationException $e) {
             return response()->json([
                 'status' => 'warning',

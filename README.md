@@ -20,12 +20,12 @@ Ikuti langkah-langkah berikut untuk mengkloning repository ke komputer Anda:
 
 4. **Klon repository:**
    ```bash
-   git clone https://github.com/MuhamadAfghan/SIM-ABSENSI.git
+   git clone https://github.com/MuhamadAfghan/WEB-SIM-ABSENSI.git
    ```
 
 5. **Masuk ke folder proyek:**
    ```bash
-   cd SIM-ABSENSI
+   cd WEB-SIM-ABSENSI
    ```
 
 6. **Instal dependensi proyek:**
