@@ -26,6 +26,10 @@
             color: #F59E42;
         }
 
+        .status-tidak-hadir {
+            color: #EF4444;
+        }
+
         .status-pending {
             color: #6B7280;
         }
@@ -188,6 +192,9 @@
         </table>
     </div>
 
+    {{-- Modal Izin/Cuti/Sakit --}}
+    @include('components.absensi.modal-absensi')
+
     <!-- Pagination -->
     <div class="flex items-center justify-end gap-2 p-4" id="paginationContainer">
         <!-- Pagination akan diisi oleh JavaScript -->
@@ -301,6 +308,25 @@
                     const arrivalTime = item.check_in_time || '--:--';
                     const departureTime = item.check_out_time || '--:--';
                     const lokasi = item.lokasi || '-';
+                    const note = item.description || item.keterangan || '';
+                    const isAbsence = tipe !== 'hadir';
+                    const openAction = isAbsence
+                        ? `loadAbsenceDetailAndOpen(${item.id}, \`${userName}\`)`
+                        : `AbsenceModal.open({kind:'attendance', id:${item.id}, userName:\`${userName}\`, note:\`${note}\`, imageUrl:''})`;
+
+                    // Determine status class based on tipe
+                    let statusClass = '';
+                    if (tipe === 'hadir') {
+                        statusClass = 'status-hadir';
+                    } else if (tipe === 'sakit') {
+                        statusClass = 'status-sakit';
+                    } else if (tipe === 'izin') {
+                        statusClass = 'status-izin';
+                    } else if (tipe === 'tidak hadir') {
+                        statusClass = 'status-tidak-hadir';
+                    } else {
+                        statusClass = 'status-pending';
+                    }
 
                     tableBody.innerHTML += `
                         <tr>
@@ -308,7 +334,9 @@
                             <td class="px-4 py-1.5">
                                 ${userName}
                             </td>
-                            <td class="px-4 py-1.5">${tipe}</td>
+                            <td class="px-4 py-1.5">
+                                <button class="${statusClass} hover:opacity-80 font-medium" onclick="${openAction}">${tipe}</button>
+                            </td>
                             <td class="px-4 py-1.5">${arrivalTime}</td>
                             <td class="px-4 py-1.5">${departureTime}</td>
                             <td class="px-4 py-1.5">${tipe == 'hadir' ? tipe : type}</td>

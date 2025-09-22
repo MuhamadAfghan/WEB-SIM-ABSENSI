@@ -1,0 +1,191 @@
+<div id="absenceModal" class="fixed inset-0 z-50 hidden">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-black/50"></div>
+
+    <!-- Modal Card -->
+    <div class="relative mx-auto mt-10 w-[800px] rounded-xl bg-white shadow-2xl">
+        <!-- Header -->
+        <div class="flex items-center justify-between border-b px-6 py-4">
+            <div class="flex items-center gap-3">
+                <button type="button" id="absenceModalCloseBtn" class="text-gray-400 hover:text-gray-600 text-2xl font-bold">&times;</button>
+                <h3 class="text-lg font-bold text-black">Surat Persetujuan Izin/Sakit:</h3>
+            </div>
+            <div class="text-right font-medium text-black" id="absenceModalUserName">-</div>
+        </div>
+
+        <!-- Body -->
+        <div class="grid grid-cols-2 gap-6 px-6 py-5">
+            <!-- Foto -->
+            <div>
+                <div class="mb-2 text-sm font-semibold text-black">Foto:</div>
+                <div class="flex h-56 w-full items-center justify-center rounded-lg bg-gray-200">
+                    <img id="absenceModalImage" alt="Lampiran" class="h-full w-full rounded-lg object-contain hidden" />
+                    <span id="absenceModalImagePlaceholder" class="text-gray-500 font-normal text-lg">Pictures</span>
+                </div>
+            </div>
+
+            <!-- Catatan -->
+            <div>
+                <div class="mb-2 text-sm font-semibold text-black">Catatan:</div>
+                <div class="flex h-56 w-full items-center justify-center rounded-lg bg-gray-200">
+                    <div id="absenceModalNote" class="h-full w-full overflow-auto whitespace-pre-wrap text-gray-700 p-4"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="flex items-center justify-end gap-3 px-6 pb-6">
+            <button type="button" id="absenceRejectBtn"
+                class="rounded-lg bg-[#F15A4A] px-5 py-2 text-white shadow hover:brightness-95">Tolak</button>
+            <button type="button" id="absenceApproveBtn"
+                class="rounded-lg bg-[#60A5FA] px-5 py-2 text-white shadow hover:brightness-95">Setujui</button>
+        </div>
+    </div>
+
+    <script>
+        // Safe-guard: only register once
+        (function () {
+            if (window.__absenceModalBound) return;
+            window.__absenceModalBound = true;
+
+            const modal = document.getElementById('absenceModal');
+            const closeBtn = document.getElementById('absenceModalCloseBtn');
+            const nameEl = document.getElementById('absenceModalUserName');
+            const noteEl = document.getElementById('absenceModalNote');
+            const imgEl = document.getElementById('absenceModalImage');
+            const imgPh = document.getElementById('absenceModalImagePlaceholder');
+            const approveBtn = document.getElementById('absenceApproveBtn');
+            const rejectBtn = document.getElementById('absenceRejectBtn');
+
+            let currentContext = null; // {kind: 'attendance'|'absence', id, userName}
+
+            function openModal(ctx) {
+                currentContext = ctx;
+                nameEl.textContent = ctx.userName || '-';
+                noteEl.textContent = ctx.note || '-';
+
+                // Handle image display
+                if (ctx.imageUrl && ctx.imageUrl.trim() !== '') {
+                    imgEl.src = ctx.imageUrl;
+                    imgEl.classList.remove('hidden');
+                    imgPh.classList.add('hidden');
+                    
+                    // Handle image load error
+                    imgEl.onerror = function() {
+                        imgEl.classList.add('hidden');
+                        imgPh.classList.remove('hidden');
+                        imgPh.textContent = 'Gagal memuat gambar';
+                    };
+                } else {
+                    imgEl.src = '';
+                    imgEl.classList.add('hidden');
+                    imgPh.classList.remove('hidden');
+                    imgPh.textContent = 'Pictures';
+                }
+
+                // Show/Hide action buttons: only for absence requests
+                const showAction = ctx.kind === 'absence' && !!ctx.id;
+                approveBtn.classList.toggle('hidden', !showAction);
+                rejectBtn.classList.toggle('hidden', !showAction);
+
+                modal.classList.remove('hidden');
+                document.body.classList.add('overflow-hidden');
+            }
+
+            function closeModal() {
+                modal.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            }
+
+            // Public API used by pages
+            window.AbsenceModal = {
+                open: openModal,
+                close: closeModal
+            };
+
+            closeBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+
+            async function sendApproval(isApproved) {
+                if (!currentContext || currentContext.kind !== 'absence' || !currentContext.id) return;
+                
+                // Show confirmation alert
+                const action = isApproved ? 'menyetujui' : 'menolak';
+                const confirmed = confirm(`Apakah Anda yakin ingin ${action} pengajuan ini?`);
+                if (!confirmed) return;
+                
+                try {
+                    approveBtn.disabled = true;
+                    rejectBtn.disabled = true;
+                    const res = await fetch(`/api/absences/${currentContext.id}/approve`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                        body: JSON.stringify({ is_approved: !!isApproved })
+                    });
+                    
+                    if (!res.ok) throw new Error('Gagal memperbarui status');
+                    
+                    const result = await res.json();
+                    const statusText = isApproved ? 'disetujui' : 'ditolak';
+                    
+                    // Show success alert
+                    alert(`Pengajuan berhasil ${statusText}!`);
+                    
+                    closeModal();
+                    // Optional: refresh listing if helper exists on page
+                    if (typeof window.fetchAttendanceData === 'function') {
+                        window.fetchAttendanceData();
+                    }
+                } catch (err) {
+                    alert('Terjadi kesalahan: ' + (err.message || 'Gagal memproses permintaan'));
+                } finally {
+                    approveBtn.disabled = false;
+                    rejectBtn.disabled = false;
+                }
+            }
+
+            approveBtn.addEventListener('click', () => sendApproval(true));
+            rejectBtn.addEventListener('click', () => sendApproval(false));
+
+            // Expose helper to fetch detail by id (absence)
+            window.loadAbsenceDetailAndOpen = async function (id, userName) {
+                try {
+                    const res = await fetch(`/api/absences/${id}`);
+                    if (!res.ok) throw new Error('Gagal mengambil detail');
+                    const json = await res.json();
+                    const data = json.data || {};
+                    
+                    // Construct proper image URL
+                    let imageUrl = '';
+                    if (data.upload_attachment) {
+                        // Handle both relative and absolute paths
+                        if (data.upload_attachment.startsWith('http')) {
+                            imageUrl = data.upload_attachment;
+                        } else {
+                            imageUrl = `/storage/${data.upload_attachment}`;
+                        }
+                    }
+                    
+                    // Get user name from data if not provided
+                    const displayName = data.user && data.user.name ? data.user.name : userName;
+                    
+                    openModal({
+                        kind: 'absence',
+                        id: id,
+                        userName: displayName,
+                        note: data.description || '-',
+                        imageUrl: imageUrl
+                    });
+                } catch (e) {
+                    alert('Tidak dapat membuka detail pengajuan: ' + e.message);
+                }
+            }
+        })();
+    </script>
+</div>
+
+
+
+
