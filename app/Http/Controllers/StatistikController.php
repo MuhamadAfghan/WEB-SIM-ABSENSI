@@ -216,7 +216,7 @@ class StatistikController extends Controller
                 ], 422);
             }
 
-            // Definisikan array months di dalam fungsi statistikBulanan
+           
             $months = [
                 'januari' => 1,
                 'februari' => 2,
