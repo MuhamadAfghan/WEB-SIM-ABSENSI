@@ -7,7 +7,8 @@
         <!-- Header -->
         <div class="flex items-center justify-between border-b px-6 py-4">
             <div class="flex items-center gap-3">
-                <button type="button" id="absenceModalCloseBtn" class="text-gray-400 hover:text-gray-600 text-2xl font-bold">&times;</button>
+                <button type="button" id="absenceModalCloseBtn"
+                    class="text-2xl font-bold text-gray-400 hover:text-gray-600">&times;</button>
                 <h3 class="text-lg font-bold text-black">Surat Persetujuan Izin/Sakit:</h3>
             </div>
             <div class="text-right font-medium text-black" id="absenceModalUserName">-</div>
@@ -19,8 +20,8 @@
             <div>
                 <div class="mb-2 text-sm font-semibold text-black">Foto:</div>
                 <div class="flex h-56 w-full items-center justify-center rounded-lg bg-gray-200">
-                    <img id="absenceModalImage" alt="Lampiran" class="h-full w-full rounded-lg object-contain hidden" />
-                    <span id="absenceModalImagePlaceholder" class="text-gray-500 font-normal text-lg">Pictures</span>
+                    <img id="absenceModalImage" alt="Lampiran" class="hidden h-full w-full rounded-lg object-contain" />
+                    <span id="absenceModalImagePlaceholder" class="text-lg font-normal text-gray-500">Pictures</span>
                 </div>
             </div>
 
@@ -28,7 +29,8 @@
             <div>
                 <div class="mb-2 text-sm font-semibold text-black">Catatan:</div>
                 <div class="flex h-56 w-full items-center justify-center rounded-lg bg-gray-200">
-                    <div id="absenceModalNote" class="h-full w-full overflow-auto whitespace-pre-wrap text-gray-700 p-4"></div>
+                    <div id="absenceModalNote"
+                        class="h-full w-full overflow-auto whitespace-pre-wrap p-4 text-gray-700"></div>
                 </div>
             </div>
         </div>
@@ -44,7 +46,7 @@
 
     <script>
         // Safe-guard: only register once
-        (function () {
+        (function() {
             if (window.__absenceModalBound) return;
             window.__absenceModalBound = true;
 
@@ -69,7 +71,7 @@
                     imgEl.src = ctx.imageUrl;
                     imgEl.classList.remove('hidden');
                     imgPh.classList.add('hidden');
-                    
+
                     // Handle image load error
                     imgEl.onerror = function() {
                         imgEl.classList.add('hidden');
@@ -110,29 +112,34 @@
 
             async function sendApproval(isApproved) {
                 if (!currentContext || currentContext.kind !== 'absence' || !currentContext.id) return;
-                
+
                 // Show confirmation alert
                 const action = isApproved ? 'menyetujui' : 'menolak';
                 const confirmed = confirm(`Apakah Anda yakin ingin ${action} pengajuan ini?`);
                 if (!confirmed) return;
-                
+
                 try {
                     approveBtn.disabled = true;
                     rejectBtn.disabled = true;
                     const res = await fetch(`/api/absences/${currentContext.id}/approve`, {
                         method: 'PATCH',
-                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                        body: JSON.stringify({ is_approved: !!isApproved })
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            is_approved: !!isApproved
+                        })
                     });
-                    
+
                     if (!res.ok) throw new Error('Gagal memperbarui status');
-                    
+
                     const result = await res.json();
                     const statusText = isApproved ? 'disetujui' : 'ditolak';
-                    
+
                     // Show success alert
                     alert(`Pengajuan berhasil ${statusText}!`);
-                    
+
                     closeModal();
                     // Optional: refresh listing if helper exists on page
                     if (typeof window.fetchAttendanceData === 'function') {
@@ -150,13 +157,13 @@
             rejectBtn.addEventListener('click', () => sendApproval(false));
 
             // Expose helper to fetch detail by id (absence)
-            window.loadAbsenceDetailAndOpen = async function (id, userName) {
+            window.loadAbsenceDetailAndOpen = async function(id, userName) {
                 try {
                     const res = await fetch(`/api/absences/${id}`);
                     if (!res.ok) throw new Error('Gagal mengambil detail');
                     const json = await res.json();
                     const data = json.data || {};
-                    
+
                     // Construct proper image URL
                     let imageUrl = '';
                     if (data.upload_attachment) {
@@ -167,10 +174,10 @@
                             imageUrl = `/storage/${data.upload_attachment}`;
                         }
                     }
-                    
+
                     // Get user name from data if not provided
                     const displayName = data.user && data.user.name ? data.user.name : userName;
-                    
+
                     openModal({
                         kind: 'absence',
                         id: id,
@@ -185,7 +192,3 @@
         })();
     </script>
 </div>
-
-
-
-
