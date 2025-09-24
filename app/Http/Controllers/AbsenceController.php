@@ -104,7 +104,7 @@ class AbsenceController extends Controller
                 'type' => $request->type,
                 'is_approved' => $request->is_approved ?? false,
                 'description' => $request->description,
-                'upload_attachment' => $request->file('upload_attachment') ? $request->file('upload_attachment')->store('attachments') : null
+                'upload_attachment' => $request->file('upload_attachment') ? $request->file('upload_attachment')->store('attachments', 'public') : null
             ]);
 
             return response()->json([

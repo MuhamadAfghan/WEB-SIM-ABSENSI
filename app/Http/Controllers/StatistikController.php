@@ -216,7 +216,6 @@ class StatistikController extends Controller
                 ], 422);
             }
 
-           
             $months = [
                 'januari' => 1,
                 'februari' => 2,
@@ -244,7 +243,6 @@ class StatistikController extends Controller
                 'december' => 12,
             ];
 
-            // Ambil bulan dari nama
             $monthName = strtolower($request->input('month'));
             $month = $months[$monthName] ?? null;
 
@@ -257,17 +255,71 @@ class StatistikController extends Controller
 
             $year = (int) ($request->input('year') ?? date('Y'));
 
-            // Rekap data absensi
-            $data = DB::table('attendances')
-                ->selectRaw("
-                SUM(CASE WHEN keterangan = 'hadir' THEN 1 ELSE 0 END) as hadir,
-                SUM(CASE WHEN keterangan = 'sakit' THEN 1 ELSE 0 END) as sakit,
-                SUM(CASE WHEN keterangan = 'izin' THEN 1 ELSE 0 END) as izin,
-                SUM(CASE WHEN keterangan IS NULL OR keterangan = '' THEN 1 ELSE 0 END) as tanpa_keterangan
-            ")
-                ->whereYear('date', $year)
-                ->whereMonth('date', $month)
-                ->first();
+            // Ambil setting jam terlambat
+            $setting = DB::table('settings')->first();
+
+            // Ambil semua user
+            $userIds = DB::table('users')->pluck('id')->toArray();
+
+            // Ambil semua tanggal di bulan ini
+            $startDate = Carbon::create($year, $month, 1);
+            $endDate = $startDate->copy()->endOfMonth();
+
+            $hadirIds = [];
+            $terlambatIds = [];
+            $sakitIds = [];
+            $izinIds = [];
+
+            for ($date = $startDate->copy(); $date <= $endDate; $date->addDay()) {
+                $tgl = $date->toDateString();
+                $dayName = strtolower($date->format('l'));
+                $jamTerlambat = $setting->{$dayName . '_start_time'} ?? '08:00:00';
+
+                // Hadir tepat waktu
+                $hadirHariIni = DB::table('attendances')
+                    ->whereDate('date', $tgl)
+                    ->whereTime('check_in_time', '<=', $jamTerlambat)
+                    ->pluck('user_id')
+                    ->toArray();
+
+                // Hadir terlambat
+                $terlambatHariIni = DB::table('attendances')
+                    ->whereDate('date', $tgl)
+                    ->whereTime('check_in_time', '>', $jamTerlambat)
+                    ->pluck('user_id')
+                    ->toArray();
+
+                // Sakit
+                $sakitHariIni = DB::table('absences')
+                    ->where('type', 'sakit')
+                    ->whereDate('date-start', '<=', $tgl)
+                    ->whereDate('date-end', '>=', $tgl)
+                    ->pluck('user_id')
+                    ->toArray();
+
+                // Izin
+                $izinHariIni = DB::table('absences')
+                    ->where('type', 'izin')
+                    ->whereDate('date-start', '<=', $tgl)
+                    ->whereDate('date-end', '>=', $tgl)
+                    ->pluck('user_id')
+                    ->toArray();
+
+                $hadirIds = array_merge($hadirIds, $hadirHariIni);
+                $terlambatIds = array_merge($terlambatIds, $terlambatHariIni);
+                $sakitIds = array_merge($sakitIds, $sakitHariIni);
+                $izinIds = array_merge($izinIds, $izinHariIni);
+            }
+
+            // Hitung unik user tiap kategori
+            $totalHadir = count(array_unique($hadirIds));
+            $totalTerlambat = count(array_unique($terlambatIds));
+            $totalSakit = count(array_unique($sakitIds));
+            $totalIzin = count(array_unique($izinIds));
+
+            // Tanpa keterangan (tidak hadir, tidak sakit, tidak izin)
+            $allActiveUsers = array_unique(array_merge($hadirIds, $terlambatIds, $sakitIds, $izinIds));
+            $totalTanpaKeterangan = count($userIds) - count($allActiveUsers);
 
             // Nama bulan Indonesia
             $indonesianMonth = Carbon::createFromDate($year, $month, 1)
@@ -279,10 +331,13 @@ class StatistikController extends Controller
                 'message' => 'Data Statistik Bulanan',
                 'data' => [
                     'bulan' => strtolower($indonesianMonth),
-                    'hadir' => (int) $data->hadir,
-                    'sakit' => (int) $data->sakit,
-                    'izin' => (int) $data->izin,
-                    'tanpa_keterangan' => (int) $data->tanpa_keterangan,
+                    'tahun' => $year,
+                    'total_karyawan' => count($userIds),
+                    'total_hadir' => $totalHadir,
+                    'total_terlambat' => $totalTerlambat,
+                    'total_sakit' => $totalSakit,
+                    'total_izin' => $totalIzin,
+                    'total_tanpa_keterangan' => $totalTanpaKeterangan
                 ]
             ]);
         } catch (\Exception $e) {
