@@ -333,8 +333,7 @@ class StatistikController extends Controller
                     'bulan' => strtolower($indonesianMonth),
                     'tahun' => $year,
                     'total_karyawan' => count($userIds),
-                    'total_hadir' => $totalHadir,
-                    'total_terlambat' => $totalTerlambat,
+                    'total_hadir' => $totalHadir + $totalTerlambat, 
                     'total_sakit' => $totalSakit,
                     'total_izin' => $totalIzin,
                     'total_tanpa_keterangan' => $totalTanpaKeterangan

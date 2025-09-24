@@ -281,29 +281,34 @@
 }
 
 
-    function updateChart(statsData) {
-        const total = (statsData.hadir || 0) + (statsData.sakit || 0) + (statsData.izin || 0) + (statsData.tanpa_keterangan || 0);
-        let chartData;
-        if (total === 0) {
-            chartData = [1, 0, 0, 0]; 
-        } else {
-            chartData = [
-                statsData.hadir || 0,
-                statsData.sakit || 0,
-                statsData.izin || 0,
-                statsData.tanpa_keterangan || 0
-            ];
-        }
-        monthlyChart.data.datasets[0].data = chartData;
-        monthlyChart.update();
-        updateDonutPercentage(statsData);
+   function updateChart(statsData) {
+    const total = (statsData.total_hadir || 0) + (statsData.total_sakit || 0) + 
+                  (statsData.total_izin || 0) + (statsData.total_tanpa_keterangan || 0);
+
+    let chartData;
+    if (total === 0) {
+        chartData = [1, 0, 0, 0]; 
+    } else {
+        chartData = [
+            statsData.total_hadir || 0,
+            statsData.total_sakit || 0,
+            statsData.total_izin || 0,
+            statsData.total_tanpa_keterangan || 0
+        ];
     }
 
-    function updateDonutPercentage(statsData) {
-        const total = (statsData.hadir || 0) + (statsData.sakit || 0) + (statsData.izin || 0) + (statsData.tanpa_keterangan || 0);
-        const percentage = total > 0 ? Math.round((statsData.hadir / total) * 100) : 0;
-        document.getElementById('donutPercentage').textContent = `${percentage}%`;
-    }
+    monthlyChart.data.datasets[0].data = chartData;
+    monthlyChart.update();
+    updateDonutPercentage(statsData);
+}
+
+function updateDonutPercentage(statsData) {
+    const total = (statsData.total_hadir || 0) + (statsData.total_sakit || 0) + 
+                  (statsData.total_izin || 0) + (statsData.total_tanpa_keterangan || 0);
+    const percentage = total > 0 ? Math.round((statsData.total_hadir / total) * 100) : 0;
+    document.getElementById('donutPercentage').textContent = `${percentage}%`;
+}
+
 
     function showLoading() {
         document.getElementById('loadingIndicator').classList.remove('hidden');
