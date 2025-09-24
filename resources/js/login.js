@@ -12,6 +12,12 @@ document.addEventListener("DOMContentLoaded", () => {
             try {
                 const response = await axios.post("/api/login/admin", formData);
                 if (response.data.status == "success") {
+                    // Save token to localStorage as backup
+                    if (response.data.data && response.data.data.token) {
+                        localStorage.setItem('auth_token', response.data.data.token);
+                        sessionStorage.setItem('auth_token', response.data.data.token);
+                        console.log('Token saved to localStorage and sessionStorage');
+                    }
                     window.location.href = "/dashboard";
                 } else {
                     alertBox.textContent =

@@ -60,7 +60,7 @@ class AdminAuthController extends Controller
                     'admin' => $admin,
                 ]
             ])
-            ->cookie('auth_token', $token, 60, '/', null, false, true);
+            ->cookie('auth_token', $token, 60, '/', null, false, false);
         } catch (ValidationException $e) {
             return response()->json([
                 'status' => 'warning',

@@ -18,6 +18,12 @@ class Absence extends Model
         'upload_attachment'
     ];
 
+    protected $casts = [
+        'is_approved' => 'boolean',
+        'date-start' => 'date',
+        'date-end' => 'date'
+    ];
+
 
     public function user()
     {

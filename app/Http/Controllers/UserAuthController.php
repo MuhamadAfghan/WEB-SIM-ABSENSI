@@ -59,7 +59,7 @@ class UserAuthController extends Controller
                     'user' => $user,
                 ]
             ])
-                ->cookie('auth_token', $token, 60, '/', null, false, true);
+                ->cookie('auth_token', $token, 60, '/', null, false, false);
         } catch (ValidationException $e) {
             return response()->json([
                 'status' => 'warning',

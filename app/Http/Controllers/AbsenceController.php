@@ -121,11 +121,18 @@ class AbsenceController extends Controller
 
     public function approve(Request $request, $id)
     {
+        \Log::info('Approve request received', [
+            'id' => $id,
+            'request_data' => $request->all(),
+            'user' => auth()->user()
+        ]);
+
         $validator = Validator::make($request->all(), [
             'is_approved' => 'required|boolean'
         ]);
 
         if ($validator->fails()) {
+            \Log::error('Validation failed', ['errors' => $validator->errors()]);
             return response()->json([
                 'status' => 'error',
                 'message' => $validator->errors()
@@ -136,11 +143,18 @@ class AbsenceController extends Controller
             $absence = Absence::find($id);
 
             if (!$absence) {
+                \Log::error('Absence not found', ['id' => $id]);
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Absence record not found'
                 ], 404);
             }
+
+            \Log::info('Updating absence', [
+                'absence_id' => $absence->id,
+                'current_status' => $absence->is_approved,
+                'new_status' => $request->is_approved
+            ]);
 
             $absence->update([
                 'is_approved' => $request->is_approved
@@ -148,12 +162,22 @@ class AbsenceController extends Controller
 
             $status = $request->is_approved ? 'approved' : 'rejected';
 
+            \Log::info('Absence updated successfully', [
+                'absence_id' => $absence->id,
+                'new_status' => $status
+            ]);
+
             return response()->json([
                 'status' => 'success',
                 'message' => "Absence has been {$status}",
                 'data' => $absence
             ], 200);
         } catch (\Exception $e) {
+            \Log::error('Failed to update absence', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed to update absence: ' . $e->getMessage()
