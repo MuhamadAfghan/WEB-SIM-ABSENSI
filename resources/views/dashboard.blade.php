@@ -14,4 +14,7 @@
     </div>
 </div>
 
+<div class="mt-4">
+    @include('components.dashboard.table-recent-absences')
+</div>
 @endsection

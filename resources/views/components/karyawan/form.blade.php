@@ -55,8 +55,27 @@
             <!-- Mapel -->
             <div>
                 <label for="mapel" class="block text-sm font-semibold">Mapel</label>
-                <input type="text" name="mapel" id="mapel"
+                <select name="mapel" id="mapel"
                     class="w-full rounded-lg border border-gray-200 bg-gray-100 px-3 py-2 text-sm shadow-sm focus:border-blue-400 focus:ring focus:ring-blue-300">
+                    <option value="" disabled selected>Pilih Mapel</option>
+                    <option value="PPLG">PPLG</option>
+                    <option value="TJKT">TJKT</option>
+                    <option value="DKV">DKV</option>
+                    <option value="KULINER">KULINER</option>
+                    <option value="HOTEL">HOTEL</option>
+                    <option value="PMN">PMN</option>
+                    <option value="MPLB">MPLB</option>
+                    <option value="MATEMATIKA">MATEMATIKA</option>
+                    <option value="PKK">PKK</option>
+                    <option value="PJOK">PJOK</option>
+                    <option value="SEJARAH">SEJARAH</option>
+                    <option value="B INGGRIS">B INGGRIS</option>
+                    <option value="B INDONESIA">B INDONESIA</option>
+                    <option value="PP">PP</option>
+                    <option value="PABP">PABP</option>
+                    <option value="B SUNDA">B SUNDA</option>
+                    <option value="INFORMATIKA">INFORMATIKA</option>
+                </select>
             </div>
 
             <!-- Password -->

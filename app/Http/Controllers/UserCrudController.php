@@ -79,6 +79,11 @@ class UserCrudController extends Controller
                 $query->where('divisi', $divisi);
             }
 
+             if ($request->has('mapel')) {
+            $mapel = $request->input('mapel');
+            $query->where('mapel', $mapel);
+        }
+
             // Fitur pencarian
             if ($request->has('search')) {
                 $search = $request->search;
@@ -347,10 +352,10 @@ class UserCrudController extends Controller
         $user = $request->user();
 
         // jumlah dia masuk kerja
-        $totalMasuk = Attendance::where('user_id', $user->id)->where('keterangan', 'masuk')->count();
+        $totalMasuk = Attendance::where('user_id', $user->id)->count();
 
         // jumlah dia telat
-        $totalTelat = Attendance::where('user_id', $user->id)->where('keterangan', 'telat')->count();
+        $totalTelat = Attendance::where('user_id', $user->id)->where('check_in_time', '>', 'expected_check_in_time')->count();
 
         // total tidak masuk
         $totalTidakMasuk = Absence::where('user_id', $user->id)->count();

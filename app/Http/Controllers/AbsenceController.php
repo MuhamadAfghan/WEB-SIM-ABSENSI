@@ -174,6 +174,30 @@ class AbsenceController extends Controller
         'date_end.after_or_equal' => 'Tanggal selesai harus setelah atau sama dengan tanggal mulai'
     ];
 
+    public function showAbsenceById($id)
+    {
+        try {
+            $absence = Absence::with('user')->find($id);
+
+            if (!$absence) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Absence record not found'
+                ], 404);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $absence
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to retrieve absence record: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function showAbsences(Request $request)
     {
         try {
@@ -182,8 +206,14 @@ class AbsenceController extends Controller
             $attendanceQuery = Attendance::query()->with('user');
 
             // Merge collections
-            $absences = $absenceQuery->get();
-            $attendances = $attendanceQuery->get();
+            $absences = $absenceQuery->get()->map(function ($absence) {
+                $absence->absence_status = 'tidak hadir';
+                return $absence;
+            });
+            $attendances = $attendanceQuery->get()->map(function ($attendance) {
+                $attendance->absence_status = 'hadir';
+                return $attendance;
+            });
 
             // Combine and convert to collection
             $merged = $absences->concat($attendances);
@@ -215,6 +245,8 @@ class AbsenceController extends Controller
             $page = $request->get('page', 1);
             $perPage = 10;
             $items = $merged->slice(($page - 1) * $perPage, $perPage)->values();
+            // sort by created_at
+            $items = $items->sortByDesc('created_at');
             $total = $merged->count();
 
             return response()->json([
