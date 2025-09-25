@@ -24,10 +24,6 @@
         <!-- Employee Information -->
         <div class="p-6">
             <div class="mb-8 flex items-start space-x-6">
-                <!-- Profile Picture -->
-                <div class="h-24 w-24 flex-shrink-0 rounded-lg bg-gray-200">
-                    <!-- Placeholder for profile image -->
-                </div>
 
                 <!-- Employee Details -->
                 <div class="flex-1 space-y-3">
@@ -85,9 +81,9 @@
     </div>
 
     <!-- Edit Modal-->
-    <div id="modalEditKaryawan" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 hidden">
-        <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-lg">
-            <div class="flex justify-between items-center mb-4">
+    <div id="modalEditKaryawan" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black/50">
+        <div class="w-full max-w-md rounded-xl bg-white p-6 shadow-lg">
+            <div class="mb-4 flex items-center justify-between">
                 <h3 class="text-lg font-bold">Edit Data Karyawan</h3>
                 <button onclick="closeEditModal()" class="text-gray-500 hover:text-gray-700">
                     <i class="fa-solid fa-xmark text-xl"></i>
@@ -118,15 +114,15 @@
 
                 <div class="flex justify-end">
                     <button type="button" onclick="closeEditModal()"
-                        class="mr-2 px-4 py-2 rounded bg-gray-200 hover:bg-gray-300">Batal</button>
+                        class="mr-2 rounded bg-gray-200 px-4 py-2 hover:bg-gray-300">Batal</button>
                     <button type="submit"
-                        class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600">Simpan</button>
+                        class="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">Simpan</button>
                 </div>
             </form>
         </div>
     </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         (function() {

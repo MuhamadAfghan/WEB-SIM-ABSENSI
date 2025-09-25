@@ -445,7 +445,7 @@ class AttendanceController extends Controller
             $month = $request->get('month');
             $year = $request->get('year');
 
-            $query = Attendance::orderBy('date', 'desc');
+            $query = Attendance::where('user_id', $userId)->orderBy('date', 'desc');
 
             if ($month && $year) {
                 $query->whereMonth('date', $month)

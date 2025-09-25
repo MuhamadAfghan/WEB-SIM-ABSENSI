@@ -354,6 +354,9 @@
                     const lokasi = item.lokasi || '-';
                     const note = item.description || item.keterangan || '';
                     const isAbsence = tipe !== 'hadir';
+                    
+                    // Debug log
+                    console.log('Item data:', item);
                     const openAction = isAbsence
                         ? `loadAbsenceDetailAndOpen(${item.id}, \`${userName}\`)`
                         : `AbsenceModal.open({kind:'attendance', id:${item.id}, userName:\`${userName}\`, note:\`${note}\`, imageUrl:''})`;

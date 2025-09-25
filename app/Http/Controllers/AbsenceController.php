@@ -104,7 +104,7 @@ class AbsenceController extends Controller
                 'type' => $request->type,
                 'is_approved' => $request->is_approved ?? false,
                 'description' => $request->description,
-                'upload_attachment' => $request->file('upload_attachment') ? $request->file('upload_attachment')->store('attachments') : null
+                'upload_attachment' => $request->file('upload_attachment') ? $request->file('upload_attachment')->store('attachments', 'public') : null
             ]);
 
             return response()->json([
@@ -232,6 +232,7 @@ class AbsenceController extends Controller
             // Merge collections
             $absences = $absenceQuery->get()->map(function ($absence) {
                 $absence->absence_status = 'tidak hadir';
+                $absence->date = $absence->{'date-start'}; // Map date-start to date for consistency
                 return $absence;
             });
             $attendances = $attendanceQuery->get()->map(function ($attendance) {
