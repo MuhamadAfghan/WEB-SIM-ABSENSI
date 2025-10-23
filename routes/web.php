@@ -15,20 +15,25 @@ use Illuminate\Support\Facades\Route;
 
 use Illuminate\Support\Facades\DB;
 
-Route::get('/', function () {
-    try {
-        DB::connection()->getPdo();
-        echo "Connected successfully to database " . DB::connection()->getDatabaseName();
-    } catch (\Exception $e) {
-        echo "Could not connect to the database. Please check your configuration. Error: " . $e->getMessage();
-    }
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     try {
+//         DB::connection()->getPdo();
+//         echo "Connected successfully to database " . DB::connection()->getDatabaseName();
+//     } catch (\Exception $e) {
+//         echo "Could not connect to the database. Please check your configuration. Error: " . $e->getMessage();
+//     }
+//     return view('welcome');
+// });
+
+Route::redirect('/', '/login');
+
 
 // Authentication Routes
-Route::get('/login', function () {
-    return view('login');
-})->name('login');
+Route::middleware('guest')->group(function () {
+    Route::get('/login', function () {
+        return view('login');
+    })->name('login');
+});
 
 Route::middleware(['islogin'])->group(function () {
     // Dashboard Routes
