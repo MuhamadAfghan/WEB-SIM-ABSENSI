@@ -14,7 +14,10 @@
         </div>
     </div>
 
-    <div class="mt-4">
-        @include('components.dashboard.table-recent-absences')
-    </div>
+<<<<<<<<< Temporary merge branch 1
+<div class="mt-4">
+    @include('components.dashboard.table-recent-absences')
+</div>
+=========
+>>>>>>>>> Temporary merge branch 2
 @endsection
