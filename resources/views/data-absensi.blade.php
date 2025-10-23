@@ -212,10 +212,43 @@
         let dateEnd = '';
         let currentType = '';
 
+        // Helper function to get auth token from multiple sources
+        function getAuthToken() {
+            // Try to get from cookies first
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [name, value] = cookie.trim().split('=');
+                if (name === 'auth_token') {
+                    return value;
+                }
+            }
+            
+            // Try to get from localStorage
+            const localStorageToken = localStorage.getItem('auth_token');
+            if (localStorageToken) {
+                return localStorageToken;
+            }
+            
+            // Try to get from sessionStorage
+            const sessionStorageToken = sessionStorage.getItem('auth_token');
+            if (sessionStorageToken) {
+                return sessionStorageToken;
+            }
+            
+            return null;
+        }
+
         // Fungsi untuk memuat data absensi
         async function fetchAttendanceData() {
             showLoading();
             try {
+                // Get auth token
+                const authToken = getAuthToken();
+                if (!authToken) {
+                    showError('Token autentikasi tidak ditemukan. Silakan login kembali.');
+                    return;
+                }
+
                 // Build URL dengan parameter
                 let url = "/api/absences";
                 const params = [];
@@ -233,11 +266,21 @@
                     url += '?' + params.join('&');
                 }
                 
-                const response = await fetch(url);
+                const response = await fetch(url, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${authToken}`,
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    credentials: 'include'
+                });
+                
                 const contentType = response.headers.get("content-type");
                 
                 if (!response.ok) {
-                    throw new Error('Gagal memuat data absensi: ' + response.status);
+                    const errorData = await response.json().catch(() => ({}));
+                    const errorMessage = errorData.message || `HTTP ${response.status}: Gagal memuat data absensi`;
+                    throw new Error(errorMessage);
                 }
                 
                 if (!contentType || !contentType.includes("application/json")) {
@@ -258,6 +301,7 @@
                     showError('Gagal memuat data absensi: ' + result.message);
                 }
             } catch (error) {
+                console.error('Fetch attendance data error:', error);
                 showError('Terjadi kesalahan: ' + error.message);
             }
         }

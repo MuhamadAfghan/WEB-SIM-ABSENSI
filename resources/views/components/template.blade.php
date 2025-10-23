@@ -123,6 +123,24 @@
         </div>
     </div>
 
+    <!-- Token management script -->
+    <script>
+        // Ensure token is available in localStorage from cookie
+        document.addEventListener('DOMContentLoaded', function() {
+            // Try to get token from cookie and save to localStorage as backup
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [name, value] = cookie.trim().split('=');
+                if (name === 'auth_token') {
+                    localStorage.setItem('auth_token', value);
+                    sessionStorage.setItem('auth_token', value);
+                    console.log('Token synced from cookie to localStorage');
+                    break;
+                }
+            }
+        });
+    </script>
+
     <!-- Sidebar toggle script -->
     <script>
         document.getElementById('sidebarToggle').addEventListener('click', function() {

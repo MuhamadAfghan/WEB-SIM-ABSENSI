@@ -110,6 +110,32 @@
                 if (e.target === modal) closeModal();
             });
 
+            // Helper function to get auth token from multiple sources
+            function getAuthToken() {
+                // Try to get from cookies first
+                const cookies = document.cookie.split(';');
+                for (let cookie of cookies) {
+                    const [name, value] = cookie.trim().split('=');
+                    if (name === 'auth_token') {
+                        return value;
+                    }
+                }
+
+                // Try to get from localStorage
+                const localStorageToken = localStorage.getItem('auth_token');
+                if (localStorageToken) {
+                    return localStorageToken;
+                }
+
+                // Try to get from sessionStorage
+                const sessionStorageToken = sessionStorage.getItem('auth_token');
+                if (sessionStorageToken) {
+                    return sessionStorageToken;
+                }
+
+                return null;
+            }
+
             async function sendApproval(isApproved) {
                 if (!currentContext || currentContext.kind !== 'absence' || !currentContext.id) return;
 
@@ -121,18 +147,33 @@
                 try {
                     approveBtn.disabled = true;
                     rejectBtn.disabled = true;
+
+                    // Get auth token
+                    const authToken = getAuthToken();
+                    if (!authToken) {
+                        throw new Error('Token autentikasi tidak ditemukan. Silakan login kembali.');
+                    }
+
                     const res = await fetch(`/api/absences/${currentContext.id}/approve`, {
                         method: 'PATCH',
                         headers: {
                             'Content-Type': 'application/json',
                             'Accept': 'application/json',
+                            'Authorization': `Bearer ${authToken}`,
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                'content')
                         },
+                        credentials: 'include',
                         body: JSON.stringify({
                             is_approved: !!isApproved
                         })
                     });
 
-                    if (!res.ok) throw new Error('Gagal memperbarui status');
+                    if (!res.ok) {
+                        const errorData = await res.json().catch(() => ({}));
+                        const errorMessage = errorData.message || `HTTP ${res.status}: Gagal memperbarui status`;
+                        throw new Error(errorMessage);
+                    }
 
                     const result = await res.json();
                     const statusText = isApproved ? 'disetujui' : 'ditolak';
@@ -141,11 +182,15 @@
                     alert(`Pengajuan berhasil ${statusText}!`);
 
                     closeModal();
-                    // Optional: refresh listing if helper exists on page
+                    // Refresh listing if helper exists on page
                     if (typeof window.fetchAttendanceData === 'function') {
                         window.fetchAttendanceData();
+                    } else {
+                        // Fallback: reload page if no refresh function available
+                        window.location.reload();
                     }
                 } catch (err) {
+                    console.error('Approval error:', err);
                     alert('Terjadi kesalahan: ' + (err.message || 'Gagal memproses permintaan'));
                 } finally {
                     approveBtn.disabled = false;
@@ -159,8 +204,28 @@
             // Expose helper to fetch detail by id (absence)
             window.loadAbsenceDetailAndOpen = async function(id, userName) {
                 try {
-                    const res = await fetch(`/api/absences/${id}`);
-                    if (!res.ok) throw new Error('Gagal mengambil detail');
+                    // Get auth token
+                    const authToken = getAuthToken();
+                    if (!authToken) {
+                        throw new Error('Token autentikasi tidak ditemukan. Silakan login kembali.');
+                    }
+
+                    const res = await fetch(`/api/absences/${id}`, {
+                        headers: {
+                            'Accept': 'application/json',
+                            'Authorization': `Bearer ${authToken}`,
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                .getAttribute('content')
+                        },
+                        credentials: 'include'
+                    });
+
+                    if (!res.ok) {
+                        const errorData = await res.json().catch(() => ({}));
+                        const errorMessage = errorData.message || `HTTP ${res.status}: Gagal mengambil detail`;
+                        throw new Error(errorMessage);
+                    }
+
                     const json = await res.json();
                     const data = json.data || {};
 
@@ -186,6 +251,7 @@
                         imageUrl: imageUrl
                     });
                 } catch (e) {
+                    console.error('Load absence detail error:', e);
                     alert('Tidak dapat membuka detail pengajuan: ' + e.message);
                 }
             }
