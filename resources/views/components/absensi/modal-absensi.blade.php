@@ -41,6 +41,11 @@
                 class="rounded-lg bg-[#F15A4A] px-5 py-2 text-white shadow hover:brightness-95">Tolak</button>
             <button type="button" id="absenceApproveBtn"
                 class="rounded-lg bg-[#60A5FA] px-5 py-2 text-white shadow hover:brightness-95">Setujui</button>
+            <!-- Status buttons (shown after approval/rejection) -->
+            <button type="button" id="absenceStatusRejected"
+                class="hidden cursor-not-allowed rounded-lg bg-red-500 px-5 py-2 text-white opacity-75 shadow">Ditolak</button>
+            <button type="button" id="absenceStatusApproved"
+                class="hidden cursor-not-allowed rounded-lg bg-green-500 px-5 py-2 text-white opacity-75 shadow">Disetujui</button>
         </div>
     </div>
 
@@ -58,6 +63,8 @@
             const imgPh = document.getElementById('absenceModalImagePlaceholder');
             const approveBtn = document.getElementById('absenceApproveBtn');
             const rejectBtn = document.getElementById('absenceRejectBtn');
+            const statusApprovedBtn = document.getElementById('absenceStatusApproved');
+            const statusRejectedBtn = document.getElementById('absenceStatusRejected');
 
             let currentContext = null; // {kind: 'attendance'|'absence', id, userName}
 
@@ -85,10 +92,38 @@
                     imgPh.textContent = 'Pictures';
                 }
 
-                // Show/Hide action buttons: only for absence requests
+                // Handle button display based on approval status
                 const showAction = ctx.kind === 'absence' && !!ctx.id;
-                approveBtn.classList.toggle('hidden', !showAction);
-                rejectBtn.classList.toggle('hidden', !showAction);
+                const isApproved = ctx.isApproved;
+                const isRejected = ctx.isRejected;
+
+                if (showAction) {
+                    if (isApproved === true) {
+                        // Show approved status button
+                        approveBtn.classList.add('hidden');
+                        rejectBtn.classList.add('hidden');
+                        statusApprovedBtn.classList.remove('hidden');
+                        statusRejectedBtn.classList.add('hidden');
+                    } else if (isRejected === true || isApproved === false) {
+                        // Show rejected status button
+                        approveBtn.classList.add('hidden');
+                        rejectBtn.classList.add('hidden');
+                        statusApprovedBtn.classList.add('hidden');
+                        statusRejectedBtn.classList.remove('hidden');
+                    } else {
+                        // Show action buttons for pending requests
+                        approveBtn.classList.remove('hidden');
+                        rejectBtn.classList.remove('hidden');
+                        statusApprovedBtn.classList.add('hidden');
+                        statusRejectedBtn.classList.add('hidden');
+                    }
+                } else {
+                    // Hide all buttons for non-absence requests
+                    approveBtn.classList.add('hidden');
+                    rejectBtn.classList.add('hidden');
+                    statusApprovedBtn.classList.add('hidden');
+                    statusRejectedBtn.classList.add('hidden');
+                }
 
                 modal.classList.remove('hidden');
                 document.body.classList.add('overflow-hidden');
@@ -174,20 +209,39 @@
                         const errorMessage = errorData.message || `HTTP ${res.status}: Gagal memperbarui status`;
                         throw new Error(errorMessage);
                     }
-
                     const result = await res.json();
                     const statusText = isApproved ? 'disetujui' : 'ditolak';
+
+                    // Update UI to show status immediately
+                    if (isApproved) {
+                        // Show approved status button
+                        approveBtn.classList.add('hidden');
+                        rejectBtn.classList.add('hidden');
+                        statusApprovedBtn.classList.remove('hidden');
+                        statusRejectedBtn.classList.add('hidden');
+                        // Update context
+                        currentContext.isApproved = true;
+                        currentContext.isRejected = false;
+                    } else {
+                        // Show rejected status button
+                        approveBtn.classList.add('hidden');
+                        rejectBtn.classList.add('hidden');
+                        statusApprovedBtn.classList.add('hidden');
+                        statusRejectedBtn.classList.remove('hidden');
+                        // Update context
+                        currentContext.isApproved = false;
+                        currentContext.isRejected = true;
+                    }
 
                     // Show success alert
                     alert(`Pengajuan berhasil ${statusText}!`);
 
-                    closeModal();
+                    // Don't close modal immediately, let user see the status change
+                    // closeModal();
+
                     // Refresh listing if helper exists on page
                     if (typeof window.fetchAttendanceData === 'function') {
                         window.fetchAttendanceData();
-                    } else {
-                        // Fallback: reload page if no refresh function available
-                        window.location.reload();
                     }
                 } catch (err) {
                     console.error('Approval error:', err);
