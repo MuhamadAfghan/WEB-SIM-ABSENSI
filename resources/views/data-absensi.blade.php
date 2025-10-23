@@ -86,18 +86,15 @@
         }
     </style>
 
-    <!-- Pastikan Alpine.js terpasang -->
     <script src="//unpkg.com/alpinejs" defer></script>
 
     <div class="mb-4 flex items-center justify-between" x-data="{ openFilter: false }">
         <h1 class="text-3xl font-black tracking-wide">Data Absensi</h1>
         <div class="relative flex gap-2">
-            <!-- Filter -->
             <div class="relative">
                 <button @click="openFilter = !openFilter" class="rounded border bg-white px-4 py-2">
                     <img src="{{ asset('image/filter_black.png') }}" alt="Icon" class="inline h-5 w-5 text-gray-500">
                 </button>
-                <!-- Dropdown Filter -->
                 <div x-show="openFilter" @click.away="openFilter = false"
                     class="absolute z-10 mt-2 w-48 rounded border bg-white text-sm shadow-lg">
                     <button class="block w-full px-4 py-2 text-left hover:bg-blue-50"
@@ -119,7 +116,6 @@
                 </div>
             </div>
 
-            <!-- Search -->
             <div class="relative">
                 <input type="text" id="searchInput" placeholder="Cari nama..."
                     class="w-56 rounded border bg-white px-3 py-2 pl-10 text-sm">
@@ -131,13 +127,11 @@
                 </svg>
             </div>
 
-            <!-- Export -->
             <button class="flex items-center gap-2 rounded border bg-white px-4 py-2 text-sm" onclick="exportData()">
                 <img src="{{ asset('image/upload_file_black.png') }}" alt="Icon" class="inline h-5 w-5 text-gray-500">
                 Export berdasarkan waktu
             </button>
 
-            <!-- Cari berdasarkan waktu -->
             <div class="relative">
                 <svg xmlns="http://www.w3.org/2000/svg"
                     class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-500" fill="none"
@@ -151,7 +145,6 @@
         </div>
     </div>
 
-    <!-- Modal untuk rentang tanggal kustom -->
     <div id="customDateRangeModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
         <div class="bg-white p-6 rounded-lg shadow-xl w-96">
             <h3 class="text-lg font-bold mb-4">Filter Rentang Tanggal</h3>
@@ -170,10 +163,8 @@
         </div>
     </div>
 
-    {{-- Container untuk status loading/error --}}
     <div id="statusContainer"></div>
 
-    {{-- Tabel Data --}}
     <div class="overflow-x-auto">
         <table class="w-full text-left text-sm" id="attendanceTable">
             <thead class="bg-white">
@@ -187,22 +178,18 @@
                 </tr>
             </thead>
             <tbody id="attendanceBody" class="divide-y border-gray-200 bg-gray-100">
-                <!-- Data akan diisi oleh JavaScript -->
             </tbody>
         </table>
     </div>
 
-    {{-- Modal Izin/Cuti/Sakit --}}
     @include('components.absensi.modal-absensi')
 
-    <!-- Pagination -->
-    <div class="flex items-center justify-end gap-2 p-4" id="paginationContainer">
-        <!-- Pagination akan diisi oleh JavaScript -->
+    <div class="flex items-center justify-center gap-2 p-4" id="paginationContainer">
     </div>
 
     <script>
-        // Variabel global untuk menyimpan data
-        let allAttendanceData = [];
+        let attendanceData = [];
+        let paginationMeta = null;
         let currentPage = 1;
         const itemsPerPage = 10;
         let currentFilter = 'all';
@@ -212,9 +199,7 @@
         let dateEnd = '';
         let currentType = '';
 
-        // Helper function to get auth token from multiple sources
         function getAuthToken() {
-            // Try to get from cookies first
             const cookies = document.cookie.split(';');
             for (let cookie of cookies) {
                 const [name, value] = cookie.trim().split('=');
@@ -222,50 +207,50 @@
                     return value;
                 }
             }
-            
-            // Try to get from localStorage
             const localStorageToken = localStorage.getItem('auth_token');
             if (localStorageToken) {
                 return localStorageToken;
             }
-            
-            // Try to get from sessionStorage
             const sessionStorageToken = sessionStorage.getItem('auth_token');
             if (sessionStorageToken) {
                 return sessionStorageToken;
             }
-            
             return null;
         }
 
-        // Fungsi untuk memuat data absensi
-        async function fetchAttendanceData() {
+        async function fetchAttendanceData(page = 1) {
             showLoading();
             try {
-                // Get auth token
                 const authToken = getAuthToken();
                 if (!authToken) {
                     showError('Token autentikasi tidak ditemukan. Silakan login kembali.');
                     return;
                 }
 
-                // Build URL dengan parameter
                 let url = "/api/absences";
                 const params = [];
-                
+                params.push(`page=${page}`);
+                params.push(`per_page=${itemsPerPage}`);
+
                 if (dateStart && dateEnd) {
-                    params.push(`date_start=${dateStart}`);
-                    params.push(`date_end=${dateEnd}`);
+                    params.push(`date_start=${encodeURIComponent(dateStart)}`);
+                    params.push(`date_end=${encodeURIComponent(dateEnd)}`);
                 }
-                
+
                 if (currentType) {
-                    params.push(`type=${currentType}`);
+                    params.push(`type=${encodeURIComponent(currentType)}`);
                 }
-                
-                if (params.length > 0) {
-                    url += '?' + params.join('&');
+
+                if (currentSearch) {
+                    params.push(`search=${encodeURIComponent(currentSearch)}`);
                 }
-                
+
+                if (currentDate) {
+                    params.push(`date=${encodeURIComponent(currentDate)}`);
+                }
+
+                url += '?' + params.join('&');
+
                 const response = await fetch(url, {
                     headers: {
                         'Accept': 'application/json',
@@ -274,15 +259,15 @@
                     },
                     credentials: 'include'
                 });
-                
+
                 const contentType = response.headers.get("content-type");
-                
+
                 if (!response.ok) {
                     const errorData = await response.json().catch(() => ({}));
                     const errorMessage = errorData.message || `HTTP ${response.status}: Gagal memuat data absensi`;
                     throw new Error(errorMessage);
                 }
-                
+
                 if (!contentType || !contentType.includes("application/json")) {
                     const text = await response.text();
                     if (text.includes('<!DOCTYPE html')) {
@@ -291,14 +276,15 @@
                     }
                     throw new Error('Respons server tidak valid.');
                 }
-                
+
                 const result = await response.json();
                 if (result.status === 'success') {
-                    // Ubah object ke array
-                    allAttendanceData = result.data.items ? Object.values(result.data.items) : [];
+                    attendanceData = Array.isArray(result.data) ? result.data : (result.data.items ? Object.values(result.data.items) : []);
+                    paginationMeta = result.meta || result.data?.meta || null;
+                    currentPage = page;
                     renderAttendanceData();
                 } else {
-                    showError('Gagal memuat data absensi: ' + result.message);
+                    showError('Gagal memuat data absensi: ' + (result.message || 'Unknown'));
                 }
             } catch (error) {
                 console.error('Fetch attendance data error:', error);
@@ -306,45 +292,21 @@
             }
         }
 
-        // Fungsi untuk menampilkan data
         function renderAttendanceData() {
             const tableBody = document.getElementById('attendanceBody');
-            const paginationContainer = document.getElementById('paginationContainer');
-            let filteredData = allAttendanceData;
-
-            // Filter pencarian nama
-            if (currentSearch) {
-                const searchTerm = currentSearch.toLowerCase();
-                filteredData = filteredData.filter(item =>
-                    (item.user && item.user.name && item.user.name.toLowerCase().includes(searchTerm))
-                );
-            }
-
-            // Filter tanggal (berdasarkan item.date)
-            if (currentDate) {
-                filteredData = filteredData.filter(item =>
-                    item.date && item.date.startsWith(currentDate)
-                );
-            }
-
-            // Pagination
-            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-            if (currentPage > totalPages) currentPage = totalPages;
-            if (currentPage < 1) currentPage = 1;
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = startIndex + itemsPerPage;
-            const currentData = filteredData.slice(startIndex, endIndex);
-
             tableBody.innerHTML = '';
-            if (currentData.length === 0) {
+
+            if (!attendanceData || attendanceData.length === 0) {
                 tableBody.innerHTML = `
                     <tr>
                         <td colspan="6" class="text-center py-4">Tidak ada data absensi</td>
                     </tr>
                 `;
             } else {
-                currentData.forEach((item, index) => {
-                    const rowNumber = startIndex + index + 1;
+                const startNumber = (paginationMeta && typeof paginationMeta.from === 'number') ? paginationMeta.from : ((currentPage - 1) * itemsPerPage + 1);
+
+                attendanceData.forEach((item, index) => {
+                    const rowNumber = startNumber + index;
                     const userName = item.user && item.user.name ? item.user.name : '-';
                     const userId = item.user && item.user.id ? item.user.id : '-';
                     const tipe = item.absence_status || '-';
@@ -354,14 +316,12 @@
                     const lokasi = item.lokasi || '-';
                     const note = item.description || item.keterangan || '';
                     const isAbsence = tipe !== 'hadir';
-                    
-                    // Debug log
+
                     console.log('Item data:', item);
                     const openAction = isAbsence
                         ? `loadAbsenceDetailAndOpen(${item.id}, \`${userName}\`)`
                         : `AbsenceModal.open({kind:'attendance', id:${item.id}, userName:\`${userName}\`, note:\`${note}\`, imageUrl:''})`;
 
-                    // Determine status class based on tipe
                     let statusClass = '';
                     if (tipe === 'hadir') {
                         statusClass = 'status-hadir';
@@ -392,69 +352,58 @@
                 });
             }
 
-            renderPagination(totalPages);
+            renderPagination(paginationMeta);
             document.getElementById('statusContainer').innerHTML = '';
         }
 
-        // Fungsi untuk render pagination
-        function renderPagination(totalPages) {
-            const paginationContainer = document.getElementById('paginationContainer');
+        function renderPagination(meta) {
+            const pagination = document.getElementById('paginationContainer');
+            pagination.innerHTML = '';
 
-            if (totalPages <= 1) {
-                paginationContainer.innerHTML = '';
+            if (!meta || meta.last_page <= 1) {
                 return;
             }
 
-            let paginationHTML = `
-                <button
-                    onclick="changePage(${currentPage - 1})"
-                    ${currentPage === 1 ? 'disabled' : ''}
-                    class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 hover:bg-blue-100 hover:text-gray-700 ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}"
-                >
-                    &lt;
-                </button>
-            `;
+            const buttonHtml = (label, page, { disabled = false, active = false } = {}) => {
+                const base = 'px-3 py-2 rounded-lg border text-sm';
+                const classes = [
+                    base,
+                    active ? 'bg-[#60B5FF] text-white border-[#60B5FF]' :
+                    'bg-white text-gray-700 border-gray-200 hover:bg-blue-50',
+                    disabled ? 'opacity-50 cursor-not-allowed' : ''
+                ].join(' ');
+                return `<button class="${classes}" ${disabled ? 'disabled' : ''} onclick="fetchAttendanceData(${page})">${label}</button>`;
+            };
 
-            for (let i = 1; i <= totalPages; i++) {
-                paginationHTML += `
-                    <button
-                        onclick="changePage(${i})"
-                        class="flex items-center justify-center px-3 h-8 ms-0 leading-tight ${currentPage === i ? 'bg-blue-500 text-white' : 'text-gray-500 hover:bg-blue-100 hover:text-gray-700'}"
-                    >
-                        ${i}
-                    </button>
-                `;
+            const current = meta.current_page;
+            const last = meta.last_page;
+
+            const windowSize = 5;
+            const half = Math.floor(windowSize / 2);
+            let start = Math.max(1, current - half);
+            let end = Math.min(last, start + windowSize - 1);
+            start = Math.max(1, end - windowSize + 1);
+
+            let html = '';
+            html += buttonHtml('Prev', Math.max(1, current - 1), { disabled: current === 1 });
+            for (let p = start; p <= end; p++) {
+                html += buttonHtml(p, p, { active: p === current });
             }
+            html += buttonHtml('Next', Math.min(last, current + 1), { disabled: current === last });
 
-            paginationHTML += `
-                <button
-                    onclick="changePage(${currentPage + 1})"
-                    ${currentPage === totalPages ? 'disabled' : ''}
-                    class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 hover:bg-blue-100 hover:text-gray-700 ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}"
-                >
-                    &gt;
-                </button>
-            `;
-
-            paginationContainer.innerHTML = paginationHTML;
+            pagination.innerHTML = html;
         }
 
-        // Fungsi untuk mengganti halaman
         function changePage(page) {
-            currentPage = page;
-            renderAttendanceData();
+            fetchAttendanceData(page);
         }
 
-        // Fungsi untuk menyetel filter
         function setFilter(filterType) {
             currentFilter = filterType;
-            currentPage = 1;
-            
-            // Set tanggal mulai dan akhir berdasarkan filter
             const today = new Date();
             dateStart = '';
             dateEnd = '';
-            
+
             if (filterType === '7days') {
                 const sevenDaysAgo = new Date();
                 sevenDaysAgo.setDate(today.getDate() - 7);
@@ -466,67 +415,48 @@
                 dateStart = formatDate(thirtyDaysAgo);
                 dateEnd = formatDate(today);
             }
-            
-            fetchAttendanceData();
+
+            fetchAttendanceData(1);
         }
 
-        // Fungsi untuk filter berdasarkan tanggal
         function filterByDate(date) {
-            currentDate = date;
+            dateStart = date;
+            dateEnd = date;
             currentPage = 1;
-            renderAttendanceData();
+            fetchAttendanceData(1);
         }
 
-        // Fungsi untuk membuka modal rentang tanggal kustom
         function openCustomDateRange() {
             document.getElementById('customDateRangeModal').classList.remove('hidden');
         }
 
-        // Fungsi untuk menutup modal rentang tanggal kustom
         function closeCustomDateRange() {
             document.getElementById('customDateRangeModal').classList.add('hidden');
         }
 
-        // Fungsi untuk menerapkan rentang tanggal kustom
         function applyCustomDateRange() {
             dateStart = document.getElementById('dateStart').value;
             dateEnd = document.getElementById('dateEnd').value;
-            
+
             if (!dateStart || !dateEnd) {
                 alert('Harap isi kedua tanggal');
                 return;
             }
-            
+
             if (dateStart > dateEnd) {
                 alert('Tanggal mulai tidak boleh lebih besar dari tanggal akhir');
                 return;
             }
-            
+
             currentFilter = 'custom';
-            currentPage = 1;
             closeCustomDateRange();
-            fetchAttendanceData();
+            fetchAttendanceData(1);
         }
 
-        // Fungsi untuk mengekspor data ke CSV
         function exportData() {
-            let exportData = allAttendanceData;
-            if (currentSearch) {
-                const searchTerm = currentSearch.toLowerCase();
-                exportData = exportData.filter(item =>
-                    (item.user && item.user.name && item.user.name.toLowerCase().includes(searchTerm))
-                );
-            }
-            if (currentDate) {
-                exportData = exportData.filter(item =>
-                    item.date && item.date.startsWith(currentDate)
-                );
-            }
-            
-            const csvContent = convertToCSV(exportData);
-            const blob = new Blob([csvContent], {
-                type: 'text/csv;charset=utf-8;'
-            });
+            let exportDataArr = attendanceData || [];
+            const csvContent = convertToCSV(exportDataArr);
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.setAttribute('href', url);
@@ -537,7 +467,6 @@
             document.body.removeChild(link);
         }
 
-        // Fungsi untuk konversi data ke CSV
         function convertToCSV(data) {
             const headers = ['Nama', 'User ID', 'Metode Absen', 'Tanggal', 'Check In', 'Check Out', 'Keterangan', 'Lokasi'];
             const rows = data.map(item => [
@@ -553,7 +482,6 @@
             return [headers, ...rows].map(e => e.join(',')).join('\n');
         }
 
-        // Fungsi untuk memformat tanggal ke YYYY-MM-DD
         function formatDate(date) {
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -561,7 +489,6 @@
             return `${year}-${month}-${day}`;
         }
 
-        // Fungsi untuk menampilkan loading
         function showLoading() {
             document.getElementById('statusContainer').innerHTML = `
                 <div class="loading-spinner"></div>
@@ -571,7 +498,6 @@
             document.getElementById('paginationContainer').innerHTML = '';
         }
 
-        // Fungsi untuk menampilkan error
         function showError(message) {
             document.getElementById('statusContainer').innerHTML = `
                 <div class="error-message">
@@ -582,11 +508,9 @@
             document.getElementById('paginationContainer').innerHTML = '';
         }
 
-        // Inisialisasi ketika halaman dimuat
         document.addEventListener('DOMContentLoaded', function() {
-            fetchAttendanceData();
+            fetchAttendanceData(1);
 
-            // Setup pencarian real-time
             const searchInput = document.getElementById('searchInput');
             let searchTimeout;
 
@@ -594,8 +518,7 @@
                 clearTimeout(searchTimeout);
                 searchTimeout = setTimeout(() => {
                     currentSearch = this.value;
-                    currentPage = 1;
-                    renderAttendanceData();
+                    fetchAttendanceData(1);
                 }, 500);
             });
         });
