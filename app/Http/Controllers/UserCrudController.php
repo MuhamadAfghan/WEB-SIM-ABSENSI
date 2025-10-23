@@ -382,10 +382,9 @@ class UserCrudController extends Controller
     {
         // Validasi file harus excel
         $request->validate([
-            'file' => 'required|mimes:xlsx,xls,csv|max:2048'
+            'file' => 'required|mimes:xlsx,xls,csv|max:20480' // max 20MB
         ]);
 
-        // Proses import
         try {
             Excel::import(new KaryawanImport, $request->file('file'));
 

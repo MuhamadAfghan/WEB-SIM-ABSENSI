@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Support\Facades\DB;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-use Illuminate\Support\Facades\DB;
 
 // Route::get('/', function () {
 //     try {
